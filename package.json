@@ -1,0 +1,31 @@
+{
+  "name": "react-native-image-box",
+  "version": "0.0.1",
+  "description": "image fullscreen popup for react native",
+  "main": "ImageBox.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dev-yakuza/react-native-image-box.git"
+  },
+  "keywords": [
+    "react-native",
+    "react-component",
+    "react-native-component",
+    "react",
+    "ios",
+    "android",
+    "ui",
+    "imagebox",
+    "image",
+    "gallery"
+  ],
+  "author": "dev-yakuza <dev.yakuza@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dev-yakuza/react-native-image-box/issues"
+  },
+  "homepage": "https://github.com/dev-yakuza/react-native-image-box#readme"
+}
