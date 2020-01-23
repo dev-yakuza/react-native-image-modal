@@ -28,9 +28,5 @@
     "url": "https://github.com/dev-yakuza/react-native-image-box/issues"
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-box#readme",
-  "devDependencies": {
-    "@types/react": "16.9.17",
-    "@types/react-native": "0.61.0",
-    "typescript": "3.7.5"
-  }
+  "devDependencies": {}
 }
