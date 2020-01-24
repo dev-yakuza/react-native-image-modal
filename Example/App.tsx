@@ -1,26 +1,7 @@
 import React, {useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  Image,
-  Dimensions,
-  Animated,
-  PanResponder,
-} from 'react-native';
-
-const Style = StyleSheet.create({
-  Container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    justifyContent: 'center',
-  },
-});
+import {View, Image, Dimensions, Animated, PanResponder} from 'react-native';
 
 interface Props {
-  imageWidth: number;
-  imageHeight: number;
-  cropWidth: number;
-  cropHeight: number;
   longPressTime?: number;
   doubleClickInterval?: number;
   enableDoubleClickZoom?: boolean;
@@ -42,10 +23,6 @@ interface Props {
   responderRelease?: (vx?: number, scale?: number) => void;
 }
 const App = ({
-  imageWidth = 100,
-  imageHeight = 100,
-  cropWidth = 100,
-  cropHeight = 100,
   longPressTime = 800,
   doubleClickInterval = 175,
   enableDoubleClickZoom = true,
@@ -134,7 +111,7 @@ const App = ({
       }).start();
     }
 
-    if (imageWidth * scale <= cropWidth) {
+    if (windowSize.width * scale <= windowSize.width) {
       positionX = 0;
       Animated.timing(animatedPositionX, {
         toValue: positionX,
@@ -142,7 +119,7 @@ const App = ({
       }).start();
     }
 
-    if (imageHeight * scale <= cropHeight) {
+    if (windowSize.height * scale <= windowSize.height) {
       positionY = 0;
       Animated.timing(animatedPositionY, {
         toValue: positionY,
@@ -150,8 +127,9 @@ const App = ({
       }).start();
     }
 
-    if (imageHeight * scale > cropHeight) {
-      const verticalMax = (imageHeight * scale - cropHeight) / 2 / scale;
+    if (windowSize.height * scale > windowSize.height) {
+      const verticalMax =
+        (windowSize.height * scale - windowSize.height) / 2 / scale;
       if (positionY < -verticalMax) {
         positionY = -verticalMax;
       } else if (positionY > verticalMax) {
@@ -163,8 +141,9 @@ const App = ({
       }).start();
     }
 
-    if (imageWidth * scale > cropWidth) {
-      const horizontalMax = (imageWidth * scale - cropWidth) / 2 / scale;
+    if (windowSize.width * scale > windowSize.width) {
+      const horizontalMax =
+        (windowSize.width * scale - windowSize.width) / 2 / scale;
       if (positionX < -horizontalMax) {
         positionX = -horizontalMax;
       } else if (positionX > horizontalMax) {
@@ -200,6 +179,15 @@ const App = ({
     onPanResponderTerminationRequest: () => false,
 
     onPanResponderGrant: evt => {
+      lastPositionX = null;
+      lastPositionY = null;
+      zoomLastDistance = null;
+      horizontalWholeCounter = 0;
+      verticalWholeCounter = 0;
+      isDoubleClick = false;
+      isLongPress = false;
+      isHorizontalWrap = false;
+
       if (singleClickTimeout) {
         clearTimeout(singleClickTimeout);
       }
@@ -287,6 +275,7 @@ const App = ({
       }
 
       if (evt.nativeEvent.changedTouches.length <= 1) {
+        console.log('lastPositionX: ', lastPositionX);
         let diffX = gestureState.dx - (lastPositionX || 0);
         if (lastPositionX === null) {
           diffX = 0;
@@ -316,7 +305,7 @@ const App = ({
               isHorizontalWrap = true;
             }
 
-            if (imageWidth * scale > windowSize.width) {
+            if (windowSize.width * scale > windowSize.width) {
               if (horizontalWholeOuterCounter > 0) {
                 if (diffX < 0) {
                   if (horizontalWholeOuterCounter > Math.abs(diffX)) {
@@ -352,7 +341,7 @@ const App = ({
               positionX += diffX / scale;
 
               const horizontalMax =
-                (imageWidth * scale - windowSize.width) / 2 / scale;
+                (windowSize.width * scale - windowSize.width) / 2 / scale;
               if (positionX < -horizontalMax) {
                 positionX = -horizontalMax;
                 horizontalWholeOuterCounter += -1 / 1e10;
@@ -378,7 +367,7 @@ const App = ({
             }
           }
 
-          if (imageHeight * scale > windowSize.height) {
+          if (windowSize.height * scale > windowSize.height) {
             positionY += diffY / scale;
             animatedPositionY.setValue(positionY);
           } else {
@@ -517,7 +506,16 @@ const App = ({
   };
 
   return (
-    <View style={Style.Container} {...imagePanResponder!.panHandlers}>
+    <View
+      style={{
+        backgroundColor: '#000000',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+        width: windowSize.width,
+        height: windowSize.height,
+      }}
+      {...imagePanResponder!.panHandlers}>
       <Animated.View style={animateConf} renderToHardwareTextureAndroid={true}>
         <Image
           resizeMode="contain"
