@@ -8,7 +8,6 @@ interface Props {
   children: JSX.Element | Array<JSX.Element>;
   swipeToDismiss?: boolean;
   backgroundColor?: string;
-  navigator?: any;
   style?: ViewStyle;
   underlayColor?: string;
   onLongPress?: () => void;
@@ -17,10 +16,6 @@ interface Props {
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   didOpen?: () => void;
   renderContent?: () => JSX.Element | Array<JSX.Element>;
-  springConfig?: (
-    value: Animated.AnimatedValue | Animated.AnimatedValueXY,
-    config: Animated.SpringAnimationConfig,
-  ) => Animated.CompositeAnimation;
   onClose?: () => void;
 }
 const ImageBox = ({
@@ -29,11 +24,9 @@ const ImageBox = ({
   children,
   renderHeader,
   swipeToDismiss,
-  springConfig,
   backgroundColor,
   didOpen,
   willClose,
-  navigator,
   onOpen,
   style,
   underlayColor,
@@ -66,7 +59,6 @@ const ImageBox = ({
     origin: state.origin,
     renderHeader: renderHeader,
     swipeToDismiss: swipeToDismiss,
-    springConfig: springConfig,
     backgroundColor: backgroundColor,
     children: getContent(),
     didOpen: didOpen,
@@ -87,9 +79,10 @@ const ImageBox = ({
         if (onOpen) {
           onOpen();
         }
+
         setState({
           ...state,
-          isOpen: navigator ? true : false,
+          isOpen: true,
           origin: {
             width,
             height,
@@ -97,34 +90,13 @@ const ImageBox = ({
             y: py,
           },
         });
-
         if (didOpen) {
           didOpen();
-        }
-        if (navigator) {
-          const route = {
-            component: ImageOverlay,
-            passProps: getOverlayProps(),
-          };
-          const routes = navigator.getCurrentRoutes();
-          routes.push(route);
-          navigator.immediatelyResetRouteStack(routes);
-        } else {
-          setState({
-            ...state,
-            isOpen: true,
-          });
         }
         setTimeout(() => {
           _root && state.layoutOpacity.setValue(0);
         });
       },
-    );
-  };
-
-  const close = () => {
-    throw new Error(
-      'Lightbox.close method is deprecated. Use renderHeader(close) prop instead.',
     );
   };
 
@@ -138,11 +110,6 @@ const ImageBox = ({
     if (onClose) {
       onClose();
     }
-    if (navigator) {
-      const routes = navigator.getCurrentRoutes();
-      routes.pop();
-      navigator.immediatelyResetRouteStack(routes);
-    }
   };
 
   return (
@@ -155,7 +122,7 @@ const ImageBox = ({
           {children}
         </TouchableHighlight>
       </Animated.View>
-      {navigator ? false : <ImageOverlay {...getOverlayProps()} />}
+      <ImageOverlay {...getOverlayProps()} />
     </View>
   );
 };

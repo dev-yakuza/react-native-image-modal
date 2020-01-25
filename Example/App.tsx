@@ -1,7 +1,7 @@
 import React from 'react';
 import ImageBox from './Components/ImageBox';
 import ImageDetail from './Components/ImageDetail';
-import {Image} from 'react-native';
+import {Image, View, Dimensions} from 'react-native';
 
 interface Props {}
 const App = ({}: Props) => {
@@ -17,17 +17,29 @@ const App = ({}: Props) => {
   const imageSource = require('./images/vertical.jpg');
 
   return (
-    <ImageBox
-      swipeToDismiss={true}
-      renderContent={() => <ImageDetail source={imageSource} />}>
-      <Image
-        style={{
-          width: 250,
-          height: 250,
-        }}
-        source={imageSource}
-      />
-    </ImageBox>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ImageBox
+        swipeToDismiss={true}
+        backgroundColor="red"
+        renderContent={() => (
+          <Image
+            style={{
+              width: Dimensions.get('window').width,
+              height: Dimensions.get('window').height,
+            }}
+            resizeMode="contain"
+            source={imageSource}
+          />
+        )}>
+        <Image
+          style={{
+            width: 250,
+            height: 250,
+          }}
+          source={imageSource}
+        />
+      </ImageBox>
+    </View>
   );
 };
 

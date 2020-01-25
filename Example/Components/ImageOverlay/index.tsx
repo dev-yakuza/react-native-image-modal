@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Animated,
   Dimensions,
@@ -9,7 +9,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
 
 const WINDOW_HEIGHT = Dimensions.get('window').height;
@@ -64,7 +63,6 @@ interface State {
     opacity: number;
   };
   pan: Animated.Value;
-  openVal: Animated.Value;
 }
 interface Props {
   isOpen: boolean;
@@ -78,10 +76,6 @@ interface Props {
   backgroundColor?: string;
   children: JSX.Element | Array<JSX.Element>;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
-  springConfig?: (
-    value: Animated.AnimatedValue | Animated.AnimatedValueXY,
-    config: Animated.SpringAnimationConfig,
-  ) => Animated.CompositeAnimation;
   didOpen?: () => void;
   willClose?: () => void;
   onClose: () => void;
@@ -92,7 +86,6 @@ const ImageOverlay = ({
   origin,
   renderHeader,
   swipeToDismiss,
-  springConfig,
   backgroundColor,
   children,
   didOpen,
@@ -108,31 +101,13 @@ const ImageOverlay = ({
       opacity: 1,
     },
     pan: new Animated.Value(0),
-    openVal: new Animated.Value(0),
   });
 
-  const open = () => {
-    if (isIOS) {
-      StatusBar.setHidden(true, 'fade');
-    }
-    state.pan.setValue(0);
-    setState({
-      ...state,
-      isAnimating: true,
-      target: {
-        x: 0,
-        y: 0,
-        opacity: 1,
-      },
-    });
-
-    Animated.spring(state.openVal, {toValue: 1, ...springConfig}).start(() => {
-      setState({...state, isAnimating: false});
-      if (didOpen) {
-        didOpen();
-      }
-    });
-  };
+  const [animatedOpacity] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(1));
+  const [animatedPositionY] = useState<Animated.Value>(new Animated.Value(1));
+  const [animatedWidth] = useState<Animated.Value>(new Animated.Value(1));
+  const [animatedHeight] = useState<Animated.Value>(new Animated.Value(1));
 
   const close = () => {
     if (willClose) {
@@ -145,7 +120,7 @@ const ImageOverlay = ({
       ...state,
       isAnimating: true,
     });
-    Animated.spring(state.openVal, {toValue: 0, ...springConfig}).start(() => {
+    Animated.spring(animatedOpacity, {toValue: 0}).start(() => {
       setState({
         ...state,
         isAnimating: false,
@@ -181,19 +156,19 @@ const ImageOverlay = ({
         });
         close();
       } else {
-        Animated.spring(state.pan, {toValue: 0, ...springConfig}).start(() => {
+        Animated.spring(state.pan, {toValue: 0}).start(() => {
           setState({...state, isPanning: false});
         });
       }
     },
   });
 
-  const {isPanning, openVal, target} = state;
+  const {isPanning, target} = state;
 
-  const lightboxOpacityStyle = {
-    opacity: openVal.interpolate({
+  const imageBoxOpacityStyle = {
+    opacity: animatedOpacity.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, target.opacity],
+      outputRange: [1, 0],
     }),
   };
 
@@ -207,7 +182,7 @@ const ImageOverlay = ({
     dragStyle = {
       top: state.pan,
     };
-    lightboxOpacityStyle.opacity = state.pan.interpolate({
+    imageBoxOpacityStyle.opacity = state.pan.interpolate({
       inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
       outputRange: [0, 1, 0],
     });
@@ -216,38 +191,62 @@ const ImageOverlay = ({
   const openStyle = [
     styles.open,
     {
-      left: openVal.interpolate({
+      left: animatedPositionX.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.x, target.x],
       }),
-      top: openVal.interpolate({
+      top: animatedPositionY.interpolate({
         inputRange: [0, 1],
         outputRange: [
           origin.y + STATUS_BAR_OFFSET,
           target.y + STATUS_BAR_OFFSET,
         ],
       }),
-      width: openVal.interpolate({
+      width: animatedWidth.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.width, WINDOW_WIDTH],
       }),
-      height: openVal.interpolate({
+      height: animatedHeight.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.height, WINDOW_HEIGHT],
       }),
     },
   ];
 
+  useEffect(() => {
+    if (isOpen) {
+      if (isIOS) {
+        StatusBar.setHidden(true, 'fade');
+      }
+      state.pan.setValue(0);
+      setState({
+        ...state,
+        isAnimating: true,
+        target: {
+          x: 0,
+          y: 0,
+          opacity: 1,
+        },
+      });
+
+      Animated.spring(animatedOpacity, {toValue: 1}).start(() => {
+        setState({...state, isAnimating: false});
+        if (didOpen) {
+          didOpen();
+        }
+      });
+    }
+  }, [isOpen]);
   const background = (
     <Animated.View
       style={[
         styles.background,
         {backgroundColor: backgroundColor},
-        lightboxOpacityStyle,
+        imageBoxOpacityStyle,
       ]}></Animated.View>
   );
   const header = (
-    <Animated.View style={[styles.header, lightboxOpacityStyle]}>
+    <Animated.View style={[styles.header, imageBoxOpacityStyle]}>
       {renderHeader ? (
         renderHeader(close)
       ) : (
