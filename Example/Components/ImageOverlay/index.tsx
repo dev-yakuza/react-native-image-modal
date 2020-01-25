@@ -104,10 +104,10 @@ const ImageOverlay = ({
   });
 
   const [animatedOpacity] = useState<Animated.Value>(new Animated.Value(0));
-  const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(1));
-  const [animatedPositionY] = useState<Animated.Value>(new Animated.Value(1));
-  const [animatedWidth] = useState<Animated.Value>(new Animated.Value(1));
-  const [animatedHeight] = useState<Animated.Value>(new Animated.Value(1));
+  const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedPositionY] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedWidth] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedHeight] = useState<Animated.Value>(new Animated.Value(0));
 
   const close = () => {
     if (willClose) {
@@ -168,7 +168,7 @@ const ImageOverlay = ({
   const imageBoxOpacityStyle = {
     opacity: animatedOpacity.interpolate({
       inputRange: [0, 1],
-      outputRange: [1, 0],
+      outputRange: [0, 1],
     }),
   };
 
@@ -193,22 +193,22 @@ const ImageOverlay = ({
     {
       left: animatedPositionX.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.x, target.x],
+        outputRange: [target.x, origin.x],
       }),
       top: animatedPositionY.interpolate({
         inputRange: [0, 1],
         outputRange: [
-          origin.y + STATUS_BAR_OFFSET,
           target.y + STATUS_BAR_OFFSET,
+          origin.y + STATUS_BAR_OFFSET,
         ],
       }),
       width: animatedWidth.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.width, WINDOW_WIDTH],
+        outputRange: [WINDOW_WIDTH, origin.width],
       }),
       height: animatedHeight.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.height, WINDOW_HEIGHT],
+        outputRange: [WINDOW_HEIGHT, origin.height],
       }),
     },
   ];
