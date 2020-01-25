@@ -17,16 +17,15 @@ const App = ({}: Props) => {
   const imageSource = require('./images/vertical.jpg');
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{flex: 1, justifyContent: 'center'}}>
       <ImageBox
         swipeToDismiss={true}
         backgroundColor="red"
         renderContent={() => (
           <Image
             style={{
-              flex: 1,
-              width: Dimensions.get('window').width,
-              height: Dimensions.get('window').height,
+              width: '100%',
+              height: '100%',
             }}
             source={imageSource}
           />

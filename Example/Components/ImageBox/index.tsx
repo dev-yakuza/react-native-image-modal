@@ -113,9 +113,13 @@ const ImageBox = ({
   };
 
   return (
-    <View ref={_root} style={style} onLayout={() => {}}>
+    <View
+      ref={_root}
+      style={[style, {alignSelf: 'baseline'}]}
+      onLayout={event => {}}>
       <Animated.View style={{opacity: state.layoutOpacity}}>
         <TouchableHighlight
+          style={{alignSelf: 'baseline'}}
           underlayColor={underlayColor}
           onPress={open}
           onLongPress={onLongPress}>
