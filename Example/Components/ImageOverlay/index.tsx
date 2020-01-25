@@ -57,11 +57,6 @@ const styles = StyleSheet.create({
 interface State {
   isAnimating: boolean;
   isPanning: boolean;
-  target: {
-    x: number;
-    y: number;
-    opacity: number;
-  };
   pan: Animated.Value;
 }
 interface Props {
@@ -95,19 +90,14 @@ const ImageOverlay = ({
   const [state, setState] = useState<State>({
     isAnimating: false,
     isPanning: false,
-    target: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-    },
     pan: new Animated.Value(0),
   });
-
-  const [animatedOpacity] = useState<Animated.Value>(new Animated.Value(0));
-  const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(0));
-  const [animatedPositionY] = useState<Animated.Value>(new Animated.Value(0));
-  const [animatedWidth] = useState<Animated.Value>(new Animated.Value(0));
-  const [animatedHeight] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedValue] = useState<Animated.Value>(new Animated.Value(0));
+  let target = {
+    x: 0,
+    y: 0,
+    opacity: 1,
+  };
 
   const close = () => {
     if (willClose) {
@@ -120,7 +110,8 @@ const ImageOverlay = ({
       ...state,
       isAnimating: true,
     });
-    Animated.spring(animatedOpacity, {toValue: 0}).start(() => {
+
+    Animated.spring(animatedValue, {toValue: 0}).start(() => {
       setState({
         ...state,
         isAnimating: false,
@@ -148,12 +139,12 @@ const ImageOverlay = ({
         setState({
           ...state,
           isPanning: false,
-          target: {
-            y: gestureState.dy,
-            x: gestureState.dx,
-            opacity: 1 - Math.abs(gestureState.dy / WINDOW_HEIGHT),
-          },
         });
+        target = {
+          y: gestureState.dy,
+          x: gestureState.dx,
+          opacity: 1 - Math.abs(gestureState.dy / WINDOW_HEIGHT),
+        };
         close();
       } else {
         Animated.spring(state.pan, {toValue: 0}).start(() => {
@@ -163,10 +154,10 @@ const ImageOverlay = ({
     },
   });
 
-  const {isPanning, target} = state;
+  const {isPanning} = state;
 
   const imageBoxOpacityStyle = {
-    opacity: animatedOpacity.interpolate({
+    opacity: animatedValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 1],
     }),
@@ -191,24 +182,24 @@ const ImageOverlay = ({
   const openStyle = [
     styles.open,
     {
-      left: animatedPositionX.interpolate({
+      left: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [target.x, origin.x],
+        outputRange: [origin.x, target.x],
       }),
-      top: animatedPositionY.interpolate({
+      top: animatedValue.interpolate({
         inputRange: [0, 1],
         outputRange: [
-          target.y + STATUS_BAR_OFFSET,
           origin.y + STATUS_BAR_OFFSET,
+          target.y + STATUS_BAR_OFFSET,
         ],
       }),
-      width: animatedWidth.interpolate({
+      width: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [WINDOW_WIDTH, origin.width],
+        outputRange: [origin.width, WINDOW_WIDTH],
       }),
-      height: animatedHeight.interpolate({
+      height: animatedValue.interpolate({
         inputRange: [0, 1],
-        outputRange: [WINDOW_HEIGHT, origin.height],
+        outputRange: [origin.height, WINDOW_HEIGHT],
       }),
     },
   ];
@@ -222,14 +213,14 @@ const ImageOverlay = ({
       setState({
         ...state,
         isAnimating: true,
-        target: {
-          x: 0,
-          y: 0,
-          opacity: 1,
-        },
       });
+      target = {
+        x: 0,
+        y: 0,
+        opacity: 1,
+      };
 
-      Animated.spring(animatedOpacity, {toValue: 1}).start(() => {
+      Animated.spring(animatedValue, {toValue: 1}).start(() => {
         setState({...state, isAnimating: false});
         if (didOpen) {
           didOpen();

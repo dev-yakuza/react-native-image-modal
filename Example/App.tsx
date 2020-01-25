@@ -24,10 +24,10 @@ const App = ({}: Props) => {
         renderContent={() => (
           <Image
             style={{
+              flex: 1,
               width: Dimensions.get('window').width,
               height: Dimensions.get('window').height,
             }}
-            resizeMode="contain"
             source={imageSource}
           />
         )}>
