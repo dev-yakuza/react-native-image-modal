@@ -138,6 +138,7 @@ const ImageOverlay = ({
     onPanResponderMove: Animated.event([null, {dy: state.pan}]),
     onPanResponderTerminationRequest: (evt, gestureState) => true,
     onPanResponderRelease: (evt, gestureState) => {
+      state.pan.setValue(0);
       if (Math.abs(gestureState.dy) > DRAG_DISMISS_THRESHOLD) {
         setState({
           ...state,
