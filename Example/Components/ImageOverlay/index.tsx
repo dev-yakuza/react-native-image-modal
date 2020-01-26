@@ -54,6 +54,12 @@ const styles = StyleSheet.create({
   },
 });
 
+let target = {
+  x: 0,
+  y: 0,
+  opacity: 1,
+};
+
 interface State {
   isAnimating: boolean;
   isPanning: boolean;
@@ -93,11 +99,6 @@ const ImageOverlay = ({
     pan: new Animated.Value(0),
   });
   const [animatedValue] = useState<Animated.Value>(new Animated.Value(0));
-  let target = {
-    x: 0,
-    y: 0,
-    opacity: 1,
-  };
 
   const close = () => {
     if (willClose) {
