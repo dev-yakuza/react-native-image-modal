@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import ImageDetail from '../ImageDetail';
+import ImageZoom from '../ImageZoom';
 
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const WINDOW_WIDTH = Dimensions.get('window').width;
@@ -245,7 +245,7 @@ const ImageOverlay = ({
     </Animated.View>
   );
   const content = (
-    <ImageDetail>
+    <ImageZoom>
       {swipeToDismiss ? (
         <Animated.View style={[openStyle, dragStyle]} {...handlers}>
           {children}
@@ -253,7 +253,7 @@ const ImageOverlay = ({
       ) : (
         children
       )}
-    </ImageDetail>
+    </ImageZoom>
   );
 
   return (

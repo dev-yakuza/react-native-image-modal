@@ -11,7 +11,7 @@ interface Props {
   horizontalOuterRangeOffset?: (offsetX?: number) => void;
   responderRelease?: (vx?: number, scale?: number) => void;
 }
-const ImageDetail = ({
+const ImageZoom = ({
   children,
   onLongPress,
   onDoubleClick,
@@ -458,4 +458,4 @@ const ImageDetail = ({
   );
 };
 
-export default ImageDetail;
+export default ImageZoom;
