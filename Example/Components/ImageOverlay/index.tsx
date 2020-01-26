@@ -245,15 +245,21 @@ const ImageOverlay = ({
     </Animated.View>
   );
   const content = (
-    <Animated.View style={[openStyle, dragStyle]} {...handlers}>
-      {children}
-    </Animated.View>
+    <ImageDetail>
+      {swipeToDismiss ? (
+        <Animated.View style={[openStyle, dragStyle]} {...handlers}>
+          {children}
+        </Animated.View>
+      ) : (
+        children
+      )}
+    </ImageDetail>
   );
 
   return (
     <Modal visible={isOpen} transparent={true} onRequestClose={() => close()}>
       {background}
-      <ImageDetail>{content}</ImageDetail>
+      {content}
       {header}
     </Modal>
   );
