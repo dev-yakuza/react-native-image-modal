@@ -1,5 +1,5 @@
 import React, {useState, useRef, Children, cloneElement} from 'react';
-import {Animated, TouchableHighlight, View, ViewStyle} from 'react-native';
+import {Animated, View, ViewStyle, TouchableOpacity} from 'react-native';
 
 import ImageOverlay from '../ImageOverlay';
 
@@ -9,7 +9,6 @@ interface Props {
   swipeToDismiss?: boolean;
   backgroundColor?: string;
   style?: ViewStyle;
-  underlayColor?: string;
   onLongPress?: () => void;
   onOpen?: () => void;
   willClose?: () => void;
@@ -29,7 +28,6 @@ const ImageBox = ({
   willClose,
   onOpen,
   style,
-  underlayColor,
   onLongPress,
   onClose,
 }: Props) => {
@@ -118,13 +116,13 @@ const ImageBox = ({
       style={[style, {alignSelf: 'baseline'}]}
       onLayout={event => {}}>
       <Animated.View style={{opacity: state.layoutOpacity}}>
-        <TouchableHighlight
+        <TouchableOpacity
+          activeOpacity={1}
           style={{alignSelf: 'baseline'}}
-          underlayColor={underlayColor}
           onPress={open}
           onLongPress={onLongPress}>
           {children}
-        </TouchableHighlight>
+        </TouchableOpacity>
       </Animated.View>
       <ImageOverlay {...getOverlayProps()} />
     </View>

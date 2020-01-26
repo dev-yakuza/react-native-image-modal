@@ -13,7 +13,7 @@ const App = ({}: Props) => {
   // //   uri:
   // //     'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
   // // };
-  // // const imageSource = require('./images/horizontal.jpg');
+  // const imageSource = require('./images/horizontal.jpg');
   const imageSource = require('./images/vertical.jpg');
 
   return (
@@ -23,6 +23,7 @@ const App = ({}: Props) => {
         backgroundColor="red"
         renderContent={() => (
           <Image
+            resizeMode="contain"
             style={{
               width: '100%',
               height: '100%',
@@ -31,6 +32,7 @@ const App = ({}: Props) => {
           />
         )}>
         <Image
+          resizeMode="contain"
           style={{
             width: 250,
             height: 250,
