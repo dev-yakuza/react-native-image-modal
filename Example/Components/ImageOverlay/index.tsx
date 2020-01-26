@@ -115,6 +115,7 @@ const ImageOverlay = ({
       setState({
         ...state,
         isAnimating: false,
+        isPanning: false,
       });
       onClose();
     });
