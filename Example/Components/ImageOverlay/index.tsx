@@ -174,7 +174,10 @@ const ImageOverlay = ({
   let dragStyle;
   if (isPanning) {
     dragStyle = {
-      top: state.pan,
+      top: state.pan.interpolate({
+        inputRange: [0, WINDOW_HEIGHT],
+        outputRange: [target.y, origin.y],
+      }),
     };
     imageBoxOpacityStyle.opacity = state.pan.interpolate({
       inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
