@@ -27,12 +27,6 @@ const styles = StyleSheet.create({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
   },
-  open: {
-    position: 'absolute',
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
   header: {
     position: 'absolute',
     top: 0,
@@ -251,7 +245,7 @@ const ImageOverlay = ({
     </Animated.View>
   );
   const content = (
-    <Animated.View style={[styles.open, openStyle, dragStyle]} {...handlers}>
+    <Animated.View style={[openStyle, dragStyle]} {...handlers}>
       {children}
     </Animated.View>
   );

@@ -5,7 +5,7 @@ interface Props {
   children: JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onDoubleClick?: () => void;
-  onMove?: (position?: IOnMove) => void;
+  onMove?: (position: IOnMove) => void;
   onClick?: (eventParams: IOnClick) => void;
   onSwipeDown?: () => void;
   horizontalOuterRangeOffset?: (offsetX?: number) => void;
