@@ -1,15 +1,8 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Image,
-  Dimensions,
-  Animated,
-  PanResponder,
-  ImageSourcePropType,
-} from 'react-native';
+import {View, Image, Dimensions, Animated, PanResponder} from 'react-native';
 
 interface Props {
-  source: ImageSourcePropType;
+  children: JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onDoubleClick?: () => void;
   onMove?: (position?: IOnMove) => void;
@@ -19,7 +12,7 @@ interface Props {
   responderRelease?: (vx?: number, scale?: number) => void;
 }
 const ImageDetail = ({
-  source,
+  children,
   onLongPress,
   onDoubleClick,
   onMove,
@@ -453,23 +446,13 @@ const ImageDetail = ({
   return (
     <View
       style={{
-        backgroundColor: '#000000',
-        justifyContent: 'center',
-        alignItems: 'center',
         overflow: 'hidden',
         width: windowSize.width,
         height: windowSize.height,
       }}
       {...imagePanResponder!.panHandlers}>
       <Animated.View style={animateConf} renderToHardwareTextureAndroid={true}>
-        <Image
-          resizeMode="contain"
-          style={{
-            width: windowSize.width,
-            height: windowSize.height,
-          }}
-          source={source}
-        />
+        {children}
       </Animated.View>
     </View>
   );

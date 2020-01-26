@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import ImageDetail from '../ImageDetail';
+
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const DRAG_DISMISS_THRESHOLD = 150;
@@ -257,7 +259,7 @@ const ImageOverlay = ({
   return (
     <Modal visible={isOpen} transparent={true} onRequestClose={() => close()}>
       {background}
-      {content}
+      <ImageDetail>{content}</ImageDetail>
       {header}
     </Modal>
   );
