@@ -112,6 +112,7 @@ const ImageOverlay = ({
       isAnimating: true,
     });
 
+    Animated.spring(state.pan, {toValue: WINDOW_HEIGHT}).start();
     Animated.spring(animatedValue, {toValue: 0}).start(() => {
       setState({
         ...state,
