@@ -180,30 +180,24 @@ const ImageOverlay = ({
     });
   }
 
-  const openStyle = [
-    styles.open,
-    {
-      left: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.x, target.x],
-      }),
-      top: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-          origin.y + STATUS_BAR_OFFSET,
-          target.y + STATUS_BAR_OFFSET,
-        ],
-      }),
-      width: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.width, WINDOW_WIDTH],
-      }),
-      height: animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.height, WINDOW_HEIGHT],
-      }),
-    },
-  ];
+  const openStyle = {
+    left: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.x, target.x],
+    }),
+    top: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.y + STATUS_BAR_OFFSET, target.y + STATUS_BAR_OFFSET],
+    }),
+    width: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.width, WINDOW_WIDTH],
+    }),
+    height: animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.height, WINDOW_HEIGHT],
+    }),
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -249,7 +243,7 @@ const ImageOverlay = ({
     </Animated.View>
   );
   const content = (
-    <Animated.View style={[openStyle, dragStyle]} {...handlers}>
+    <Animated.View style={[styles.open, openStyle, dragStyle]} {...handlers}>
       {children}
     </Animated.View>
   );
