@@ -181,7 +181,7 @@ const ImageOverlay = ({
     };
     imageBoxOpacityStyle.opacity = state.pan.interpolate({
       inputRange: [-WINDOW_HEIGHT, 0, WINDOW_HEIGHT],
-      outputRange: [0, 1, 0],
+      outputRange: [0, target.opacity, 0],
     });
   }
 
