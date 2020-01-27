@@ -19,7 +19,6 @@ const App = ({}: Props) => {
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ImageBox
         swipeToDismiss={true}
-        backgroundColor="red"
         renderContent={() => (
           <Image
             resizeMode="contain"

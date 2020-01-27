@@ -9,12 +9,13 @@ import {
   PanResponder,
   Platform,
   StatusBar,
+  Modal,
+  SafeAreaView,
 } from 'react-native';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const WINDOW_HEIGHT = Dimensions.get('window').height;
-const isIOS = Platform.OS === 'ios';
-const STATUS_BAR_OFFSET = isIOS ? 0 : -25;
+const STATUS_BAR_OFFSET = Platform.OS === 'ios' ? 0 : -25;
 let target = {
   x: 0,
   y: 0,
@@ -80,7 +81,7 @@ interface Props {
 const ImageDetail = ({
   children,
   origin,
-  backgroundColor,
+  backgroundColor = '#000',
   isOpen,
   swipeToDismiss,
   renderHeader,
@@ -543,11 +544,7 @@ const ImageDetail = ({
     if (willClose) {
       willClose();
     }
-    if (isIOS) {
-      StatusBar.setHidden(false, 'fade');
-    }
 
-    console.log('close!!!!');
     Animated.parallel([
       Animated.timing(animatedOpacity, {toValue: WINDOW_HEIGHT}),
       Animated.spring(animatedFrame, {toValue: 0}),
@@ -557,9 +554,6 @@ const ImageDetail = ({
   };
   useEffect(() => {
     if (isOpen) {
-      if (isIOS) {
-        StatusBar.setHidden(true, 'fade');
-      }
       target = {
         x: 0,
         y: 0,
@@ -605,14 +599,16 @@ const ImageDetail = ({
       {renderHeader ? (
         renderHeader(close)
       ) : (
-        <TouchableOpacity onPress={close}>
-          <Text style={Styles.closeButton}>×</Text>
-        </TouchableOpacity>
+        <SafeAreaView>
+          <TouchableOpacity onPress={close}>
+            <Text style={Styles.closeButton}>×</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
       )}
     </Animated.View>
   );
 
-  return (
+  const content = (
     <View
       style={{
         overflow: 'hidden',
@@ -626,6 +622,12 @@ const ImageDetail = ({
       </Animated.View>
       {header}
     </View>
+  );
+
+  return (
+    <Modal visible={isOpen} transparent={true} onRequestClose={() => close()}>
+      {content}
+    </Modal>
   );
 };
 

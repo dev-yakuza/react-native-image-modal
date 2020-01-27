@@ -1,7 +1,7 @@
 import React, {useState, useRef, Children, cloneElement} from 'react';
 import {Animated, View, ViewStyle, TouchableOpacity} from 'react-native';
 
-import ImageOverlay from '../ImageOverlay';
+import ImageDetail from '../ImageDetail';
 
 interface Props {
   activeProps?: object;
@@ -124,7 +124,7 @@ const ImageBox = ({
           {children}
         </TouchableOpacity>
       </Animated.View>
-      <ImageOverlay {...getOverlayProps()} />
+      <ImageDetail {...getOverlayProps()} />
     </View>
   );
 };
