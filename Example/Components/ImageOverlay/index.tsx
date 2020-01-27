@@ -225,14 +225,7 @@ const ImageOverlay = ({
       });
     }
   }, [isOpen]);
-  const background = (
-    <Animated.View
-      style={[
-        styles.background,
-        {backgroundColor: backgroundColor},
-        imageBoxOpacityStyle,
-      ]}></Animated.View>
-  );
+
   const header = (
     <Animated.View style={[styles.header, imageBoxOpacityStyle]}>
       {renderHeader ? (
@@ -245,20 +238,13 @@ const ImageOverlay = ({
     </Animated.View>
   );
   const content = (
-    <ImageZoom>
-      {swipeToDismiss ? (
-        <Animated.View style={[openStyle, dragStyle]} {...handlers}>
-          {children}
-        </Animated.View>
-      ) : (
-        children
-      )}
+    <ImageZoom origin={origin} backgroundColor={backgroundColor}>
+      {children}
     </ImageZoom>
   );
 
   return (
     <Modal visible={isOpen} transparent={true} onRequestClose={() => close()}>
-      {background}
       {content}
       {header}
     </Modal>

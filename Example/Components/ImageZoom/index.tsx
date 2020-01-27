@@ -1,8 +1,43 @@
-import React, {useState} from 'react';
-import {View, Image, Dimensions, Animated, PanResponder} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  Animated,
+  PanResponder,
+  Platform,
+} from 'react-native';
+
+const WINDOW_WIDTH = Dimensions.get('window').width;
+const WINDOW_HEIGHT = Dimensions.get('window').height;
+const STATUS_BAR_OFFSET = Platform.OS === 'android' ? -25 : 0;
+let target = {
+  x: 0,
+  y: 0,
+  opacity: 1,
+};
+
+const DRAG_DISMISS_THRESHOLD = 150;
+
+const styles = StyleSheet.create({
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
+  },
+});
 
 interface Props {
   children: JSX.Element | Array<JSX.Element>;
+  origin: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  backgroundColor?: string;
   onLongPress?: () => void;
   onDoubleClick?: () => void;
   onMove?: (position: IOnMove) => void;
@@ -13,6 +48,8 @@ interface Props {
 }
 const ImageZoom = ({
   children,
+  origin,
+  backgroundColor,
   onLongPress,
   onDoubleClick,
   onMove,
@@ -20,11 +57,13 @@ const ImageZoom = ({
   horizontalOuterRangeOffset,
   responderRelease,
 }: Props) => {
-  const windowSize = Dimensions.get('window');
-
   const [animatedScale] = useState<Animated.Value>(new Animated.Value(1));
   const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(0));
   const [animatedPositionY] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedFrame] = useState<Animated.Value>(new Animated.Value(0));
+  const [animatedOpacity] = useState<Animated.Value>(
+    new Animated.Value(WINDOW_HEIGHT),
+  );
 
   const longPressTime: number = 800;
   const doubleClickInterval: number = 175;
@@ -75,7 +114,7 @@ const ImageZoom = ({
       }).start();
     }
 
-    if (windowSize.width * scale <= windowSize.width) {
+    if (WINDOW_WIDTH * scale <= WINDOW_WIDTH) {
       positionX = 0;
       Animated.timing(animatedPositionX, {
         toValue: positionX,
@@ -83,17 +122,28 @@ const ImageZoom = ({
       }).start();
     }
 
-    if (windowSize.height * scale <= windowSize.height) {
+    if (WINDOW_HEIGHT * scale < WINDOW_HEIGHT) {
       positionY = 0;
       Animated.timing(animatedPositionY, {
         toValue: positionY,
         duration: 100,
       }).start();
+    } else if (scale === 1 && Math.abs(positionY) > DRAG_DISMISS_THRESHOLD) {
+      Animated.parallel([
+        Animated.timing(animatedOpacity, {toValue: WINDOW_HEIGHT}),
+        Animated.spring(animatedFrame, {toValue: 0}),
+      ]).start(() => {
+        // setState({
+        //   ...state,
+        //   isAnimating: false,
+        //   isPanning: false,
+        // });
+        // onClose();
+      });
     }
 
-    if (windowSize.height * scale > windowSize.height) {
-      const verticalMax =
-        (windowSize.height * scale - windowSize.height) / 2 / scale;
+    if (WINDOW_HEIGHT * scale > WINDOW_HEIGHT) {
+      const verticalMax = (WINDOW_HEIGHT * scale - WINDOW_HEIGHT) / 2 / scale;
       if (positionY < -verticalMax) {
         positionY = -verticalMax;
       } else if (positionY > verticalMax) {
@@ -105,9 +155,8 @@ const ImageZoom = ({
       }).start();
     }
 
-    if (windowSize.width * scale > windowSize.width) {
-      const horizontalMax =
-        (windowSize.width * scale - windowSize.width) / 2 / scale;
+    if (WINDOW_WIDTH * scale > WINDOW_WIDTH) {
+      const horizontalMax = (WINDOW_WIDTH * scale - WINDOW_WIDTH) / 2 / scale;
       if (positionX < -horizontalMax) {
         positionX = -horizontalMax;
       } else if (positionX > horizontalMax) {
@@ -160,13 +209,13 @@ const ImageZoom = ({
           (evt.nativeEvent.changedTouches[0].pageX +
             evt.nativeEvent.changedTouches[1].pageX) /
           2;
-        centerDiffX = centerX - windowSize.width / 2;
+        centerDiffX = centerX - WINDOW_WIDTH / 2;
 
         const centerY =
           (evt.nativeEvent.changedTouches[0].pageY +
             evt.nativeEvent.changedTouches[1].pageY) /
           2;
-        centerDiffY = centerY - windowSize.height / 2;
+        centerDiffY = centerY - WINDOW_HEIGHT / 2;
       }
       if (longPressTimeout) {
         clearTimeout(longPressTimeout);
@@ -202,11 +251,10 @@ const ImageZoom = ({
             scale = 2;
 
             const diffScale = scale - beforeScale;
-            positionX =
-              ((windowSize.width / 2 - doubleClickX) * diffScale) / scale;
+            positionX = ((WINDOW_WIDTH / 2 - doubleClickX) * diffScale) / scale;
 
             positionY =
-              ((windowSize.height / 2 - doubleClickY) * diffScale) / scale;
+              ((WINDOW_HEIGHT / 2 - doubleClickY) * diffScale) / scale;
           }
 
           imageDidMove('centerOn');
@@ -260,7 +308,7 @@ const ImageZoom = ({
         }
 
         if (swipeDownOffset === 0) {
-          if (windowSize.width * scale > windowSize.width) {
+          if (WINDOW_WIDTH * scale > WINDOW_WIDTH) {
             if (horizontalWholeOuterCounter > 0) {
               if (diffX < 0) {
                 if (horizontalWholeOuterCounter > Math.abs(diffX)) {
@@ -296,7 +344,7 @@ const ImageZoom = ({
             positionX += diffX / scale;
 
             const horizontalMax =
-              (windowSize.width * scale - windowSize.width) / 2 / scale;
+              (WINDOW_WIDTH * scale - WINDOW_WIDTH) / 2 / scale;
             if (positionX < -horizontalMax) {
               positionX = -horizontalMax;
               horizontalWholeOuterCounter += -1 / 1e10;
@@ -322,10 +370,10 @@ const ImageZoom = ({
           }
         }
 
-        if (windowSize.height * scale > windowSize.height) {
-          positionY += diffY / scale;
-          animatedPositionY.setValue(positionY);
-        }
+        positionY += diffY / scale;
+        animatedPositionY.setValue(positionY);
+        console.log(Math.abs(gestureState.dy));
+        animatedOpacity.setValue(Math.abs(gestureState.dy));
       } else {
         if (longPressTimeout) {
           clearTimeout(longPressTimeout);
@@ -441,16 +489,60 @@ const ImageZoom = ({
         translateY: animatedPositionY,
       },
     ],
+    left: animatedFrame.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.x, target.x],
+    }),
+    top: animatedFrame.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.y + STATUS_BAR_OFFSET, target.y + STATUS_BAR_OFFSET],
+    }),
+    width: animatedFrame.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.width, WINDOW_WIDTH],
+    }),
+    height: animatedFrame.interpolate({
+      inputRange: [0, 1],
+      outputRange: [origin.height, WINDOW_HEIGHT],
+    }),
   };
+
+  useEffect(() => {
+    target = {
+      x: 0,
+      y: 0,
+      opacity: 1,
+    };
+
+    Animated.parallel([
+      Animated.timing(animatedOpacity, {toValue: 0}),
+      Animated.spring(animatedFrame, {toValue: 1}),
+    ]).start(() => {});
+  }, []);
+
+  const background = (
+    <Animated.View
+      style={[
+        styles.background,
+        {backgroundColor: backgroundColor},
+        {
+          opacity: animatedOpacity.interpolate({
+            inputRange: [0, WINDOW_HEIGHT],
+            outputRange: [1, 0],
+          }),
+        },
+      ]}></Animated.View>
+  );
 
   return (
     <View
       style={{
         overflow: 'hidden',
-        width: windowSize.width,
-        height: windowSize.height,
+        width: WINDOW_WIDTH,
+        height: WINDOW_HEIGHT,
       }}
       {...imagePanResponder!.panHandlers}>
+      {background}
       <Animated.View style={animateConf} renderToHardwareTextureAndroid={true}>
         {children}
       </Animated.View>

@@ -1,6 +1,5 @@
 import React from 'react';
 import ImageBox from './Components/ImageBox';
-import ImageDetail from './Components/ImageDetail';
 import {Image, View, Dimensions} from 'react-native';
 
 interface Props {}
