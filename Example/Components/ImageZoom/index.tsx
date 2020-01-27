@@ -372,8 +372,9 @@ const ImageZoom = ({
 
         positionY += diffY / scale;
         animatedPositionY.setValue(positionY);
-        console.log(Math.abs(gestureState.dy));
-        animatedOpacity.setValue(Math.abs(gestureState.dy));
+        if (scale === 1) {
+          animatedOpacity.setValue(Math.abs(gestureState.dy));
+        }
       } else {
         if (longPressTimeout) {
           clearTimeout(longPressTimeout);
