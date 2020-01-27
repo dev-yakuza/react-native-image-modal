@@ -2,15 +2,19 @@ import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
+  TouchableOpacity,
+  Text,
   Dimensions,
   Animated,
   PanResponder,
   Platform,
+  StatusBar,
 } from 'react-native';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const WINDOW_HEIGHT = Dimensions.get('window').height;
-const STATUS_BAR_OFFSET = Platform.OS === 'android' ? -25 : 0;
+const isIOS = Platform.OS === 'ios';
+const STATUS_BAR_OFFSET = isIOS ? 0 : -25;
 let target = {
   x: 0,
   y: 0,
@@ -19,13 +23,34 @@ let target = {
 
 const DRAG_DISMISS_THRESHOLD = 150;
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
   background: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: WINDOW_WIDTH,
+    backgroundColor: 'transparent',
+  },
+  closeButton: {
+    fontSize: 35,
+    color: 'white',
+    lineHeight: 40,
+    width: 40,
+    textAlign: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 1.5,
+    shadowColor: 'black',
+    shadowOpacity: 0.8,
   },
 });
 
@@ -38,6 +63,9 @@ interface Props {
     height: number;
   };
   backgroundColor?: string;
+  isOpen: boolean;
+  swipeToDismiss?: boolean;
+  renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onDoubleClick?: () => void;
   onMove?: (position: IOnMove) => void;
@@ -45,17 +73,26 @@ interface Props {
   onSwipeDown?: () => void;
   horizontalOuterRangeOffset?: (offsetX?: number) => void;
   responderRelease?: (vx?: number, scale?: number) => void;
+  willClose?: () => void;
+  onClose: () => void;
+  didOpen?: () => void;
 }
-const ImageZoom = ({
+const ImageDetail = ({
   children,
   origin,
   backgroundColor,
+  isOpen,
+  swipeToDismiss,
+  renderHeader,
   onLongPress,
   onDoubleClick,
   onMove,
   onClick,
   horizontalOuterRangeOffset,
   responderRelease,
+  willClose,
+  onClose,
+  didOpen,
 }: Props) => {
   const [animatedScale] = useState<Animated.Value>(new Animated.Value(1));
   const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(0));
@@ -128,18 +165,12 @@ const ImageZoom = ({
         toValue: positionY,
         duration: 100,
       }).start();
-    } else if (scale === 1 && Math.abs(positionY) > DRAG_DISMISS_THRESHOLD) {
-      Animated.parallel([
-        Animated.timing(animatedOpacity, {toValue: WINDOW_HEIGHT}),
-        Animated.spring(animatedFrame, {toValue: 0}),
-      ]).start(() => {
-        // setState({
-        //   ...state,
-        //   isAnimating: false,
-        //   isPanning: false,
-        // });
-        // onClose();
-      });
+    } else if (
+      swipeToDismiss &&
+      scale === 1 &&
+      Math.abs(positionY) > DRAG_DISMISS_THRESHOLD
+    ) {
+      close();
     }
 
     if (WINDOW_HEIGHT * scale > WINDOW_HEIGHT) {
@@ -372,7 +403,7 @@ const ImageZoom = ({
 
         positionY += diffY / scale;
         animatedPositionY.setValue(positionY);
-        if (scale === 1) {
+        if (swipeToDismiss && scale === 1) {
           animatedOpacity.setValue(Math.abs(gestureState.dy));
         }
       } else {
@@ -508,23 +539,48 @@ const ImageZoom = ({
     }),
   };
 
-  useEffect(() => {
-    target = {
-      x: 0,
-      y: 0,
-      opacity: 1,
-    };
+  const close = () => {
+    if (willClose) {
+      willClose();
+    }
+    if (isIOS) {
+      StatusBar.setHidden(false, 'fade');
+    }
 
+    console.log('close!!!!');
     Animated.parallel([
-      Animated.timing(animatedOpacity, {toValue: 0}),
-      Animated.spring(animatedFrame, {toValue: 1}),
-    ]).start(() => {});
-  }, []);
+      Animated.timing(animatedOpacity, {toValue: WINDOW_HEIGHT}),
+      Animated.spring(animatedFrame, {toValue: 0}),
+    ]).start(() => {
+      onClose();
+    });
+  };
+  useEffect(() => {
+    if (isOpen) {
+      if (isIOS) {
+        StatusBar.setHidden(true, 'fade');
+      }
+      target = {
+        x: 0,
+        y: 0,
+        opacity: 1,
+      };
+
+      Animated.parallel([
+        Animated.timing(animatedOpacity, {toValue: 0}),
+        Animated.spring(animatedFrame, {toValue: 1}),
+      ]).start(() => {
+        if (didOpen) {
+          didOpen();
+        }
+      });
+    }
+  }, [isOpen]);
 
   const background = (
     <Animated.View
       style={[
-        styles.background,
+        Styles.background,
         {backgroundColor: backgroundColor},
         {
           opacity: animatedOpacity.interpolate({
@@ -533,6 +589,27 @@ const ImageZoom = ({
           }),
         },
       ]}></Animated.View>
+  );
+
+  const header = (
+    <Animated.View
+      style={[
+        Styles.header,
+        {
+          opacity: animatedOpacity.interpolate({
+            inputRange: [0, WINDOW_HEIGHT],
+            outputRange: [1, 0],
+          }),
+        },
+      ]}>
+      {renderHeader ? (
+        renderHeader(close)
+      ) : (
+        <TouchableOpacity onPress={close}>
+          <Text style={Styles.closeButton}>×</Text>
+        </TouchableOpacity>
+      )}
+    </Animated.View>
   );
 
   return (
@@ -547,8 +624,9 @@ const ImageZoom = ({
       <Animated.View style={animateConf} renderToHardwareTextureAndroid={true}>
         {children}
       </Animated.View>
+      {header}
     </View>
   );
 };
 
-export default ImageZoom;
+export default ImageDetail;

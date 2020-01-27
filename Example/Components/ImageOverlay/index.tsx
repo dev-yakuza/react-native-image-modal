@@ -6,49 +6,15 @@ import {
   PanResponder,
   Platform,
   StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
 } from 'react-native';
 
-import ImageZoom from '../ImageZoom';
+import ImageDetail from '../ImageDetail';
 
 const WINDOW_HEIGHT = Dimensions.get('window').height;
 const WINDOW_WIDTH = Dimensions.get('window').width;
 const DRAG_DISMISS_THRESHOLD = 150;
 const STATUS_BAR_OFFSET = Platform.OS === 'android' ? -25 : 0;
 const isIOS = Platform.OS === 'ios';
-
-const styles = StyleSheet.create({
-  background: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: WINDOW_WIDTH,
-    backgroundColor: 'transparent',
-  },
-  closeButton: {
-    fontSize: 35,
-    color: 'white',
-    lineHeight: 40,
-    width: 40,
-    textAlign: 'center',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowRadius: 1.5,
-    shadowColor: 'black',
-    shadowOpacity: 0.8,
-  },
-});
 
 let target = {
   x: 0,
@@ -226,27 +192,20 @@ const ImageOverlay = ({
     }
   }, [isOpen]);
 
-  const header = (
-    <Animated.View style={[styles.header, imageBoxOpacityStyle]}>
-      {renderHeader ? (
-        renderHeader(close)
-      ) : (
-        <TouchableOpacity onPress={close}>
-          <Text style={styles.closeButton}>×</Text>
-        </TouchableOpacity>
-      )}
-    </Animated.View>
-  );
   const content = (
-    <ImageZoom origin={origin} backgroundColor={backgroundColor}>
+    <ImageDetail
+      origin={origin}
+      backgroundColor={backgroundColor}
+      onClose={onClose}
+      isOpen={isOpen}
+      swipeToDismiss={true}>
       {children}
-    </ImageZoom>
+    </ImageDetail>
   );
 
   return (
     <Modal visible={isOpen} transparent={true} onRequestClose={() => close()}>
       {content}
-      {header}
     </Modal>
   );
 };
