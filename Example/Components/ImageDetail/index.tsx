@@ -114,7 +114,7 @@ const ImageDetail = ({
   );
 
   const longPressTime: number = 800;
-  const doubleClickInterval: number = 175;
+  const doubleClickInterval: number = 250;
   const maxOverflow: number = 100;
   const minScale: number = 0.6;
   const maxScale: number = 10;

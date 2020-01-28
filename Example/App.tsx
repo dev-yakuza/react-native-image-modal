@@ -25,6 +25,16 @@ const App = ({}: Props) => {
           height: 250,
         }}
         source={imageSource}
+        onLongPressOriginImage={() => console.log('onLongPressOriginImage')}
+        onTap={() => console.log('onTap')}
+        onDoubleTap={() => console.log('onDoubleTap')}
+        onLongPress={() => console.log('onLongPress')}
+        onOpen={() => console.log('onOpen')}
+        didOpen={() => console.log('didOpen')}
+        onMove={() => console.log('onMove')}
+        responderRelease={() => console.log('responderRelease')}
+        willClose={() => console.log('willClose')}
+        onClose={() => console.log('onClose')}
       />
     </View>
   );
