@@ -8,9 +8,11 @@ import {
   Animated,
   PanResponder,
   Platform,
-  StatusBar,
+  Image,
   Modal,
   SafeAreaView,
+  ImageSourcePropType,
+  ImageResizeMode,
 } from 'react-native';
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
@@ -56,7 +58,8 @@ const Styles = StyleSheet.create({
 });
 
 interface Props {
-  children: JSX.Element | Array<JSX.Element>;
+  source: ImageSourcePropType;
+  resizeMode?: ImageResizeMode;
   origin: {
     x: number;
     y: number;
@@ -79,7 +82,8 @@ interface Props {
   didOpen?: () => void;
 }
 const ImageDetail = ({
-  children,
+  source,
+  resizeMode,
   origin,
   backgroundColor = '#000',
   isOpen,
@@ -627,7 +631,14 @@ const ImageDetail = ({
       {...imagePanResponder!.panHandlers}>
       {background}
       <Animated.View style={animateConf} renderToHardwareTextureAndroid={true}>
-        {children}
+        <Image
+          resizeMode={resizeMode}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+          source={source}
+        />
       </Animated.View>
       {header}
     </View>

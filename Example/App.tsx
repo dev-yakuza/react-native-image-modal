@@ -19,16 +19,6 @@ const App = ({}: Props) => {
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ImageBox
         swipeToDismiss={true}
-        renderContent={() => (
-          <Image
-            resizeMode="contain"
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            source={imageSource}
-          />
-        )}
         resizeMode="contain"
         style={{
           width: 250,

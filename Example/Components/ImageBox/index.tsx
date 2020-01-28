@@ -3,7 +3,6 @@ import {
   Animated,
   View,
   TouchableOpacity,
-  ImageResizeMode,
   Image,
   ImageProps,
 } from 'react-native';
@@ -12,21 +11,19 @@ import ImageDetail from '../ImageDetail';
 
 interface Props extends ImageProps {
   swipeToDismiss?: boolean;
-  backgroundColor?: string;
+  overlayBackgroundColor?: string;
+  renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onOpen?: () => void;
-  willClose?: () => void;
-  renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   didOpen?: () => void;
-  renderContent: () => JSX.Element | Array<JSX.Element>;
+  willClose?: () => void;
   onClose?: () => void;
 }
 const ImageBox = (props: Props) => {
   const {
-    renderContent,
     renderHeader,
     swipeToDismiss,
-    backgroundColor,
+    overlayBackgroundColor,
     didOpen,
     willClose,
     onOpen,
@@ -43,22 +40,6 @@ const ImageBox = (props: Props) => {
       height: 0,
     },
     layoutOpacity: new Animated.Value(1),
-  });
-
-  const getContent = () => {
-    return renderContent();
-  };
-
-  const getOverlayProps = () => ({
-    isOpen: state.isOpen,
-    origin: state.origin,
-    renderHeader: renderHeader,
-    swipeToDismiss: swipeToDismiss,
-    backgroundColor: backgroundColor,
-    children: getContent(),
-    didOpen: didOpen,
-    willClose: willClose,
-    onClose: _onClose,
   });
 
   const open = () => {
@@ -118,7 +99,18 @@ const ImageBox = (props: Props) => {
           <Image {...props} />
         </TouchableOpacity>
       </Animated.View>
-      <ImageDetail {...getOverlayProps()} />
+      <ImageDetail
+        isOpen={state.isOpen}
+        origin={state.origin}
+        renderHeader={renderHeader}
+        swipeToDismiss={swipeToDismiss}
+        backgroundColor={overlayBackgroundColor}
+        resizeMode={props.resizeMode}
+        source={props.source}
+        didOpen={didOpen}
+        willClose={willClose}
+        onClose={_onClose}
+      />
     </View>
   );
 };
