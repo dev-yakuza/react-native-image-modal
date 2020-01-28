@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageBox from './Components/ImageBox';
+import ImageModal from './Components/ImageModal';
 import {View} from 'react-native';
 
 interface Props {}
@@ -17,7 +17,7 @@ const App = ({}: Props) => {
 
   return (
     <View style={{flex: 1, justifyContent: 'center'}}>
-      <ImageBox
+      <ImageModal
         swipeToDismiss={true}
         resizeMode="contain"
         style={{

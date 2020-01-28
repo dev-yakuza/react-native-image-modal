@@ -25,7 +25,7 @@ interface Props extends ImageProps {
   willClose?: () => void;
   onClose?: () => void;
 }
-const ImageBox = (props: Props) => {
+const ImageModal = (props: Props) => {
   const {
     swipeToDismiss,
     overlayBackgroundColor,
@@ -132,4 +132,4 @@ const ImageBox = (props: Props) => {
   );
 };
 
-export default ImageBox;
+export default ImageModal;
