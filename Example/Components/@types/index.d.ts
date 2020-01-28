@@ -6,7 +6,7 @@ interface IOnMove {
   zoomCurrentDistance: number;
 }
 
-interface IOnClick {
+interface IOnTap {
   locationX: number;
   locationY: number;
   pageX: number;

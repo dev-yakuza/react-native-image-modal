@@ -65,48 +65,45 @@ const Styles = StyleSheet.create({
 });
 
 interface Props {
-  source: ImageSourcePropType;
-  resizeMode?: ImageResizeMode;
+  isOpen: boolean;
   origin: {
     x: number;
     y: number;
     width: number;
     height: number;
   };
+  source: ImageSourcePropType;
+  resizeMode?: ImageResizeMode;
   backgroundColor?: string;
-  isOpen: boolean;
   swipeToDismiss?: boolean;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  onTap?: (eventParams: IOnTap) => void;
+  onDoubleTap?: () => void;
   onLongPress?: () => void;
-  onDoubleClick?: () => void;
+  didOpen?: () => void;
   onMove?: (position: IOnMove) => void;
-  onClick?: (eventParams: IOnClick) => void;
-  onSwipeDown?: () => void;
-  horizontalOuterRangeOffset?: (offsetX?: number) => void;
   responderRelease?: (vx?: number, scale?: number) => void;
   willClose?: () => void;
   onClose: () => void;
-  didOpen?: () => void;
 }
 const ImageDetail = ({
+  isOpen,
+  origin,
   source,
   resizeMode,
-  origin,
-  backgroundColor = '#000',
-  isOpen,
+  backgroundColor = '#000000',
   swipeToDismiss,
   renderHeader,
   renderFooter,
+  onTap,
+  onDoubleTap,
   onLongPress,
-  onDoubleClick,
+  didOpen,
   onMove,
-  onClick,
-  horizontalOuterRangeOffset,
   responderRelease,
   willClose,
   onClose,
-  didOpen,
 }: Props) => {
   const [animatedScale] = useState<Animated.Value>(new Animated.Value(1));
   const [animatedPositionX] = useState<Animated.Value>(new Animated.Value(0));
@@ -145,7 +142,7 @@ const ImageDetail = ({
   let horizontalWholeOuterCounter: number = 0;
 
   const imageDidMove = (type: string): void => {
-    if (onMove) {
+    if (typeof onMove === 'function') {
       onMove({
         type,
         positionX: positionX,
@@ -273,7 +270,7 @@ const ImageDetail = ({
       }
       longPressTimeout = setTimeout(() => {
         isLongPress = true;
-        if (onLongPress) {
+        if (typeof onLongPress === 'function') {
           onLongPress();
         }
       }, longPressTime);
@@ -281,8 +278,8 @@ const ImageDetail = ({
       if (evt.nativeEvent.changedTouches.length <= 1) {
         if (new Date().getTime() - lastClickTime < (doubleClickInterval || 0)) {
           lastClickTime = 0;
-          if (onDoubleClick) {
-            onDoubleClick();
+          if (typeof onDoubleTap === 'function') {
+            onDoubleTap();
           }
 
           clearTimeout(longPressTimeout);
@@ -368,9 +365,6 @@ const ImageDetail = ({
                 } else {
                   diffX += horizontalWholeOuterCounter;
                   horizontalWholeOuterCounter = 0;
-                  if (horizontalOuterRangeOffset) {
-                    horizontalOuterRangeOffset(0);
-                  }
                 }
               } else {
                 horizontalWholeOuterCounter += diffX;
@@ -383,9 +377,6 @@ const ImageDetail = ({
                 } else {
                   diffX += horizontalWholeOuterCounter;
                   horizontalWholeOuterCounter = 0;
-                  if (horizontalOuterRangeOffset) {
-                    horizontalOuterRangeOffset(0);
-                  }
                 }
               } else {
                 horizontalWholeOuterCounter += diffX;
@@ -412,12 +403,6 @@ const ImageDetail = ({
             horizontalWholeOuterCounter = maxOverflow || 0;
           } else if (horizontalWholeOuterCounter < -(maxOverflow || 0)) {
             horizontalWholeOuterCounter = -(maxOverflow || 0);
-          }
-
-          if (horizontalWholeOuterCounter !== 0) {
-            if (horizontalOuterRangeOffset) {
-              horizontalOuterRangeOffset(horizontalWholeOuterCounter);
-            }
           }
         }
 
@@ -514,12 +499,12 @@ const ImageDetail = ({
         moveDistance < clickDistance
       ) {
         singleClickTimeout = setTimeout(() => {
-          if (onClick) {
-            onClick({locationX, locationY, pageX, pageY});
+          if (typeof onTap === 'function') {
+            onTap({locationX, locationY, pageX, pageY});
           }
         }, doubleClickInterval);
       } else {
-        if (responderRelease) {
+        if (typeof responderRelease === 'function') {
           responderRelease(gestureState.vx, scale);
         }
 
@@ -586,7 +571,7 @@ const ImageDetail = ({
         Animated.timing(animatedOpacity, {toValue: 0}),
         Animated.spring(animatedFrame, {toValue: 1}),
       ]).start(() => {
-        if (didOpen) {
+        if (typeof didOpen === 'function') {
           didOpen();
         }
       });

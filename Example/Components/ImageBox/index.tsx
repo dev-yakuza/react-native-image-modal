@@ -12,24 +12,34 @@ import ImageDetail from '../ImageDetail';
 interface Props extends ImageProps {
   swipeToDismiss?: boolean;
   overlayBackgroundColor?: string;
+  onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  onTap?: (eventParams: IOnTap) => void;
+  onDoubleTap?: () => void;
   onLongPress?: () => void;
   onOpen?: () => void;
   didOpen?: () => void;
+  onMove?: (position: IOnMove) => void;
+  responderRelease?: (vx?: number, scale?: number) => void;
   willClose?: () => void;
   onClose?: () => void;
 }
 const ImageBox = (props: Props) => {
   const {
-    renderHeader,
-    renderFooter,
     swipeToDismiss,
     overlayBackgroundColor,
-    didOpen,
-    willClose,
-    onOpen,
+    onLongPressOriginImage,
+    renderHeader,
+    renderFooter,
+    onTap,
+    onDoubleTap,
     onLongPress,
+    onOpen,
+    didOpen,
+    onMove,
+    responderRelease,
+    willClose,
     onClose,
   } = props;
   const _root = useRef(null);
@@ -41,8 +51,9 @@ const ImageBox = (props: Props) => {
       width: 0,
       height: 0,
     },
-    layoutOpacity: new Animated.Value(1),
   });
+
+  const [originImageOpacity] = useState<Animated.Value>(new Animated.Value(1));
 
   const open = () => {
     (_root!.current as any).measure(
@@ -54,7 +65,7 @@ const ImageBox = (props: Props) => {
         px: number,
         py: number,
       ) => {
-        if (onOpen) {
+        if (typeof onOpen === 'function') {
           onOpen();
         }
 
@@ -68,49 +79,52 @@ const ImageBox = (props: Props) => {
             y: py,
           },
         });
-        if (didOpen) {
-          didOpen();
-        }
-        setTimeout(() => {
-          _root && state.layoutOpacity.setValue(0);
-        });
+
+        _root && originImageOpacity.setValue(0);
+        setTimeout(() => {});
       },
     );
   };
 
   const _onClose = () => {
-    state.layoutOpacity.setValue(1);
+    originImageOpacity.setValue(1);
+
     setState({
       ...state,
       isOpen: false,
     });
 
-    if (onClose) {
+    if (typeof onClose === 'function') {
       onClose();
     }
   };
 
   return (
     <View ref={_root} style={[{alignSelf: 'baseline'}]} onLayout={event => {}}>
-      <Animated.View style={{opacity: state.layoutOpacity}}>
+      <Animated.View style={{opacity: originImageOpacity}}>
         <TouchableOpacity
           activeOpacity={1}
           style={{alignSelf: 'baseline'}}
           onPress={open}
-          onLongPress={onLongPress}>
+          onLongPress={onLongPressOriginImage}>
           <Image {...props} />
         </TouchableOpacity>
       </Animated.View>
       <ImageDetail
         isOpen={state.isOpen}
         origin={state.origin}
+        source={props.source}
+        resizeMode={props.resizeMode}
+        backgroundColor={overlayBackgroundColor}
+        swipeToDismiss={swipeToDismiss}
         renderHeader={renderHeader}
         renderFooter={renderFooter}
-        swipeToDismiss={swipeToDismiss}
-        backgroundColor={overlayBackgroundColor}
-        resizeMode={props.resizeMode}
-        source={props.source}
+        onTap={onTap}
+        onDoubleTap={onDoubleTap}
+        onLongPress={onLongPress}
         didOpen={didOpen}
+        onMove={onMove}
+        responderRelease={responderRelease}
         willClose={willClose}
         onClose={_onClose}
       />
