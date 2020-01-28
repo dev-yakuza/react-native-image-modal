@@ -172,6 +172,7 @@ const ImageDetail = ({
       Math.abs(positionY) > DRAG_DISMISS_THRESHOLD
     ) {
       close();
+      return;
     }
 
     if (WINDOW_HEIGHT * scale > WINDOW_HEIGHT) {
@@ -212,6 +213,11 @@ const ImageDetail = ({
         duration: 100,
       }).start();
     }
+
+    Animated.timing(animatedOpacity, {
+      toValue: 0,
+      duration: 100,
+    }).start();
 
     horizontalWholeOuterCounter = 0;
     swipeDownOffset = 0;
@@ -546,6 +552,9 @@ const ImageDetail = ({
     }
 
     Animated.parallel([
+      Animated.timing(animatedScale, {toValue: 1}),
+      Animated.timing(animatedPositionX, {toValue: 0}),
+      Animated.timing(animatedPositionY, {toValue: 0}),
       Animated.timing(animatedOpacity, {toValue: WINDOW_HEIGHT}),
       Animated.spring(animatedFrame, {toValue: 0}),
     ]).start(() => {
