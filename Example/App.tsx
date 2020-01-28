@@ -1,6 +1,6 @@
 import React from 'react';
 import ImageBox from './Components/ImageBox';
-import {Image, View, Dimensions} from 'react-native';
+import {View} from 'react-native';
 
 interface Props {}
 const App = ({}: Props) => {
