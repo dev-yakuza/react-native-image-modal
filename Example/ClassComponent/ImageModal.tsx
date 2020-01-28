@@ -7,7 +7,7 @@ import {
   ImageProps,
 } from 'react-native';
 
-import ImageDetail from '../ImageDetail';
+import ImageDetail from './ImageDetail';
 
 interface Props extends ImageProps {
   swipeToDismiss?: boolean;
