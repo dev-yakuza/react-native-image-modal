@@ -41,6 +41,13 @@ const Styles = StyleSheet.create({
     width: WINDOW_WIDTH,
     backgroundColor: 'transparent',
   },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: WINDOW_WIDTH,
+    backgroundColor: 'transparent',
+  },
   closeButton: {
     fontSize: 35,
     color: 'white',
@@ -70,6 +77,7 @@ interface Props {
   isOpen: boolean;
   swipeToDismiss?: boolean;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onDoubleClick?: () => void;
   onMove?: (position: IOnMove) => void;
@@ -89,6 +97,7 @@ const ImageDetail = ({
   isOpen,
   swipeToDismiss,
   renderHeader,
+  renderFooter,
   onLongPress,
   onDoubleClick,
   onMove,
@@ -621,6 +630,21 @@ const ImageDetail = ({
     </Animated.View>
   );
 
+  const footer = renderFooter && (
+    <Animated.View
+      style={[
+        Styles.footer,
+        {
+          opacity: animatedOpacity.interpolate({
+            inputRange: [0, WINDOW_HEIGHT],
+            outputRange: [1, 0],
+          }),
+        },
+      ]}>
+      {renderFooter(close)}
+    </Animated.View>
+  );
+
   const content = (
     <View
       style={{
@@ -641,6 +665,7 @@ const ImageDetail = ({
         />
       </Animated.View>
       {header}
+      {footer}
     </View>
   );
 

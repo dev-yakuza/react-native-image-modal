@@ -13,6 +13,7 @@ interface Props extends ImageProps {
   swipeToDismiss?: boolean;
   overlayBackgroundColor?: string;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onLongPress?: () => void;
   onOpen?: () => void;
   didOpen?: () => void;
@@ -22,6 +23,7 @@ interface Props extends ImageProps {
 const ImageBox = (props: Props) => {
   const {
     renderHeader,
+    renderFooter,
     swipeToDismiss,
     overlayBackgroundColor,
     didOpen,
@@ -103,6 +105,7 @@ const ImageBox = (props: Props) => {
         isOpen={state.isOpen}
         origin={state.origin}
         renderHeader={renderHeader}
+        renderFooter={renderFooter}
         swipeToDismiss={swipeToDismiss}
         backgroundColor={overlayBackgroundColor}
         resizeMode={props.resizeMode}
