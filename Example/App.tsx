@@ -28,16 +28,14 @@ const App = ({}: Props) => {
             }}
             source={imageSource}
           />
-        )}>
-        <Image
-          resizeMode="contain"
-          style={{
-            width: 250,
-            height: 250,
-          }}
-          source={imageSource}
-        />
-      </ImageBox>
+        )}
+        resizeMode="contain"
+        style={{
+          width: 250,
+          height: 250,
+        }}
+        source={imageSource}
+      />
     </View>
   );
 };

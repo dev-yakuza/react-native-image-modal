@@ -1,36 +1,38 @@
-import React, {useState, useRef, Children, cloneElement} from 'react';
-import {Animated, View, ViewStyle, TouchableOpacity} from 'react-native';
+import React, {useState, useRef} from 'react';
+import {
+  Animated,
+  View,
+  TouchableOpacity,
+  ImageResizeMode,
+  Image,
+  ImageProps,
+} from 'react-native';
 
 import ImageDetail from '../ImageDetail';
 
-interface Props {
-  activeProps?: object;
-  children: JSX.Element | Array<JSX.Element>;
+interface Props extends ImageProps {
   swipeToDismiss?: boolean;
   backgroundColor?: string;
-  style?: ViewStyle;
   onLongPress?: () => void;
   onOpen?: () => void;
   willClose?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   didOpen?: () => void;
-  renderContent?: () => JSX.Element | Array<JSX.Element>;
+  renderContent: () => JSX.Element | Array<JSX.Element>;
   onClose?: () => void;
 }
-const ImageBox = ({
-  renderContent,
-  activeProps,
-  children,
-  renderHeader,
-  swipeToDismiss,
-  backgroundColor,
-  didOpen,
-  willClose,
-  onOpen,
-  style,
-  onLongPress,
-  onClose,
-}: Props) => {
+const ImageBox = (props: Props) => {
+  const {
+    renderContent,
+    renderHeader,
+    swipeToDismiss,
+    backgroundColor,
+    didOpen,
+    willClose,
+    onOpen,
+    onLongPress,
+    onClose,
+  } = props;
   const _root = useRef(null);
   const [state, setState] = useState({
     isOpen: false,
@@ -44,12 +46,7 @@ const ImageBox = ({
   });
 
   const getContent = () => {
-    if (renderContent) {
-      return renderContent();
-    } else if (activeProps) {
-      return cloneElement(Children.only(children), activeProps);
-    }
-    return children;
+    return renderContent();
   };
 
   const getOverlayProps = () => ({
@@ -111,17 +108,14 @@ const ImageBox = ({
   };
 
   return (
-    <View
-      ref={_root}
-      style={[style, {alignSelf: 'baseline'}]}
-      onLayout={event => {}}>
+    <View ref={_root} style={[{alignSelf: 'baseline'}]} onLayout={event => {}}>
       <Animated.View style={{opacity: state.layoutOpacity}}>
         <TouchableOpacity
           activeOpacity={1}
           style={{alignSelf: 'baseline'}}
           onPress={open}
           onLongPress={onLongPress}>
-          {children}
+          <Image {...props} />
         </TouchableOpacity>
       </Animated.View>
       <ImageDetail {...getOverlayProps()} />
