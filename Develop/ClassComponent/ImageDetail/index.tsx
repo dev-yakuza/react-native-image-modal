@@ -414,7 +414,9 @@ export default class ImageDetail extends React.Component<Props> {
             responderRelease(gestureState.vx, this._scale);
           }
 
-          this._panResponderReleaseResolve();
+          this._panResponderReleaseResolve(
+            evt.nativeEvent.changedTouches.length,
+          );
         }
       },
       onPanResponderTerminate: () => {},
@@ -434,7 +436,7 @@ export default class ImageDetail extends React.Component<Props> {
     }
   };
 
-  private _panResponderReleaseResolve = () => {
+  private _panResponderReleaseResolve = (changedTouchesCount: number) => {
     const {swipeToDismiss} = this.props;
     if (this._scale < 1) {
       this._scale = 1;
@@ -461,6 +463,7 @@ export default class ImageDetail extends React.Component<Props> {
     } else if (
       swipeToDismiss &&
       this._scale === 1 &&
+      changedTouchesCount === 1 &&
       Math.abs(this._positionY) > DRAG_DISMISS_THRESHOLD
     ) {
       this._close();
