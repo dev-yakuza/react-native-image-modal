@@ -1,10 +1,11 @@
 {
   "name": "react-native-image-modal",
   "version": "0.0.1",
-  "description": "image fullscreen popup for react native",
+  "description": "image fullscreen modal for react native",
   "main": "ImageBox.js",
   "scripts": {
-    "test": ""
+    "prepare": "rm -rf Develop/dist && tsc",
+    "start": "tsc -w --outDir Develop/dist"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,11 @@
     "url": "https://github.com/dev-yakuza/react-native-image-modal/issues"
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-native": "*",
+    "react": "*",
+    "react-native": "*",
+    "typescript": "^3.7.5"
+  }
 }
