@@ -1,25 +1,17 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "jsx": "react",
-    "lib": ["es6"],
-    "moduleResolution": "node",
-    "noEmit": true,
+    "declaration": true,
+    "module": "commonjs",
     "strict": true,
-    "target": "esnext",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["dom", "es5", "es6", "scripthost"],
+    "target": "es5",
+    "outDir": "dist",
     "sourceMap": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "babel.config.js",
-    "metro.config.js",
-    "jest.config.js",
-    "Develop",
-    "Example"
-  ]
+  "exclude": ["node_modules", "Develop", "Example"]
 }

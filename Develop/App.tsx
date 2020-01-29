@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageModal from './ClassComponent/ImageModal';
+import ImageModal from './dist/index';
 import {View} from 'react-native';
 
 interface Props {}
