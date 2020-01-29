@@ -36,7 +36,7 @@ interface Props extends ImageProps {
 }
 export default class ImageModal extends React.Component<Props, State> {
   private _root: View | null = null;
-  private originImageOpacity = new Animated.Value(1);
+  private _originImageOpacity = new Animated.Value(1);
 
   constructor(props: Props) {
     super(props);
@@ -77,14 +77,14 @@ export default class ImageModal extends React.Component<Props, State> {
           },
         });
 
-        this._root && this.originImageOpacity.setValue(0);
+        this._root && this._originImageOpacity.setValue(0);
       },
     );
   };
 
   private _onClose = () => {
     const {onClose} = this.props;
-    this.originImageOpacity.setValue(1);
+    this._originImageOpacity.setValue(1);
 
     this.setState({
       isOpen: false,
@@ -117,7 +117,7 @@ export default class ImageModal extends React.Component<Props, State> {
       <View
         ref={component => (this._root = component)}
         style={[{alignSelf: 'baseline'}]}>
-        <Animated.View style={{opacity: this.originImageOpacity}}>
+        <Animated.View style={{opacity: this._originImageOpacity}}>
           <TouchableOpacity
             activeOpacity={1}
             style={{alignSelf: 'baseline'}}
