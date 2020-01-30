@@ -54,10 +54,10 @@ const App = () => {
           <ImageModal
             swipeToDismiss={true}
             resizeMode="contain"
+            imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 250,
-              backgroundColor: '#000000',
             }}
             source={{
               uri:
@@ -88,10 +88,10 @@ const App = () => {
           <ImageModal
             swipeToDismiss={true}
             resizeMode="contain"
+            imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 250,
-              backgroundColor: '#000000',
             }}
             source={{
               uri:
@@ -118,10 +118,10 @@ const App = () => {
           <ImageModal
             swipeToDismiss={true}
             resizeMode="contain"
+            imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 175,
-              backgroundColor: '#000000',
             }}
             source={require('./images/horizontal.jpg')}
           />
@@ -135,10 +135,10 @@ const App = () => {
           <ImageModal
             swipeToDismiss={true}
             resizeMode="contain"
+            imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 250,
-              backgroundColor: '#000000',
             }}
             source={require('./images/vertical.jpg')}
           />
