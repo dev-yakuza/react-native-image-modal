@@ -118,6 +118,7 @@ export default class ImageDetail extends React.Component<Props> {
   private _zoomCurrentDistance: number = 0;
   private _swipeDownOffset: number = 0;
   private _horizontalWholeOuterCounter: number = 0;
+  private _isAnimated: boolean = false;
   private _target = {
     x: 0,
     y: 0,
@@ -139,6 +140,9 @@ export default class ImageDetail extends React.Component<Props> {
       onPanResponderTerminationRequest: () => false,
 
       onPanResponderGrant: evt => {
+        if (this._isAnimated) {
+          return;
+        }
         this._lastPositionX = null;
         this._lastPositionY = null;
         this._zoomLastDistance = null;
@@ -232,7 +236,7 @@ export default class ImageDetail extends React.Component<Props> {
         }
       },
       onPanResponderMove: (evt, gestureState) => {
-        if (this._isDoubleClick) {
+        if (this._isDoubleClick || this._isAnimated) {
           return;
         }
 
@@ -389,11 +393,7 @@ export default class ImageDetail extends React.Component<Props> {
           clearTimeout(this._longPressTimeout);
         }
 
-        if (this._isDoubleClick) {
-          return;
-        }
-
-        if (this._isLongPress) {
+        if (this._isDoubleClick || this._isLongPress || this._isAnimated) {
           return;
         }
 
@@ -526,7 +526,7 @@ export default class ImageDetail extends React.Component<Props> {
 
   private _close = () => {
     const { willClose, onClose } = this.props;
-
+    this._isAnimated = true;
     if (willClose) {
       willClose();
     }
@@ -539,6 +539,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.spring(this._animatedFrame, { toValue: 0 }),
     ]).start(() => {
       onClose();
+      this._isAnimated = false;
     });
   };
 
@@ -573,6 +574,7 @@ export default class ImageDetail extends React.Component<Props> {
       this._zoomCurrentDistance = 0;
       this._swipeDownOffset = 0;
       this._horizontalWholeOuterCounter = 0;
+      this._isAnimated = true;
       this._target = {
         x: 0,
         y: 0,
@@ -583,6 +585,7 @@ export default class ImageDetail extends React.Component<Props> {
         Animated.timing(this._animatedOpacity, { toValue: 0 }),
         Animated.spring(this._animatedFrame, { toValue: 1 }),
       ]).start(() => {
+        this._isAnimated = false;
         if (typeof didOpen === 'function') {
           didOpen();
         }
