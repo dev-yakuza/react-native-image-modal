@@ -101,7 +101,7 @@ export default class ImageModal extends React.Component<Props, State> {
     const {
       source,
       resizeMode,
-      swipeToDismiss,
+      swipeToDismiss = true,
       imageBackgroundColor,
       overlayBackgroundColor,
       onLongPressOriginImage,
