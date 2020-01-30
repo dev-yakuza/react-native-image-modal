@@ -20,7 +20,7 @@ const App = ({}: Props) => {
       <ImageModal
         swipeToDismiss={true}
         resizeMode="contain"
-        imageBackground="#000000"
+        imageBackgroundColor="#000000"
         style={{
           width: 250,
           height: 250,

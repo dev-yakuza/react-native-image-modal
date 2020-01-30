@@ -21,7 +21,7 @@ interface State {
 }
 interface Props extends ImageProps {
   swipeToDismiss?: boolean;
-  imageBackground?: string;
+  imageBackgroundColor?: string;
   overlayBackgroundColor?: string;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -102,7 +102,7 @@ export default class ImageModal extends React.Component<Props, State> {
       source,
       resizeMode,
       swipeToDismiss,
-      imageBackground,
+      imageBackgroundColor,
       overlayBackgroundColor,
       onLongPressOriginImage,
       renderHeader,
@@ -119,7 +119,9 @@ export default class ImageModal extends React.Component<Props, State> {
     return (
       <View
         ref={component => (this._root = component)}
-        style={[{ alignSelf: 'baseline', backgroundColor: imageBackground }]}>
+        style={[
+          { alignSelf: 'baseline', backgroundColor: imageBackgroundColor },
+        ]}>
         <Animated.View style={{ opacity: this._originImageOpacity }}>
           <TouchableOpacity
             activeOpacity={1}
