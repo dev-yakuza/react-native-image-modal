@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import ImageModal from 'react-native-image-modal';
 import {
   SafeAreaView,
   ScrollView,
@@ -8,6 +7,8 @@ import {
   StyleSheet,
   LayoutChangeEvent,
 } from 'react-native';
+
+import ImageModal from 'react-native-image-modal';
 
 const Style = StyleSheet.create({
   container: {
