@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
-    "build": "rm -rf dist && tsc"
+    "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
+    "prepare": "rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",
