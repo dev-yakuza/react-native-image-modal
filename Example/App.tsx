@@ -134,8 +134,6 @@ const App = () => {
           </Text>
           <ImageModal
             swipeToDismiss={true}
-            resizeMode="contain"
-            imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 250,
