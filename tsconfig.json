@@ -7,6 +7,7 @@
     "allowJs": false,
     "jsx": "react-native",
     "declaration": true,
+    "declarationMap": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
@@ -17,7 +18,8 @@
     "noUnusedLocals": true,
     "outDir": "dist",
     "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "Develop", "Example", "dist"]

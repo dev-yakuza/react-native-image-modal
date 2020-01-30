@@ -7,6 +7,7 @@ import {
   ImageProps,
 } from 'react-native';
 
+import { IOnTap, IOnMove } from './types';
 import ImageDetail from './ImageDetail';
 
 interface State {

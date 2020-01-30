@@ -16,6 +16,8 @@ import {
   PanResponderInstance,
 } from 'react-native';
 
+import { IOnTap, IOnMove } from '../types';
+
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
 const WINDOW_HEIGHT: number = Dimensions.get('window').height;
 const STATUS_BAR_OFFSET: number = Platform.OS === 'ios' ? 0 : -25;
@@ -350,7 +352,7 @@ export default class ImageDetail extends React.Component<Props> {
           const widthDistance = maxX - minX;
           const heightDistance = maxY - minY;
           const diagonalDistance = Math.sqrt(
-            widthDistance * widthDistance + heightDistance * heightDistance,
+            widthDistance * widthDistance + heightDistance * heightDistance
           );
           this._zoomCurrentDistance = Number(diagonalDistance.toFixed(1));
 
@@ -396,9 +398,9 @@ export default class ImageDetail extends React.Component<Props> {
         }
 
         const moveDistance = Math.sqrt(
-          gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy,
+          gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy
         );
-        const {locationX, locationY, pageX, pageY} = evt.nativeEvent;
+        const { locationX, locationY, pageX, pageY } = evt.nativeEvent;
 
         if (
           evt.nativeEvent.changedTouches.length === 1 &&
@@ -406,7 +408,7 @@ export default class ImageDetail extends React.Component<Props> {
         ) {
           this._singleClickTimeout = setTimeout(() => {
             if (typeof onTap === 'function') {
-              onTap({locationX, locationY, pageX, pageY});
+              onTap({ locationX, locationY, pageX, pageY });
             }
           }, DOUBLE_CLICK_INTERVAL);
         } else {
@@ -415,7 +417,7 @@ export default class ImageDetail extends React.Component<Props> {
           }
 
           this._panResponderReleaseResolve(
-            evt.nativeEvent.changedTouches.length,
+            evt.nativeEvent.changedTouches.length
           );
         }
       },
@@ -424,7 +426,7 @@ export default class ImageDetail extends React.Component<Props> {
   }
 
   private _imageDidMove = (type: string): void => {
-    const {onMove} = this.props;
+    const { onMove } = this.props;
     if (typeof onMove === 'function') {
       onMove({
         type,
@@ -437,7 +439,7 @@ export default class ImageDetail extends React.Component<Props> {
   };
 
   private _panResponderReleaseResolve = (changedTouchesCount: number) => {
-    const {swipeToDismiss} = this.props;
+    const { swipeToDismiss } = this.props;
     if (this._scale < 1) {
       this._scale = 1;
       Animated.timing(this._animatedScale, {
@@ -523,18 +525,18 @@ export default class ImageDetail extends React.Component<Props> {
   };
 
   private _close = () => {
-    const {willClose, onClose} = this.props;
+    const { willClose, onClose } = this.props;
 
     if (willClose) {
       willClose();
     }
 
     Animated.parallel([
-      Animated.timing(this._animatedScale, {toValue: 1}),
-      Animated.timing(this._animatedPositionX, {toValue: 0}),
-      Animated.timing(this._animatedPositionY, {toValue: 0}),
-      Animated.timing(this._animatedOpacity, {toValue: WINDOW_HEIGHT}),
-      Animated.spring(this._animatedFrame, {toValue: 0}),
+      Animated.timing(this._animatedScale, { toValue: 1 }),
+      Animated.timing(this._animatedPositionX, { toValue: 0 }),
+      Animated.timing(this._animatedPositionY, { toValue: 0 }),
+      Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT }),
+      Animated.spring(this._animatedFrame, { toValue: 0 }),
     ]).start(() => {
       onClose();
     });
@@ -548,7 +550,7 @@ export default class ImageDetail extends React.Component<Props> {
   }
 
   componentDidUpdate() {
-    const {isOpen, didOpen} = this.props;
+    const { isOpen, didOpen } = this.props;
 
     if (isOpen) {
       console.log('updated!');
@@ -579,8 +581,8 @@ export default class ImageDetail extends React.Component<Props> {
       };
 
       Animated.parallel([
-        Animated.timing(this._animatedOpacity, {toValue: 0}),
-        Animated.spring(this._animatedFrame, {toValue: 1}),
+        Animated.timing(this._animatedOpacity, { toValue: 0 }),
+        Animated.spring(this._animatedFrame, { toValue: 1 }),
       ]).start(() => {
         if (typeof didOpen === 'function') {
           didOpen();
@@ -637,7 +639,7 @@ export default class ImageDetail extends React.Component<Props> {
       <Animated.View
         style={[
           Styles.background,
-          {backgroundColor: backgroundColor},
+          { backgroundColor: backgroundColor },
           {
             opacity: this._animatedOpacity.interpolate({
               inputRange: [0, WINDOW_HEIGHT],
