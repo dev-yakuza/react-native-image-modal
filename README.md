@@ -65,19 +65,19 @@ Below are react-native-image-modal specific properties.
 
 ## Demo
 
-Open and close the image modal
+- Open and close the image modal
 
 ![open and close image modal](demo/open-and-close-image-modal.gif)
 
-pinch zoom in/out and move
+- pinch zoom in/out and move
 
 ![pinch zoom in/out and move](demo/pinch-zoom-and-move.gif)
 
-double tap zoom in/out
+- double tap zoom in/out
 
 ![double tap zoom in/out](demo/double-tap-zoom.gif)
 
-swipe to dismiss
+- swipe to dismiss
 
 ![swipe to dismiss](demo/swipe-to-dismiss.gif)
 
