@@ -553,7 +553,6 @@ export default class ImageDetail extends React.Component<Props> {
     const { isOpen, didOpen } = this.props;
 
     if (isOpen) {
-      console.log('updated!');
       this._lastPositionX = null;
       this._lastPositionY = null;
       this._zoomLastDistance = null;
