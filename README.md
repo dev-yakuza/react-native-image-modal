@@ -5,6 +5,14 @@ react-native-image-modal is a simple full size modal image for iOS and Android.
 You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
 It supports react version >= 0.60 and <= 0.59.
 
+## Blog
+
+There are blog posts about how to use `react-native-image-modal`.
+
+- English: [how to use react-native-image-modal](https://dev-yakuza.github.io/en/react-native/react-native-image-modal/)
+- 한국어: [react-native-image-modal 사용법](https://dev-yakuza.github.io/ko/react-native/react-native-image-modal/)
+- 日本語: [react-native-image-modal使い方](https://dev-yakuza.github.io/react-native/react-native-image-modal/)
+
 ## Installation
 
 Execute the command to install react-native-image-modal.
