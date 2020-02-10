@@ -88,13 +88,15 @@ export default class ImageModal extends React.Component<Props, State> {
     const { onClose } = this.props;
     this._originImageOpacity.setValue(1);
 
-    this.setState({
-      isOpen: false,
-    });
+    setTimeout(() => {
+      this.setState({
+        isOpen: false,
+      });
 
-    if (typeof onClose === 'function') {
-      onClose();
-    }
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+    });
   };
 
   render() {
@@ -122,7 +124,10 @@ export default class ImageModal extends React.Component<Props, State> {
         style={[
           { alignSelf: 'baseline', backgroundColor: imageBackgroundColor },
         ]}>
-        <Animated.View style={{ opacity: this._originImageOpacity }}>
+        <Animated.View
+          useNativeDriver={true}
+          renderToHardwareTextureAndroid={true}
+          style={{ opacity: this._originImageOpacity }}>
           <TouchableOpacity
             activeOpacity={1}
             style={{ alignSelf: 'baseline' }}
