@@ -7,7 +7,6 @@ import {
   Dimensions,
   Animated,
   PanResponder,
-  Platform,
   Image,
   Modal,
   SafeAreaView,
@@ -20,7 +19,6 @@ import { IOnTap, IOnMove } from '../types';
 
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
 const WINDOW_HEIGHT: number = Dimensions.get('window').height;
-const STATUS_BAR_OFFSET: number = Platform.OS === 'ios' ? 0 : -25;
 const LONG_PRESS_TIME: number = 800;
 const DOUBLE_CLICK_INTERVAL: number = 250;
 const MAX_OVERFLOW: number = 100;
@@ -527,7 +525,7 @@ export default class ImageDetail extends React.Component<Props> {
   private _close = () => {
     const { willClose, onClose } = this.props;
     this._isAnimated = true;
-    if (willClose) {
+    if (typeof willClose === 'function') {
       willClose();
     }
 
@@ -622,10 +620,7 @@ export default class ImageDetail extends React.Component<Props> {
       }),
       top: this._animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-          origin.y + STATUS_BAR_OFFSET,
-          this._target.y + STATUS_BAR_OFFSET,
-        ],
+        outputRange: [origin.y, this._target.y],
       }),
       width: this._animatedFrame.interpolate({
         inputRange: [0, 1],
@@ -639,6 +634,8 @@ export default class ImageDetail extends React.Component<Props> {
 
     const background = (
       <Animated.View
+        useNativeDriver={true}
+        renderToHardwareTextureAndroid={true}
         style={[
           Styles.background,
           { backgroundColor: backgroundColor },
@@ -653,6 +650,8 @@ export default class ImageDetail extends React.Component<Props> {
 
     const header = (
       <Animated.View
+        useNativeDriver={true}
+        renderToHardwareTextureAndroid={true}
         style={[
           Styles.header,
           {
@@ -662,7 +661,7 @@ export default class ImageDetail extends React.Component<Props> {
             }),
           },
         ]}>
-        {renderHeader ? (
+        {typeof renderHeader === 'function' ? (
           renderHeader(this._close)
         ) : (
           <SafeAreaView>
@@ -676,6 +675,8 @@ export default class ImageDetail extends React.Component<Props> {
 
     const footer = renderFooter && (
       <Animated.View
+        useNativeDriver={true}
+        renderToHardwareTextureAndroid={true}
         style={[
           Styles.footer,
           {
@@ -700,6 +701,7 @@ export default class ImageDetail extends React.Component<Props> {
         {background}
         <Animated.View
           style={animateConf}
+          useNativeDriver={true}
           renderToHardwareTextureAndroid={true}>
           <Image
             resizeMode={resizeMode}
@@ -711,7 +713,7 @@ export default class ImageDetail extends React.Component<Props> {
           />
         </Animated.View>
         {header}
-        {footer}
+        {typeof renderFooter === 'function' && footer}
       </View>
     );
 
