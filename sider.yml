@@ -1,0 +1,4 @@
+linter:
+  eslint:
+    dir: "src/"
+    ext: ".tsx"
