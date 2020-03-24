@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Animated,
-  View,
-  TouchableOpacity,
-  Image,
-  ImageProps,
-} from 'react-native';
+import { Animated, View, TouchableOpacity, Image, ImageProps } from 'react-native';
 
 import { IOnTap, IOnMove } from './types';
 import ImageDetail from './ImageDetail';
@@ -55,33 +49,24 @@ export default class ImageModal extends React.Component<Props, State> {
   }
 
   private _open = () => {
-    this._root?.measure(
-      (
-        ox: number,
-        oy: number,
-        width: number,
-        height: number,
-        px: number,
-        py: number
-      ) => {
-        const { onOpen } = this.props;
-        if (typeof onOpen === 'function') {
-          onOpen();
-        }
-
-        this.setState({
-          isOpen: true,
-          origin: {
-            width,
-            height,
-            x: px,
-            y: py,
-          },
-        });
-
-        this._root && this._originImageOpacity.setValue(0);
+    this._root?.measure((ox: number, oy: number, width: number, height: number, px: number, py: number) => {
+      const { onOpen } = this.props;
+      if (typeof onOpen === 'function') {
+        onOpen();
       }
-    );
+
+      this.setState({
+        isOpen: true,
+        origin: {
+          width,
+          height,
+          x: px,
+          y: py,
+        },
+      });
+
+      this._root && this._originImageOpacity.setValue(0);
+    });
   };
 
   private _onClose = () => {
@@ -120,19 +105,20 @@ export default class ImageModal extends React.Component<Props, State> {
     const { isOpen, origin } = this.state;
     return (
       <View
-        ref={component => (this._root = component)}
-        style={[
-          { alignSelf: 'baseline', backgroundColor: imageBackgroundColor },
-        ]}>
+        ref={(component) => (this._root = component)}
+        style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
+      >
         <Animated.View
           useNativeDriver={true}
           renderToHardwareTextureAndroid={true}
-          style={{ opacity: this._originImageOpacity }}>
+          style={{ opacity: this._originImageOpacity }}
+        >
           <TouchableOpacity
             activeOpacity={1}
             style={{ alignSelf: 'baseline' }}
             onPress={this._open}
-            onLongPress={onLongPressOriginImage}>
+            onLongPress={onLongPressOriginImage}
+          >
             <Image {...this.props} />
           </TouchableOpacity>
         </Animated.View>

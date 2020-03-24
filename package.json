@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "lint": "eslint ./src/**/*.tsx",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "prepare": "rm -rf dist && tsc"
   },
@@ -34,11 +35,32 @@
     "react": "*",
     "react-native": "*"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
   "devDependencies": {
     "@types/react": "*",
     "@types/react-native": "*",
+    "@typescript-eslint/eslint-plugin": "2.25.0",
+    "@typescript-eslint/parser": "2.25.0",
+    "eslint": "6.8.0",
+    "eslint-plugin-prettier": "3.1.2",
+    "eslint-plugin-react": "7.19.0",
+    "eslint-plugin-react-hooks": "2.5.1",
+    "husky": "4.2.3",
+    "lint-staged": "10.0.9",
     "react": "*",
     "react-native": "*",
     "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "prettier": "2.0.2"
   }
 }

@@ -19,13 +19,13 @@ import { IOnTap, IOnMove } from '../types';
 
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
 const WINDOW_HEIGHT: number = Dimensions.get('window').height;
-const LONG_PRESS_TIME: number = 800;
-const DOUBLE_CLICK_INTERVAL: number = 250;
-const MAX_OVERFLOW: number = 100;
-const MIN_SCALE: number = 0.6;
-const MAX_SCALE: number = 10;
-const CLICK_DISTANCE: number = 10;
-const DRAG_DISMISS_THRESHOLD: number = 150;
+const LONG_PRESS_TIME = 800;
+const DOUBLE_CLICK_INTERVAL = 250;
+const MAX_OVERFLOW = 100;
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 10;
+const CLICK_DISTANCE = 10;
+const DRAG_DISMISS_THRESHOLD = 150;
 
 const Styles = StyleSheet.create({
   background: {
@@ -99,24 +99,24 @@ export default class ImageDetail extends React.Component<Props> {
   private _lastPositionX: null | number = null;
   private _lastPositionY: null | number = null;
   private _zoomLastDistance: null | number = null;
-  private _horizontalWholeCounter: number = 0;
-  private _verticalWholeCounter: number = 0;
-  private _isDoubleClick: boolean = false;
-  private _isLongPress: boolean = false;
-  private _centerDiffX: number = 0;
-  private _centerDiffY: number = 0;
+  private _horizontalWholeCounter = 0;
+  private _verticalWholeCounter = 0;
+  private _isDoubleClick = false;
+  private _isLongPress = false;
+  private _centerDiffX = 0;
+  private _centerDiffY = 0;
   private _singleClickTimeout: undefined | number = undefined;
   private _longPressTimeout: undefined | number = undefined;
-  private _lastClickTime: number = 0;
-  private _doubleClickX: number = 0;
-  private _doubleClickY: number = 0;
-  private _scale: number = 1;
-  private _positionX: number = 0;
-  private _positionY: number = 0;
-  private _zoomCurrentDistance: number = 0;
-  private _swipeDownOffset: number = 0;
-  private _horizontalWholeOuterCounter: number = 0;
-  private _isAnimated: boolean = false;
+  private _lastClickTime = 0;
+  private _doubleClickX = 0;
+  private _doubleClickY = 0;
+  private _scale = 1;
+  private _positionX = 0;
+  private _positionY = 0;
+  private _zoomCurrentDistance = 0;
+  private _swipeDownOffset = 0;
+  private _horizontalWholeOuterCounter = 0;
+  private _isAnimated = false;
   private _target = {
     x: 0,
     y: 0,
@@ -126,18 +126,12 @@ export default class ImageDetail extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
 
-    const {
-      onLongPress,
-      onDoubleTap,
-      swipeToDismiss,
-      onTap,
-      responderRelease,
-    } = props;
+    const { onLongPress, onDoubleTap, swipeToDismiss, onTap, responderRelease } = props;
     this._imagePanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderTerminationRequest: () => false,
 
-      onPanResponderGrant: evt => {
+      onPanResponderGrant: (evt) => {
         if (this._isAnimated) {
           return;
         }
@@ -154,16 +148,10 @@ export default class ImageDetail extends React.Component<Props> {
         }
 
         if (evt.nativeEvent.changedTouches.length > 1) {
-          const centerX =
-            (evt.nativeEvent.changedTouches[0].pageX +
-              evt.nativeEvent.changedTouches[1].pageX) /
-            2;
+          const centerX = (evt.nativeEvent.changedTouches[0].pageX + evt.nativeEvent.changedTouches[1].pageX) / 2;
           this._centerDiffX = centerX - WINDOW_WIDTH / 2;
 
-          const centerY =
-            (evt.nativeEvent.changedTouches[0].pageY +
-              evt.nativeEvent.changedTouches[1].pageY) /
-            2;
+          const centerY = (evt.nativeEvent.changedTouches[0].pageY + evt.nativeEvent.changedTouches[1].pageY) / 2;
           this._centerDiffY = centerY - WINDOW_HEIGHT / 2;
         }
         if (this._longPressTimeout) {
@@ -177,10 +165,7 @@ export default class ImageDetail extends React.Component<Props> {
         }, LONG_PRESS_TIME);
 
         if (evt.nativeEvent.changedTouches.length <= 1) {
-          if (
-            new Date().getTime() - this._lastClickTime <
-            (DOUBLE_CLICK_INTERVAL || 0)
-          ) {
+          if (new Date().getTime() - this._lastClickTime < (DOUBLE_CLICK_INTERVAL || 0)) {
             this._lastClickTime = 0;
             if (typeof onDoubleTap === 'function') {
               onDoubleTap();
@@ -203,13 +188,9 @@ export default class ImageDetail extends React.Component<Props> {
               this._scale = 2;
 
               const diffScale = this._scale - beforeScale;
-              this._positionX =
-                ((WINDOW_WIDTH / 2 - this._doubleClickX) * diffScale) /
-                this._scale;
+              this._positionX = ((WINDOW_WIDTH / 2 - this._doubleClickX) * diffScale) / this._scale;
 
-              this._positionY =
-                ((WINDOW_HEIGHT / 2 - this._doubleClickY) * diffScale) /
-                this._scale;
+              this._positionY = ((WINDOW_HEIGHT / 2 - this._doubleClickY) * diffScale) / this._scale;
             }
 
             this._imageDidMove('centerOn');
@@ -255,8 +236,7 @@ export default class ImageDetail extends React.Component<Props> {
           this._verticalWholeCounter += diffY;
 
           if (
-            (Math.abs(this._horizontalWholeCounter) > 5 ||
-              Math.abs(this._verticalWholeCounter) > 5) &&
+            (Math.abs(this._horizontalWholeCounter) > 5 || Math.abs(this._verticalWholeCounter) > 5) &&
             this._longPressTimeout
           ) {
             clearTimeout(this._longPressTimeout);
@@ -292,8 +272,7 @@ export default class ImageDetail extends React.Component<Props> {
 
               this._positionX += diffX / this._scale;
 
-              const horizontalMax =
-                (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
+              const horizontalMax = (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
               if (this._positionX < -horizontalMax) {
                 this._positionX = -horizontalMax;
                 this._horizontalWholeOuterCounter += -1 / 1e10;
@@ -308,9 +287,7 @@ export default class ImageDetail extends React.Component<Props> {
 
             if (this._horizontalWholeOuterCounter > (MAX_OVERFLOW || 0)) {
               this._horizontalWholeOuterCounter = MAX_OVERFLOW || 0;
-            } else if (
-              this._horizontalWholeOuterCounter < -(MAX_OVERFLOW || 0)
-            ) {
+            } else if (this._horizontalWholeOuterCounter < -(MAX_OVERFLOW || 0)) {
               this._horizontalWholeOuterCounter = -(MAX_OVERFLOW || 0);
             }
           }
@@ -327,10 +304,7 @@ export default class ImageDetail extends React.Component<Props> {
 
           let minX: number;
           let maxX: number;
-          if (
-            evt.nativeEvent.changedTouches[0].locationX >
-            evt.nativeEvent.changedTouches[1].locationX
-          ) {
+          if (evt.nativeEvent.changedTouches[0].locationX > evt.nativeEvent.changedTouches[1].locationX) {
             minX = evt.nativeEvent.changedTouches[1].pageX;
             maxX = evt.nativeEvent.changedTouches[0].pageX;
           } else {
@@ -340,10 +314,7 @@ export default class ImageDetail extends React.Component<Props> {
 
           let minY: number;
           let maxY: number;
-          if (
-            evt.nativeEvent.changedTouches[0].locationY >
-            evt.nativeEvent.changedTouches[1].locationY
-          ) {
+          if (evt.nativeEvent.changedTouches[0].locationY > evt.nativeEvent.changedTouches[1].locationY) {
             minY = evt.nativeEvent.changedTouches[1].pageY;
             maxY = evt.nativeEvent.changedTouches[0].pageY;
           } else {
@@ -353,14 +324,11 @@ export default class ImageDetail extends React.Component<Props> {
 
           const widthDistance = maxX - minX;
           const heightDistance = maxY - minY;
-          const diagonalDistance = Math.sqrt(
-            widthDistance * widthDistance + heightDistance * heightDistance
-          );
+          const diagonalDistance = Math.sqrt(widthDistance * widthDistance + heightDistance * heightDistance);
           this._zoomCurrentDistance = Number(diagonalDistance.toFixed(1));
 
           if (this._zoomLastDistance !== null) {
-            const distanceDiff =
-              (this._zoomCurrentDistance - this._zoomLastDistance) / 200;
+            const distanceDiff = (this._zoomCurrentDistance - this._zoomLastDistance) / 200;
             let zoom = this._scale + distanceDiff;
 
             if (zoom < MIN_SCALE) {
@@ -395,15 +363,10 @@ export default class ImageDetail extends React.Component<Props> {
           return;
         }
 
-        const moveDistance = Math.sqrt(
-          gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy
-        );
+        const moveDistance = Math.sqrt(gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy);
         const { locationX, locationY, pageX, pageY } = evt.nativeEvent;
 
-        if (
-          evt.nativeEvent.changedTouches.length === 1 &&
-          moveDistance < CLICK_DISTANCE
-        ) {
+        if (evt.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
           this._singleClickTimeout = setTimeout(() => {
             if (typeof onTap === 'function') {
               onTap({ locationX, locationY, pageX, pageY });
@@ -414,12 +377,9 @@ export default class ImageDetail extends React.Component<Props> {
             responderRelease(gestureState.vx, this._scale);
           }
 
-          this._panResponderReleaseResolve(
-            evt.nativeEvent.changedTouches.length
-          );
+          this._panResponderReleaseResolve(evt.nativeEvent.changedTouches.length);
         }
       },
-      onPanResponderTerminate: () => {},
     });
   }
 
@@ -471,8 +431,7 @@ export default class ImageDetail extends React.Component<Props> {
     }
 
     if (WINDOW_HEIGHT * this._scale > WINDOW_HEIGHT) {
-      const verticalMax =
-        (WINDOW_HEIGHT * this._scale - WINDOW_HEIGHT) / 2 / this._scale;
+      const verticalMax = (WINDOW_HEIGHT * this._scale - WINDOW_HEIGHT) / 2 / this._scale;
       if (this._positionY < -verticalMax) {
         this._positionY = -verticalMax;
       } else if (this._positionY > verticalMax) {
@@ -485,8 +444,7 @@ export default class ImageDetail extends React.Component<Props> {
     }
 
     if (WINDOW_WIDTH * this._scale > WINDOW_WIDTH) {
-      const horizontalMax =
-        (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
+      const horizontalMax = (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
       if (this._positionX < -horizontalMax) {
         this._positionX = -horizontalMax;
       } else if (this._positionX > horizontalMax) {
@@ -592,15 +550,7 @@ export default class ImageDetail extends React.Component<Props> {
   }
 
   render() {
-    const {
-      isOpen,
-      origin,
-      source,
-      resizeMode,
-      backgroundColor = '#000000',
-      renderHeader,
-      renderFooter,
-    } = this.props;
+    const { isOpen, origin, source, resizeMode, backgroundColor = '#000000', renderHeader, renderFooter } = this.props;
 
     const animateConf = {
       transform: [
@@ -645,7 +595,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}></Animated.View>
+        ]}
+      ></Animated.View>
     );
 
     const header = (
@@ -660,7 +611,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}>
+        ]}
+      >
         {typeof renderHeader === 'function' ? (
           renderHeader(this._close)
         ) : (
@@ -685,7 +637,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}>
+        ]}
+      >
         {renderFooter(this._close)}
       </Animated.View>
     );
@@ -697,12 +650,10 @@ export default class ImageDetail extends React.Component<Props> {
           width: WINDOW_WIDTH,
           height: WINDOW_HEIGHT,
         }}
-        {...this._imagePanResponder!.panHandlers}>
+        {...this._imagePanResponder?.panHandlers}
+      >
         {background}
-        <Animated.View
-          style={animateConf}
-          useNativeDriver={true}
-          renderToHardwareTextureAndroid={true}>
+        <Animated.View style={animateConf} useNativeDriver={true} renderToHardwareTextureAndroid={true}>
           <Image
             resizeMode={resizeMode}
             style={{
@@ -718,10 +669,7 @@ export default class ImageDetail extends React.Component<Props> {
     );
 
     return (
-      <Modal
-        visible={isOpen}
-        transparent={true}
-        onRequestClose={() => this._close()}>
+      <Modal visible={isOpen} transparent={true} onRequestClose={() => this._close()}>
         {content}
       </Modal>
     );
