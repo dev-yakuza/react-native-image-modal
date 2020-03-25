@@ -58,7 +58,8 @@
     "lint-staged": "10.0.9",
     "react": "*",
     "react-native": "*",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "tyscan": "0.3.1"
   },
   "dependencies": {
     "prettier": "2.0.2"

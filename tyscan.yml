@@ -1,0 +1,9 @@
+rules:
+  - id: do.not.use.console                     # required, string
+    message: Do not use `console`  # required, string
+    pattern: '(_: Console)._(...)' # required, string or string list
+    tests:                         # optional
+      match:                       # optional, string or string list
+        - console.log("...");
+      unmatch:                     # optional, string or string list
+        - console.log("...");      # this test fails since it matches the pattern
