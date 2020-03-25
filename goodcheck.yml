@@ -1,0 +1,11 @@
+rules:
+  # id, pattern, message are required attributes.
+  - id: check.useNativeDriver
+    message: To check useNativeDriver TRUE or FALSE
+    pattern:
+      - token: useNativeDriver={${value}}
+        where:
+          value:
+            not: /(true|false)/
+    glob:
+      - "src/**/*.tsx"
