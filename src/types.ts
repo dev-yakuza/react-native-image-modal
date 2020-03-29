@@ -1,4 +1,4 @@
-export interface IOnMove {
+export interface OnMove {
   type: string;
   positionX: number;
   positionY: number;
@@ -6,7 +6,7 @@ export interface IOnMove {
   zoomCurrentDistance: number;
 }
 
-export interface IOnTap {
+export interface OnTap {
   locationX: number;
   locationY: number;
   pageX: number;
