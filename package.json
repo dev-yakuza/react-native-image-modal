@@ -12,12 +12,10 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
-      "eslint ./src/**/*.tsx ./src/**/*.ts --fix",
-      "git add"
+      "eslint ./src/**/*.tsx ./src/**/*.ts --fix"
     ],
     "*": [
-      "prettier --write .",
-      "git add"
+      "prettier --write ."
     ]
   },
   "husky": {
