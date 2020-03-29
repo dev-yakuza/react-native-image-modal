@@ -5,9 +5,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint ./src/**/*.tsx",
+    "lint": "eslint ./src/**/*.tsx ./src/**/*.ts",
+    "format": "prettier --check .",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "prepare": "rm -rf dist && tsc"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint ./src/**/*.tsx ./src/**/*.ts --fix",
+      "git add"
+    ],
+    "*": [
+      "prettier --write .",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "repository": {
     "type": "git",
@@ -35,16 +51,6 @@
     "react": "*",
     "react-native": "*"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix"
-    ]
-  },
   "devDependencies": {
     "@types/react": "*",
     "@types/react-native": "*",
@@ -56,11 +62,10 @@
     "eslint-plugin-react-hooks": "2.5.1",
     "husky": "4.2.3",
     "lint-staged": "10.0.9",
+    "prettier": "2.0.2",
     "react": "*",
     "react-native": "*",
     "typescript": "^3.7.5"
   },
-  "dependencies": {
-    "prettier": "2.0.2"
-  }
+  "dependencies": {}
 }

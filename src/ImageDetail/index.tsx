@@ -15,7 +15,7 @@ import {
   PanResponderInstance,
 } from 'react-native';
 
-import { IOnTap, IOnMove } from '../types';
+import { OnTap, OnMove } from '../types';
 
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
 const WINDOW_HEIGHT: number = Dimensions.get('window').height;
@@ -79,11 +79,11 @@ interface Props {
   swipeToDismiss?: boolean;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
-  onTap?: (eventParams: IOnTap) => void;
+  onTap?: (eventParams: OnTap) => void;
   onDoubleTap?: () => void;
   onLongPress?: () => void;
   didOpen?: () => void;
-  onMove?: (position: IOnMove) => void;
+  onMove?: (position: OnMove) => void;
   responderRelease?: (vx?: number, scale?: number) => void;
   willClose?: () => void;
   onClose: () => void;
@@ -148,10 +148,12 @@ export default class ImageDetail extends React.Component<Props> {
         }
 
         if (evt.nativeEvent.changedTouches.length > 1) {
-          const centerX = (evt.nativeEvent.changedTouches[0].pageX + evt.nativeEvent.changedTouches[1].pageX) / 2;
+          const centerX =
+            (evt.nativeEvent.changedTouches[0].pageX + evt.nativeEvent.changedTouches[1].pageX) / 2;
           this._centerDiffX = centerX - WINDOW_WIDTH / 2;
 
-          const centerY = (evt.nativeEvent.changedTouches[0].pageY + evt.nativeEvent.changedTouches[1].pageY) / 2;
+          const centerY =
+            (evt.nativeEvent.changedTouches[0].pageY + evt.nativeEvent.changedTouches[1].pageY) / 2;
           this._centerDiffY = centerY - WINDOW_HEIGHT / 2;
         }
         if (this._longPressTimeout) {
@@ -190,7 +192,8 @@ export default class ImageDetail extends React.Component<Props> {
               const diffScale = this._scale - beforeScale;
               this._positionX = ((WINDOW_WIDTH / 2 - this._doubleClickX) * diffScale) / this._scale;
 
-              this._positionY = ((WINDOW_HEIGHT / 2 - this._doubleClickY) * diffScale) / this._scale;
+              this._positionY =
+                ((WINDOW_HEIGHT / 2 - this._doubleClickY) * diffScale) / this._scale;
             }
 
             this._imageDidMove('centerOn');
@@ -236,7 +239,8 @@ export default class ImageDetail extends React.Component<Props> {
           this._verticalWholeCounter += diffY;
 
           if (
-            (Math.abs(this._horizontalWholeCounter) > 5 || Math.abs(this._verticalWholeCounter) > 5) &&
+            (Math.abs(this._horizontalWholeCounter) > 5 ||
+              Math.abs(this._verticalWholeCounter) > 5) &&
             this._longPressTimeout
           ) {
             clearTimeout(this._longPressTimeout);
@@ -304,7 +308,10 @@ export default class ImageDetail extends React.Component<Props> {
 
           let minX: number;
           let maxX: number;
-          if (evt.nativeEvent.changedTouches[0].locationX > evt.nativeEvent.changedTouches[1].locationX) {
+          if (
+            evt.nativeEvent.changedTouches[0].locationX >
+            evt.nativeEvent.changedTouches[1].locationX
+          ) {
             minX = evt.nativeEvent.changedTouches[1].pageX;
             maxX = evt.nativeEvent.changedTouches[0].pageX;
           } else {
@@ -314,7 +321,10 @@ export default class ImageDetail extends React.Component<Props> {
 
           let minY: number;
           let maxY: number;
-          if (evt.nativeEvent.changedTouches[0].locationY > evt.nativeEvent.changedTouches[1].locationY) {
+          if (
+            evt.nativeEvent.changedTouches[0].locationY >
+            evt.nativeEvent.changedTouches[1].locationY
+          ) {
             minY = evt.nativeEvent.changedTouches[1].pageY;
             maxY = evt.nativeEvent.changedTouches[0].pageY;
           } else {
@@ -324,7 +334,9 @@ export default class ImageDetail extends React.Component<Props> {
 
           const widthDistance = maxX - minX;
           const heightDistance = maxY - minY;
-          const diagonalDistance = Math.sqrt(widthDistance * widthDistance + heightDistance * heightDistance);
+          const diagonalDistance = Math.sqrt(
+            widthDistance * widthDistance + heightDistance * heightDistance,
+          );
           this._zoomCurrentDistance = Number(diagonalDistance.toFixed(1));
 
           if (this._zoomLastDistance !== null) {
@@ -363,7 +375,9 @@ export default class ImageDetail extends React.Component<Props> {
           return;
         }
 
-        const moveDistance = Math.sqrt(gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy);
+        const moveDistance = Math.sqrt(
+          gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy,
+        );
         const { locationX, locationY, pageX, pageY } = evt.nativeEvent;
 
         if (evt.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
@@ -396,7 +410,7 @@ export default class ImageDetail extends React.Component<Props> {
     }
   };
 
-  private _panResponderReleaseResolve = (changedTouchesCount: number) => {
+  private _panResponderReleaseResolve = (changedTouchesCount: number): void => {
     const { swipeToDismiss } = this.props;
     if (this._scale < 1) {
       this._scale = 1;
@@ -480,7 +494,7 @@ export default class ImageDetail extends React.Component<Props> {
     this._imageDidMove('onPanResponderRelease');
   };
 
-  private _close = () => {
+  private _close = (): void => {
     const { willClose, onClose } = this.props;
     this._isAnimated = true;
     if (typeof willClose === 'function') {
@@ -499,14 +513,14 @@ export default class ImageDetail extends React.Component<Props> {
     });
   };
 
-  shouldComponentUpdate(nextProps: Props) {
+  shouldComponentUpdate(nextProps: Props): boolean {
     if (nextProps.isOpen !== this.props.isOpen) {
       return true;
     }
     return false;
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(): void {
     const { isOpen, didOpen } = this.props;
 
     if (isOpen) {
@@ -549,8 +563,16 @@ export default class ImageDetail extends React.Component<Props> {
     }
   }
 
-  render() {
-    const { isOpen, origin, source, resizeMode, backgroundColor = '#000000', renderHeader, renderFooter } = this.props;
+  render(): JSX.Element {
+    const {
+      isOpen,
+      origin,
+      source,
+      resizeMode,
+      backgroundColor = '#000000',
+      renderHeader,
+      renderFooter,
+    } = this.props;
 
     const animateConf = {
       transform: [
@@ -595,8 +617,7 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}
-      ></Animated.View>
+        ]}></Animated.View>
     );
 
     const header = (
@@ -611,8 +632,7 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}
-      >
+        ]}>
         {typeof renderHeader === 'function' ? (
           renderHeader(this._close)
         ) : (
@@ -637,8 +657,7 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}
-      >
+        ]}>
         {renderFooter(this._close)}
       </Animated.View>
     );
@@ -650,10 +669,12 @@ export default class ImageDetail extends React.Component<Props> {
           width: WINDOW_WIDTH,
           height: WINDOW_HEIGHT,
         }}
-        {...this._imagePanResponder?.panHandlers}
-      >
+        {...this._imagePanResponder?.panHandlers}>
         {background}
-        <Animated.View style={animateConf} useNativeDriver={true} renderToHardwareTextureAndroid={true}>
+        <Animated.View
+          style={animateConf}
+          useNativeDriver={true}
+          renderToHardwareTextureAndroid={true}>
           <Image
             resizeMode={resizeMode}
             style={{
@@ -669,7 +690,7 @@ export default class ImageDetail extends React.Component<Props> {
     );
 
     return (
-      <Modal visible={isOpen} transparent={true} onRequestClose={() => this._close()}>
+      <Modal visible={isOpen} transparent={true} onRequestClose={(): void => this._close()}>
         {content}
       </Modal>
     );
