@@ -60,6 +60,7 @@ buck-out/
 Podfile
 Podfile.lock
 
+*.png
 .gitignore
 .prettierignore
 ios/Podfile.lock

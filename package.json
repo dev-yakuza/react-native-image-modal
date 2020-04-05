@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "lint": "eslint --ext .tsx --ext .ts src/",
-    "format": "prettier --check .",
+    "format": "prettier --check ./src",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "prepare": "rm -rf dist && tsc"
   },
@@ -15,7 +15,7 @@
       "eslint --ext .tsx --ext .ts src/ --fix"
     ],
     "*": [
-      "prettier --write ."
+      "prettier --write ./src"
     ]
   },
   "husky": {
