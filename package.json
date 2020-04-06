@@ -14,8 +14,8 @@
     "src/**/*.{ts,tsx}": [
       "eslint --ext .tsx --ext .ts src/ --fix"
     ],
-    "*": [
-      "prettier --write ./src"
+    "./src/**": [
+      "prettier --write ."
     ]
   },
   "husky": {
