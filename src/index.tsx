@@ -86,7 +86,9 @@ export default class ImageModal extends React.Component<Props, State> {
     });
   };
 
-  render(): JSX.Element {
+  render() {
+    console.log('sider test');
+
     const {
       source,
       resizeMode,

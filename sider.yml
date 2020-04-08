@@ -1,0 +1,9 @@
+linter:
+  eslint:
+    dir: 'src/'
+    ext: '.tsx'
+  tyscan:
+    config: tyscan.yml
+    tsconfig: tsconfig.json
+    paths:
+      - src
