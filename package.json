@@ -5,16 +5,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint ./src/**/*.tsx ./src/**/*.ts",
-    "format": "prettier --check .",
+    "lint": "eslint --ext .tsx --ext .ts src/",
+    "format": "prettier --check ./src",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "prepare": "rm -rf dist && tsc"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
-      "eslint ./src/**/*.tsx ./src/**/*.ts --fix"
+      "eslint --ext .tsx --ext .ts src/ --fix"
     ],
-    "*": [
+    "./src/**": [
       "prettier --write ."
     ]
   },
