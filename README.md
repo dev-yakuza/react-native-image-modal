@@ -52,23 +52,23 @@ return (
 You can use All props of React Native Image for the original image(not full size modal image).
 Below are react-native-image-modal specific properties.
 
-| Prop                   | required | Type                                                                                                                  | Description                                                   |
-| ---------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| swipeToDismiss         | X        | boolean                                                                                                               | set `true` to swipe to dismiss (`default: true`)              |
-| imageBackgroundColor   | X        | string                                                                                                                | background color for `the original image`                     |
-| overlayBackgroundColor | X        | string                                                                                                                | backgroud color for `the full size modal`(`default: #000000`) |
-| onLongPressOriginImage | X        | () => void                                                                                                            | long press event callback for `the original image`            |
-| renderHeader           | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                            | You can customize the header of `the full size modal` with react native components |
-| renderFooter           | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                            | You can customize the footer of `the full size modal` with react native components |
-| onTap                  | X        | (eventParams: {locationX: number; locationY: number; pageX: number; pageY: number;}) => void                          | one tap event callback for `the full size modal`              |
-| onDoubleTap            | X        | () => void                                                                                                            | double tap event callback for `the full size modal`           |
-| onLongPress            | X        | () => void                                                                                                            | long press event callback for `the full size modal`           |
-| onOpen                 | X        | () => void                                                                                                            | open event callback for `the full size modal`                 |
-| didOpen                | X        | () => void                                                                                                            | event callback after open for `the full size modal`           |
-| onMove                 | X        | (position: {type: string; positionX: number; positionY: number; scale: number; zoomCurrentDistance: number;}) => void | move event callback for `the full size modal`                 |
-| responderRelease       | X        | (vx?: number, scale?: number) => void                                                                                 | responder release event callback for `the full size modal`    |
-| willClose              | X        | () => void                                                                                                            | event callback before close for `the full size modal`         |
-| onClose                | X        | () => void                                                                                                            | close event callback for `the full size modal`                |
+| Prop                   | required | Type                                                                                                                  | Description                                                    |
+| ---------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| swipeToDismiss         | X        | boolean                                                                                                               | set `true` to swipe to dismiss (`default: true`)               |
+| imageBackgroundColor   | X        | string                                                                                                                | background color for `the original image`                      |
+| overlayBackgroundColor | X        | string                                                                                                                | background color for `the full size modal`(`default: #000000`) |
+| onLongPressOriginImage | X        | () => void                                                                                                            | long press event callback for `the original image`             |
+| renderHeader           | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                             | You can customize the header of `the full size modal` with react native components |
+| renderFooter           | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                             | You can customize the footer of `the full size modal` with react native components |
+| onTap                  | X        | (eventParams: {locationX: number; locationY: number; pageX: number; pageY: number;}) => void                          | one tap event callback for `the full size modal`               |
+| onDoubleTap            | X        | () => void                                                                                                            | double tap event callback for `the full size modal`            |
+| onLongPress            | X        | () => void                                                                                                            | long press event callback for `the full size modal`            |
+| onOpen                 | X        | () => void                                                                                                            | open event callback for `the full size modal`                  |
+| didOpen                | X        | () => void                                                                                                            | event callback after open for `the full size modal`            |
+| onMove                 | X        | (position: {type: string; positionX: number; positionY: number; scale: number; zoomCurrentDistance: number;}) => void | move event callback for `the full size modal`                  |
+| responderRelease       | X        | (vx?: number, scale?: number) => void                                                                                 | responder release event callback for `the full size modal`     |
+| willClose              | X        | () => void                                                                                                            | event callback before close for `the full size modal`          |
+| onClose                | X        | () => void                                                                                                            | close event callback for `the full size modal`                 |
 
 ## Demo
 
