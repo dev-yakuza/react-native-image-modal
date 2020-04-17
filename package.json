@@ -8,6 +8,7 @@
     "lint": "eslint --ext .tsx --ext .ts src/",
     "format": "prettier --check ./src",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
+    "start:expo": "rm -rf DevelopWithExpo/dist && tsc -w --outDir DevelopWithExpo/dist",
     "prepare": "rm -rf dist && tsc"
   },
   "lint-staged": {
