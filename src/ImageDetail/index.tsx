@@ -690,7 +690,11 @@ export default class ImageDetail extends React.Component<Props> {
     );
 
     return (
-      <Modal visible={isOpen} transparent={true} onRequestClose={(): void => this._close()}>
+      <Modal
+        hardwareAccelerated={true}
+        visible={isOpen}
+        transparent={true}
+        onRequestClose={(): void => this._close()}>
         {content}
       </Modal>
     );
