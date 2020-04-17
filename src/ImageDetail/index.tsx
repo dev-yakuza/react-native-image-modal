@@ -33,21 +33,21 @@ const Styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
+    width: WINDOW_WIDTH || '100%',
+    height: WINDOW_HEIGHT || '100%',
   },
   header: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: WINDOW_WIDTH,
+    width: WINDOW_WIDTH || '100%',
     backgroundColor: 'transparent',
   },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
-    width: WINDOW_WIDTH,
+    width: WINDOW_WIDTH || '100%',
     backgroundColor: 'transparent',
   },
   closeButton: {
@@ -672,8 +672,8 @@ export default class ImageDetail extends React.Component<Props> {
       <View
         style={{
           overflow: 'hidden',
-          width: WINDOW_WIDTH,
-          height: WINDOW_HEIGHT,
+          width: WINDOW_WIDTH || '100%',
+          height: WINDOW_HEIGHT || '100%',
         }}
         {...this._imagePanResponder?.panHandlers}>
         {background}
