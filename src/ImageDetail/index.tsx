@@ -18,7 +18,7 @@ import {
 import { OnTap, OnMove } from '../types';
 
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
-const WINDOW_HEIGHT: number = Dimensions.get('screen').height;
+const WINDOW_HEIGHT: number = Dimensions.get('window').height;
 const LONG_PRESS_TIME = 800;
 const DOUBLE_CLICK_INTERVAL = 250;
 const MAX_OVERFLOW = 100;
