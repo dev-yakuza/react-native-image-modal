@@ -13,12 +13,13 @@ import {
   ImageSourcePropType,
   ImageResizeMode,
   PanResponderInstance,
+  StatusBar,
 } from 'react-native';
 
 import { OnTap, OnMove } from '../types';
 
 const WINDOW_WIDTH: number = Dimensions.get('window').width;
-const WINDOW_HEIGHT: number = Dimensions.get('screen').height;
+const WINDOW_HEIGHT: number = Dimensions.get('window').height;
 const LONG_PRESS_TIME = 800;
 const DOUBLE_CLICK_INTERVAL = 250;
 const MAX_OVERFLOW = 100;
@@ -66,6 +67,7 @@ const Styles = StyleSheet.create({
 });
 
 interface Props {
+  isTranslucent?: boolean;
   isOpen: boolean;
   origin: {
     x: number;
@@ -125,7 +127,6 @@ export default class ImageDetail extends React.Component<Props> {
 
   constructor(props: Props) {
     super(props);
-
     const { onLongPress, onDoubleTap, swipeToDismiss, onTap, responderRelease } = props;
     this._imagePanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -495,21 +496,26 @@ export default class ImageDetail extends React.Component<Props> {
   };
 
   private _close = (): void => {
-    const { willClose, onClose } = this.props;
-    this._isAnimated = true;
-    if (typeof willClose === 'function') {
-      willClose();
+    const { isTranslucent, willClose, onClose } = this.props;
+    if (isTranslucent) {
+      StatusBar.setHidden(false);
     }
+    setTimeout(() => {
+      this._isAnimated = true;
+      if (typeof willClose === 'function') {
+        willClose();
+      }
 
-    Animated.parallel([
-      Animated.timing(this._animatedScale, { toValue: 1 }),
-      Animated.timing(this._animatedPositionX, { toValue: 0 }),
-      Animated.timing(this._animatedPositionY, { toValue: 0 }),
-      Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT }),
-      Animated.spring(this._animatedFrame, { toValue: 0 }),
-    ]).start(() => {
-      onClose();
-      this._isAnimated = false;
+      Animated.parallel([
+        Animated.timing(this._animatedScale, { toValue: 1 }),
+        Animated.timing(this._animatedPositionX, { toValue: 0 }),
+        Animated.timing(this._animatedPositionY, { toValue: 0 }),
+        Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT }),
+        Animated.spring(this._animatedFrame, { toValue: 0 }),
+      ]).start(() => {
+        onClose();
+        this._isAnimated = false;
+      });
     });
   };
 
@@ -690,7 +696,11 @@ export default class ImageDetail extends React.Component<Props> {
     );
 
     return (
-      <Modal visible={isOpen} transparent={true} onRequestClose={(): void => this._close()}>
+      <Modal
+        hardwareAccelerated={true}
+        visible={isOpen}
+        transparent={true}
+        onRequestClose={(): void => this._close()}>
         {content}
       </Modal>
     );
