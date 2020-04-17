@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import ImageModal from './dist';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, LayoutChangeEvent } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  LayoutChangeEvent,
+  Platform,
+} from 'react-native';
 
 const Style = StyleSheet.create({
   container: {
@@ -43,6 +51,7 @@ const App = () => {
             contempt oh he raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
           <ImageModal
+            isTranslucent={Platform.OS === 'android' ? true : false}
             swipeToDismiss={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
@@ -74,6 +83,7 @@ const App = () => {
             attended doubtful be it.
           </Text>
           <ImageModal
+            isTranslucent={Platform.OS === 'android' ? true : false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
@@ -99,6 +109,7 @@ const App = () => {
             relied an whence lovers temper by. Looked wisdom common he an be giving length mr.
           </Text>
           <ImageModal
+            isTranslucent={Platform.OS === 'android' ? true : false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
@@ -114,6 +125,7 @@ const App = () => {
             if remarkably especially an. Going eat set she books found met aware.
           </Text>
           <ImageModal
+            isTranslucent={Platform.OS === 'android' ? true : false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{

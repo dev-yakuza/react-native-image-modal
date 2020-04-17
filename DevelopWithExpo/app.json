@@ -17,9 +17,6 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
-    },
-    "androidStatusBar": {
-      "translucent": false
     }
   }
 }
