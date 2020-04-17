@@ -53,6 +53,7 @@ const App = () => {
             raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
           <ImageModal
+            isTranslucent={false}
             swipeToDismiss={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
@@ -87,6 +88,7 @@ const App = () => {
             attended doubtful be it.
           </Text>
           <ImageModal
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
@@ -116,6 +118,7 @@ const App = () => {
             common he an be giving length mr.
           </Text>
           <ImageModal
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
@@ -132,6 +135,7 @@ const App = () => {
             remarkably especially an. Going eat set she books found met aware.
           </Text>
           <ImageModal
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{

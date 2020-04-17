@@ -4230,10 +4230,10 @@ react-is@^16.12.0, react-is@^16.8.1, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-image-modal@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-image-modal/-/react-native-image-modal-1.0.1.tgz#c59522ea7d716175d95ffaed4ba2b989d90648a8"
-  integrity sha512-/dSK8IEZfZhJDMgRQronXBttJN6+YAJmD6dDXr8wTUjnGU7w6HSbuEsLDCV6VeknBYvU/CHn6D1kZBi4XW76uA==
+react-native-image-modal@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-modal/-/react-native-image-modal-1.0.3.tgz#a254610612821f62daa61055aaec71ee33fd3d8b"
+  integrity sha512-oZ0f3XudMcL2ssh0ScqLuyUyJaF9ed5tlwzOIpJ25Wj7OOfl0GRomUDz2cLpXiFgU5OJpBu8HK9T9g4yADOlAQ==
 
 react-native-screens@~2.2.0:
   version "2.2.0"
