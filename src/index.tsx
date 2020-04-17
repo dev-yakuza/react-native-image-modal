@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, View, TouchableOpacity, Image, ImageProps } from 'react-native';
+import { Animated, View, TouchableOpacity, Image, ImageProps, StatusBar } from 'react-native';
 
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
@@ -14,6 +14,7 @@ interface State {
   };
 }
 interface Props extends ImageProps {
+  isTranslucent?: boolean;
   swipeToDismiss?: boolean;
   imageBackgroundColor?: string;
   overlayBackgroundColor?: string;
@@ -51,19 +52,25 @@ export default class ImageModal extends React.Component<Props, State> {
   private _open = (): void => {
     this._root?.measure(
       (ox: number, oy: number, width: number, height: number, px: number, py: number) => {
-        const { onOpen } = this.props;
+        const { isTranslucent, onOpen } = this.props;
         if (typeof onOpen === 'function') {
           onOpen();
         }
 
-        this.setState({
-          isOpen: true,
-          origin: {
-            width,
-            height,
-            x: px,
-            y: py,
-          },
+        if (isTranslucent) {
+          StatusBar.setHidden(true);
+        }
+
+        setTimeout(() => {
+          this.setState({
+            isOpen: true,
+            origin: {
+              width,
+              height,
+              x: px,
+              y: py,
+            },
+          });
         });
 
         this._root && this._originImageOpacity.setValue(0);
@@ -90,6 +97,7 @@ export default class ImageModal extends React.Component<Props, State> {
     const {
       source,
       resizeMode,
+      isTranslucent,
       swipeToDismiss = true,
       imageBackgroundColor,
       overlayBackgroundColor,
@@ -124,6 +132,7 @@ export default class ImageModal extends React.Component<Props, State> {
           </TouchableOpacity>
         </Animated.View>
         <ImageDetail
+          isTranslucent={isTranslucent}
           isOpen={isOpen}
           origin={origin}
           source={source}
