@@ -676,7 +676,7 @@ export default class ImageDetail extends React.Component<Props> {
           width: WINDOW_WIDTH || '100%',
           height: WINDOW_HEIGHT || '100%',
         }}
-        {...this._imagePanResponder?.panHandlers}>
+        {...(this._imagePanResponder ? this._imagePanResponder.panHandlers : undefined)}>
         {background}
         <Animated.View
           style={animateConf}
