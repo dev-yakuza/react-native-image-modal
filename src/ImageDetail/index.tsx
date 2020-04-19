@@ -67,6 +67,7 @@ const Styles = StyleSheet.create({
 });
 
 interface Props {
+  renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
   isOpen: boolean;
   origin: {
@@ -571,6 +572,7 @@ export default class ImageDetail extends React.Component<Props> {
 
   render(): JSX.Element {
     const {
+      renderToHardwareTextureAndroid,
       isOpen,
       origin,
       source,
@@ -579,7 +581,6 @@ export default class ImageDetail extends React.Component<Props> {
       renderHeader,
       renderFooter,
     } = this.props;
-
     const animateConf = {
       transform: [
         {
@@ -613,7 +614,7 @@ export default class ImageDetail extends React.Component<Props> {
     const background = (
       <Animated.View
         useNativeDriver={true}
-        renderToHardwareTextureAndroid={true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.background,
           { backgroundColor: backgroundColor },
@@ -629,7 +630,7 @@ export default class ImageDetail extends React.Component<Props> {
     const header = (
       <Animated.View
         useNativeDriver={true}
-        renderToHardwareTextureAndroid={true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.header,
           {
@@ -654,7 +655,7 @@ export default class ImageDetail extends React.Component<Props> {
     const footer = renderFooter && (
       <Animated.View
         useNativeDriver={true}
-        renderToHardwareTextureAndroid={true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.footer,
           {
@@ -680,7 +681,7 @@ export default class ImageDetail extends React.Component<Props> {
         <Animated.View
           style={animateConf}
           useNativeDriver={true}
-          renderToHardwareTextureAndroid={true}>
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}>
           <Image
             resizeMode={resizeMode}
             style={{

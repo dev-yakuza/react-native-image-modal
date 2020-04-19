@@ -14,6 +14,7 @@ interface State {
   };
 }
 interface Props extends ImageProps {
+  renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
   swipeToDismiss?: boolean;
   imageBackgroundColor?: string;
@@ -97,6 +98,7 @@ export default class ImageModal extends React.Component<Props, State> {
     const {
       source,
       resizeMode,
+      renderToHardwareTextureAndroid,
       isTranslucent,
       swipeToDismiss = true,
       imageBackgroundColor,
@@ -121,7 +123,7 @@ export default class ImageModal extends React.Component<Props, State> {
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
         <Animated.View
           useNativeDriver={true}
-          renderToHardwareTextureAndroid={true}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
           style={{ opacity: this._originImageOpacity }}>
           <TouchableOpacity
             activeOpacity={1}
@@ -132,6 +134,7 @@ export default class ImageModal extends React.Component<Props, State> {
           </TouchableOpacity>
         </Animated.View>
         <ImageDetail
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
           isTranslucent={isTranslucent}
           isOpen={isOpen}
           origin={origin}
