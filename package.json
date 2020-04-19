@@ -1,6 +1,6 @@
 {
   "name": "react-native-image-modal",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "image fullscreen modal for react native",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
