@@ -1,5 +1,13 @@
 import React from 'react';
-import { Animated, View, TouchableOpacity, Image, ImageProps, StatusBar } from 'react-native';
+import {
+  Animated,
+  View,
+  TouchableOpacity,
+  Image,
+  ImageProps,
+  StatusBar,
+  Platform,
+} from 'react-native';
 
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
@@ -38,6 +46,10 @@ export default class ImageModal extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+    const { isTranslucent } = props;
+    if (Platform.OS === 'android' && isTranslucent) {
+      StatusBar.setTranslucent(isTranslucent);
+    }
 
     this.state = {
       isOpen: false,
@@ -51,14 +63,16 @@ export default class ImageModal extends React.Component<Props, State> {
   }
 
   private _open = (): void => {
-    this._root?.measure(
-      (ox: number, oy: number, width: number, height: number, px: number, py: number) => {
+    if (this._root) {
+      this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
         const { isTranslucent, onOpen } = this.props;
+        let newY: number = y;
         if (typeof onOpen === 'function') {
           onOpen();
         }
 
         if (isTranslucent) {
+          newY += StatusBar.currentHeight ? StatusBar.currentHeight : 0;
           StatusBar.setHidden(true);
         }
 
@@ -68,15 +82,15 @@ export default class ImageModal extends React.Component<Props, State> {
             origin: {
               width,
               height,
-              x: px,
-              y: py,
+              x,
+              y: newY,
             },
           });
         });
 
         this._root && this._originImageOpacity.setValue(0);
-      },
-    );
+      });
+    }
   };
 
   private _onClose = (): void => {
@@ -119,6 +133,20 @@ export default class ImageModal extends React.Component<Props, State> {
       <View
         ref={(component): void => {
           this._root = component;
+        }}
+        onLayout={(): void => {
+          if (this._root) {
+            this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
+              this.setState({
+                origin: {
+                  width,
+                  height,
+                  x,
+                  y,
+                },
+              });
+            });
+          }
         }}
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
         <Animated.View
