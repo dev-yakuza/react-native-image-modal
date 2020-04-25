@@ -120,11 +120,6 @@ export default class ImageDetail extends React.Component<Props> {
   private _swipeDownOffset = 0;
   private _horizontalWholeOuterCounter = 0;
   private _isAnimated = false;
-  private _target = {
-    x: 0,
-    y: 0,
-    opacity: 1,
-  };
 
   constructor(props: Props) {
     super(props);
@@ -521,7 +516,7 @@ export default class ImageDetail extends React.Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.isOpen !== this.props.isOpen) {
+    if (nextProps.isOpen !== this.props.isOpen || nextProps.origin.x !== this.props.origin.x) {
       return true;
     }
     return false;
@@ -552,11 +547,6 @@ export default class ImageDetail extends React.Component<Props> {
       this._swipeDownOffset = 0;
       this._horizontalWholeOuterCounter = 0;
       this._isAnimated = true;
-      this._target = {
-        x: 0,
-        y: 0,
-        opacity: 1,
-      };
 
       Animated.parallel([
         Animated.timing(this._animatedOpacity, { toValue: 0 }),
@@ -595,11 +585,11 @@ export default class ImageDetail extends React.Component<Props> {
       ],
       left: this._animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.x, this._target.x],
+        outputRange: [origin.x, 0],
       }),
       top: this._animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.y, this._target.y],
+        outputRange: [origin.y, 0],
       }),
       width: this._animatedFrame.interpolate({
         inputRange: [0, 1],

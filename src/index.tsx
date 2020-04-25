@@ -76,15 +76,18 @@ export default class ImageModal extends React.Component<Props, State> {
           StatusBar.setHidden(true);
         }
 
+        this.setState({
+          origin: {
+            width,
+            height,
+            x,
+            y: newY,
+          },
+        });
+
         setTimeout(() => {
           this.setState({
             isOpen: true,
-            origin: {
-              width,
-              height,
-              x,
-              y: newY,
-            },
           });
         });
 
