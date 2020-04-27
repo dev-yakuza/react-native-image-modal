@@ -22,5 +22,5 @@
     "removeComments": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "Develop", "Example", "dist"]
+  "exclude": ["node_modules", "Develop", "DevelopWithExpo", "Example", "ExampleWithExpo", "dist"]
 }
