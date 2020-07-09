@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  LayoutChangeEvent,
-  Platform,
-} from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, LayoutChangeEvent } from 'react-native';
 
 import ImageModal from 'react-native-image-modal';
 
@@ -52,7 +44,7 @@ const App = () => {
             contempt oh he raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
           <ImageModal
-            isTranslucent={Platform.OS === 'android' ? true : false}
+            isTranslucent={false}
             swipeToDismiss={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
@@ -84,7 +76,7 @@ const App = () => {
             attended doubtful be it.
           </Text>
           <ImageModal
-            isTranslucent={Platform.OS === 'android' ? true : false}
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
@@ -110,14 +102,14 @@ const App = () => {
             relied an whence lovers temper by. Looked wisdom common he an be giving length mr.
           </Text>
           <ImageModal
-            isTranslucent={Platform.OS === 'android' ? true : false}
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 175,
             }}
-            source={require('./images/horizontal.jpg')}
+            source={require('./assets/images/horizontal.jpg')}
           />
           <Text style={Style.text}>
             He do subjects prepared bachelor juvenile ye oh. He feelings removing informed he as
@@ -126,14 +118,14 @@ const App = () => {
             if remarkably especially an. Going eat set she books found met aware.
           </Text>
           <ImageModal
-            isTranslucent={Platform.OS === 'android' ? true : false}
+            isTranslucent={false}
             resizeMode="contain"
             imageBackgroundColor="#000000"
             style={{
               width: imageWidth,
               height: 250,
             }}
-            source={require('./images/vertical.jpg')}
+            source={require('./assets/images/vertical.jpg')}
           />
           <Text style={Style.text}>
             At distant inhabit amongst by. Appetite welcomed interest the goodness boy not.
