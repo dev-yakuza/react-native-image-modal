@@ -2,7 +2,6 @@
   "expo": {
     "name": "DevelopWithExpo",
     "slug": "DevelopWithExpo",
-    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,6 +16,9 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }
