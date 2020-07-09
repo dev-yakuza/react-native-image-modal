@@ -199,14 +199,17 @@ export default class ImageDetail extends React.Component<Props> {
               Animated.timing(this._animatedScale, {
                 toValue: this._scale,
                 duration: 100,
+                useNativeDriver: false,
               }),
               Animated.timing(this._animatedPositionX, {
                 toValue: this._positionX,
                 duration: 100,
+                useNativeDriver: false,
               }),
               Animated.timing(this._animatedPositionY, {
                 toValue: this._positionY,
                 duration: 100,
+                useNativeDriver: false,
               }),
             ]).start();
           } else {
@@ -414,6 +417,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedScale, {
         toValue: this._scale,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     }
 
@@ -422,6 +426,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedPositionX, {
         toValue: this._positionX,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     }
 
@@ -430,6 +435,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedPositionY, {
         toValue: this._positionY,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     } else if (
       swipeToDismiss &&
@@ -451,6 +457,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedPositionY, {
         toValue: this._positionY,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     }
 
@@ -464,6 +471,7 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedPositionX, {
         toValue: this._positionX,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     }
 
@@ -473,16 +481,19 @@ export default class ImageDetail extends React.Component<Props> {
       Animated.timing(this._animatedPositionX, {
         toValue: this._positionX,
         duration: 100,
+        useNativeDriver: false,
       }).start();
       Animated.timing(this._animatedPositionY, {
         toValue: this._positionY,
         duration: 100,
+        useNativeDriver: false,
       }).start();
     }
 
     Animated.timing(this._animatedOpacity, {
       toValue: 0,
       duration: 100,
+      useNativeDriver: false,
     }).start();
 
     this._horizontalWholeOuterCounter = 0;
@@ -503,11 +514,11 @@ export default class ImageDetail extends React.Component<Props> {
       }
 
       Animated.parallel([
-        Animated.timing(this._animatedScale, { toValue: 1 }),
-        Animated.timing(this._animatedPositionX, { toValue: 0 }),
-        Animated.timing(this._animatedPositionY, { toValue: 0 }),
-        Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT }),
-        Animated.spring(this._animatedFrame, { toValue: 0 }),
+        Animated.timing(this._animatedScale, { toValue: 1, useNativeDriver: false }),
+        Animated.timing(this._animatedPositionX, { toValue: 0, useNativeDriver: false }),
+        Animated.timing(this._animatedPositionY, { toValue: 0, useNativeDriver: false }),
+        Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT, useNativeDriver: false }),
+        Animated.spring(this._animatedFrame, { toValue: 0, useNativeDriver: false }),
       ]).start(() => {
         onClose();
         this._isAnimated = false;
@@ -549,8 +560,8 @@ export default class ImageDetail extends React.Component<Props> {
       this._isAnimated = true;
 
       Animated.parallel([
-        Animated.timing(this._animatedOpacity, { toValue: 0 }),
-        Animated.spring(this._animatedFrame, { toValue: 1 }),
+        Animated.timing(this._animatedOpacity, { toValue: 0, useNativeDriver: false }),
+        Animated.spring(this._animatedFrame, { toValue: 1, useNativeDriver: false }),
       ]).start(() => {
         this._isAnimated = false;
         if (typeof didOpen === 'function') {

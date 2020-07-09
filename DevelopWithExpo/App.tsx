@@ -116,7 +116,7 @@ const App = () => {
               width: imageWidth,
               height: 175,
             }}
-            source={require('./images/horizontal.jpg')}
+            source={require('./assets/images/horizontal.jpg')}
           />
           <Text style={Style.text}>
             He do subjects prepared bachelor juvenile ye oh. He feelings removing informed he as
@@ -132,7 +132,7 @@ const App = () => {
               width: imageWidth,
               height: 250,
             }}
-            source={require('./images/vertical.jpg')}
+            source={require('./assets/images/vertical.jpg')}
           />
           <Text style={Style.text}>
             At distant inhabit amongst by. Appetite welcomed interest the goodness boy not.
