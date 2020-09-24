@@ -153,7 +153,6 @@ export default class ImageModal extends React.Component<Props, State> {
         }}
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
         <Animated.View
-          useNativeDriver={true}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
           style={{ opacity: this._originImageOpacity }}>
           <TouchableOpacity
