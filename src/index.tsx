@@ -27,6 +27,7 @@ interface Props extends ImageProps {
   swipeToDismiss?: boolean;
   imageBackgroundColor?: string;
   overlayBackgroundColor?: string;
+  hideCloseButton?: boolean;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -120,6 +121,7 @@ export default class ImageModal extends React.Component<Props, State> {
       swipeToDismiss = true,
       imageBackgroundColor,
       overlayBackgroundColor,
+      hideCloseButton,
       onLongPressOriginImage,
       renderHeader,
       renderFooter,
@@ -172,6 +174,7 @@ export default class ImageModal extends React.Component<Props, State> {
           resizeMode={resizeMode}
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
+          hideCloseButton={hideCloseButton}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
           onTap={onTap}
