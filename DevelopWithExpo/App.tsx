@@ -8,6 +8,7 @@ import {
   StyleSheet,
   LayoutChangeEvent,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 
 const Style = StyleSheet.create({
@@ -133,6 +134,35 @@ const App = () => {
               height: 250,
             }}
             source={require('./assets/images/vertical.jpg')}
+          />
+          <Text style={Style.text}>
+            At distant inhabit amongst by. Appetite welcomed interest the goodness boy not.
+            Estimable education for disposing pronounce her. John size good gay plan sent old roof
+            own. Inquietude saw understood his friendship frequently yet. Nature his marked ham
+            wished.
+          </Text>
+          <ImageModal
+            isTranslucent={false}
+            resizeMode="contain"
+            imageBackgroundColor="#000000"
+            style={{
+              width: imageWidth,
+              height: 250,
+            }}
+            source={require('./assets/images/vertical.jpg')}
+            hideCloseButton
+            renderFooter={(onClose) => (
+              <TouchableOpacity
+                onPress={onClose}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  height: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text>CloseButton</Text>
+              </TouchableOpacity>
+            )}
           />
           <Text style={Style.text}>
             At distant inhabit amongst by. Appetite welcomed interest the goodness boy not.

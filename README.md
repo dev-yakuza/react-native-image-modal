@@ -91,6 +91,10 @@ Below are react-native-image-modal specific properties.
 
 ![swipe to dismiss](demo/swipe-to-dismiss.gif)
 
+- customize the component with the close button
+
+![swipe to dismiss](demo/swipe-to-dismiss.gif)
+
 ## Example code
 
 You can see the example code and demo.
