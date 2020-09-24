@@ -80,6 +80,7 @@ interface Props {
   resizeMode?: ImageResizeMode;
   backgroundColor?: string;
   swipeToDismiss?: boolean;
+  hideCloseButton?: boolean;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onTap?: (eventParams: OnTap) => void;
@@ -579,6 +580,7 @@ export default class ImageDetail extends React.Component<Props> {
       source,
       resizeMode,
       backgroundColor = '#000000',
+      hideCloseButton,
       renderHeader,
       renderFooter,
     } = this.props;
@@ -641,13 +643,13 @@ export default class ImageDetail extends React.Component<Props> {
         ]}>
         {typeof renderHeader === 'function' ? (
           renderHeader(this._close)
-        ) : (
+        ) : !hideCloseButton ? (
           <SafeAreaView>
             <TouchableOpacity onPress={this._close}>
               <Text style={Styles.closeButton}>×</Text>
             </TouchableOpacity>
           </SafeAreaView>
-        )}
+        ) : undefined}
       </Animated.View>
     );
 
