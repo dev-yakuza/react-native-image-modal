@@ -614,7 +614,6 @@ export default class ImageDetail extends React.Component<Props> {
 
     const background = (
       <Animated.View
-        useNativeDriver={true}
         renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.background,
@@ -630,7 +629,6 @@ export default class ImageDetail extends React.Component<Props> {
 
     const header = (
       <Animated.View
-        useNativeDriver={true}
         renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.header,
@@ -655,7 +653,6 @@ export default class ImageDetail extends React.Component<Props> {
 
     const footer = renderFooter && (
       <Animated.View
-        useNativeDriver={true}
         renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
         style={[
           Styles.footer,
@@ -681,7 +678,6 @@ export default class ImageDetail extends React.Component<Props> {
         {background}
         <Animated.View
           style={animateConf}
-          useNativeDriver={true}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}>
           <Image
             resizeMode={resizeMode}
