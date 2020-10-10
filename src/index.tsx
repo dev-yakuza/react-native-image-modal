@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { LegacyRef } from 'react';
 import {
   Animated,
   View,
@@ -28,6 +28,7 @@ interface Props extends ImageProps {
   imageBackgroundColor?: string;
   overlayBackgroundColor?: string;
   hideCloseButton?: boolean;
+  modalRef?: LegacyRef<ImageDetail>;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -122,6 +123,7 @@ export default class ImageModal extends React.Component<Props, State> {
       imageBackgroundColor,
       overlayBackgroundColor,
       hideCloseButton,
+      modalRef,
       onLongPressOriginImage,
       renderHeader,
       renderFooter,
@@ -166,6 +168,7 @@ export default class ImageModal extends React.Component<Props, State> {
           </TouchableOpacity>
         </Animated.View>
         <ImageDetail
+          ref={modalRef}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
           isTranslucent={isTranslucent}
           isOpen={isOpen}
@@ -190,3 +193,5 @@ export default class ImageModal extends React.Component<Props, State> {
     );
   }
 }
+
+export { ImageDetail };

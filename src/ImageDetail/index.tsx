@@ -444,7 +444,7 @@ export default class ImageDetail extends React.Component<Props> {
       changedTouchesCount === 1 &&
       Math.abs(this._positionY) > DRAG_DISMISS_THRESHOLD
     ) {
-      this._close();
+      this.close();
       return;
     }
 
@@ -503,7 +503,7 @@ export default class ImageDetail extends React.Component<Props> {
     this._imageDidMove('onPanResponderRelease');
   };
 
-  private _close = (): void => {
+  public close = (): void => {
     const { isTranslucent, willClose, onClose } = this.props;
     if (isTranslucent) {
       StatusBar.setHidden(false);
@@ -642,10 +642,10 @@ export default class ImageDetail extends React.Component<Props> {
           },
         ]}>
         {typeof renderHeader === 'function' ? (
-          renderHeader(this._close)
+          renderHeader(this.close)
         ) : !hideCloseButton ? (
           <SafeAreaView>
-            <TouchableOpacity onPress={this._close}>
+            <TouchableOpacity onPress={this.close}>
               <Text style={Styles.closeButton}>×</Text>
             </TouchableOpacity>
           </SafeAreaView>
@@ -665,7 +665,7 @@ export default class ImageDetail extends React.Component<Props> {
             }),
           },
         ]}>
-        {renderFooter(this._close)}
+        {renderFooter(this.close)}
       </Animated.View>
     );
 
@@ -700,7 +700,7 @@ export default class ImageDetail extends React.Component<Props> {
         hardwareAccelerated={true}
         visible={isOpen}
         transparent={true}
-        onRequestClose={(): void => this._close()}>
+        onRequestClose={(): void => this.close()}>
         {content}
       </Modal>
     );
