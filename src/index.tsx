@@ -29,6 +29,7 @@ interface Props extends ImageProps {
   overlayBackgroundColor?: string;
   hideCloseButton?: boolean;
   modalRef?: LegacyRef<ImageDetail>;
+  disabled?: boolean;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -65,6 +66,8 @@ export default class ImageModal extends React.Component<Props, State> {
   }
 
   private _open = (): void => {
+    if (this.props.disabled) return;
+
     if (this._root) {
       this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
         const { isTranslucent, onOpen } = this.props;
