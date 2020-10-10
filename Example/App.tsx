@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import ImageModal from 'react-native-image-modal';
+import ImageModal, {ImageDetail} from 'react-native-image-modal';
 
 const Style = StyleSheet.create({
   container: {
@@ -31,6 +31,8 @@ const Style = StyleSheet.create({
 });
 const App = () => {
   const [imageWidth, setImageWidth] = useState<number>(0);
+  const element = useRef<ImageDetail>(null);
+
   return (
     <SafeAreaView style={Style.container}>
       <ScrollView>
@@ -179,6 +181,68 @@ const App = () => {
             goodness boy not. Estimable education for disposing pronounce her.
             John size good gay plan sent old roof own. Inquietude saw understood
             his friendship frequently yet. Nature his marked ham wished.
+          </Text>
+          <ImageModal
+            isTranslucent={false}
+            swipeToDismiss={false}
+            resizeMode="contain"
+            imageBackgroundColor="#000000"
+            modalRef={element}
+            style={{
+              width: imageWidth,
+              height: 250,
+            }}
+            source={{
+              uri:
+                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+            }}
+            onOpen={() => {
+              console.log('onOpen');
+              setTimeout(() => {
+                element.current?.close();
+              }, 3000);
+            }}
+          />
+          <Text style={Style.text}>
+            Affronting discretion as do is announcing. Now months esteem oppose
+            nearer enable too six. She numerous unlocked you perceive speedily.
+            Affixed offence spirits or ye of offices between. Real on shot it
+            were four an as. Absolute bachelor rendered six nay you juvenile.
+            Vanity entire an chatty to.
+          </Text>
+          <Text style={Style.text}>
+            Prepared is me marianne pleasure likewise debating. Wonder an unable
+            except better stairs do ye admire. His and eat secure sex called
+            esteem praise. So moreover as speedily differed branched ignorant.
+            Tall are her knew poor now does then. Procured to contempt oh he
+            raptures amounted occasion. One boy assure income spirit lovers set.
+          </Text>
+          <ImageModal
+            disabled
+            resizeMode="contain"
+            imageBackgroundColor="#000000"
+            style={{
+              width: imageWidth,
+              height: 250,
+            }}
+            source={{
+              uri:
+                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+            }}
+          />
+          <Text style={Style.text}>
+            Affronting discretion as do is announcing. Now months esteem oppose
+            nearer enable too six. She numerous unlocked you perceive speedily.
+            Affixed offence spirits or ye of offices between. Real on shot it
+            were four an as. Absolute bachelor rendered six nay you juvenile.
+            Vanity entire an chatty to.
+          </Text>
+          <Text style={Style.text}>
+            Prepared is me marianne pleasure likewise debating. Wonder an unable
+            except better stairs do ye admire. His and eat secure sex called
+            esteem praise. So moreover as speedily differed branched ignorant.
+            Tall are her knew poor now does then. Procured to contempt oh he
+            raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
         </View>
       </ScrollView>
