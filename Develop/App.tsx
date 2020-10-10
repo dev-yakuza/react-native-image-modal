@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import ImageModal from './dist';
+import React, {useState, useRef} from 'react';
+import ImageModal, {ImageDetail} from './dist';
 import {
   SafeAreaView,
   ScrollView,
@@ -30,6 +30,8 @@ const Style = StyleSheet.create({
 });
 const App = () => {
   const [imageWidth, setImageWidth] = useState<number>(0);
+  const element = useRef<ImageDetail>(null);
+
   return (
     <SafeAreaView style={Style.container}>
       <ScrollView>
@@ -179,6 +181,27 @@ const App = () => {
             John size good gay plan sent old roof own. Inquietude saw understood
             his friendship frequently yet. Nature his marked ham wished.
           </Text>
+          <ImageModal
+            isTranslucent={false}
+            swipeToDismiss={false}
+            resizeMode="contain"
+            imageBackgroundColor="#000000"
+            modalRef={element}
+            style={{
+              width: imageWidth,
+              height: 250,
+            }}
+            source={{
+              uri:
+                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+            }}
+            onOpen={() => {
+              console.log('onOpen');
+              setTimeout(() => {
+                element.current?.close();
+              }, 3000);
+            }}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
