@@ -59,6 +59,9 @@ Below are react-native-image-modal specific properties.
 | swipeToDismiss                 | X        | boolean                                                                                                               | set `true` to swipe to dismiss (`default: true`)                                                                                           |
 | imageBackgroundColor           | X        | string                                                                                                                | background color for `the original image`                                                                                                  |
 | overlayBackgroundColor         | X        | string                                                                                                                | background color for `the full size modal`(`default: #000000`)                                                                             |
+| modalRef                       | X        | ImageDetail                                                                                                           | You can use this Ref for closing the Modal programmatically.                                                                                                         |
+| disabled                       | X        | boolean                                                                                                               | disable opening the modal                                                                                                         |
+| hideCloseButton                | X        | boolean                                                                                                               | hide hide the default close button                                                                                                         |
 | onLongPressOriginImage         | X        | () => void                                                                                                            | long press event callback for `the original image`                                                                                         |
 | renderHeader                   | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                                                                                                         | You can customize the header of `the full size modal` with react native components |
 | renderFooter                   | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                                                                                                         | You can customize the footer of `the full size modal` with react native components |
@@ -89,6 +92,10 @@ Below are react-native-image-modal specific properties.
 - swipe to dismiss
 
 ![swipe to dismiss](demo/swipe-to-dismiss.gif)
+
+- customize the component with the close button
+
+![customize the component](demo/custom-button.png)
 
 ## Example code
 
