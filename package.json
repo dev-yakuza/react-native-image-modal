@@ -46,7 +46,6 @@
     "url": "https://github.com/dev-yakuza/react-native-image-modal/issues"
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
