@@ -700,7 +700,8 @@ export default class ImageDetail extends React.Component<Props> {
         hardwareAccelerated={true}
         visible={isOpen}
         transparent={true}
-        onRequestClose={(): void => this.close()}>
+        onRequestClose={(): void => this.close()}
+        supportedOrientations={['portrait', 'landscape']}>
         {content}
       </Modal>
     );
