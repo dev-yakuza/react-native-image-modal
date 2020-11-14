@@ -710,7 +710,13 @@ export default class ImageDetail extends React.Component<Props> {
         visible={isOpen}
         transparent={true}
         onRequestClose={(): void => this.close()}
-        supportedOrientations={['portrait', 'landscape']}>
+        supportedOrientations={[
+          'portrait',
+          'portrait-upside-down',
+          'landscape',
+          'landscape-left',
+          'landscape-right',
+        ]}>
         {content}
       </Modal>
     );
