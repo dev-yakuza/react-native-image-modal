@@ -18,8 +18,6 @@ import {
 
 import { OnTap, OnMove } from '../types';
 
-const WINDOW_WIDTH: number = Dimensions.get('window').width;
-const WINDOW_HEIGHT: number = Dimensions.get('window').height;
 const LONG_PRESS_TIME = 800;
 const DOUBLE_CLICK_INTERVAL = 250;
 const MAX_OVERFLOW = 100;
@@ -33,21 +31,21 @@ const Styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: WINDOW_WIDTH || '100%',
-    height: WINDOW_HEIGHT || '100%',
+    width: '100%',
+    height: '100%',
   },
   header: {
     position: 'absolute',
     top: 0,
     left: 0,
-    width: WINDOW_WIDTH || '100%',
+    width: '100%',
     backgroundColor: 'transparent',
   },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
-    width: WINDOW_WIDTH || '100%',
+    width: '100%',
     backgroundColor: 'transparent',
   },
   closeButton: {
@@ -97,7 +95,7 @@ export default class ImageDetail extends React.Component<Props> {
   private _animatedPositionX = new Animated.Value(0);
   private _animatedPositionY = new Animated.Value(0);
   private _animatedFrame = new Animated.Value(0);
-  private _animatedOpacity = new Animated.Value(WINDOW_HEIGHT);
+  private _animatedOpacity = new Animated.Value(Dimensions.get('window').height);
   private _imagePanResponder?: PanResponderInstance = undefined;
 
   private _lastPositionX: null | number = null;
@@ -133,6 +131,8 @@ export default class ImageDetail extends React.Component<Props> {
         if (this._isAnimated) {
           return;
         }
+        const windowWidth: number = Dimensions.get('window').width;
+        const windowHeight: number = Dimensions.get('window').height;
         this._lastPositionX = null;
         this._lastPositionY = null;
         this._zoomLastDistance = null;
@@ -148,11 +148,11 @@ export default class ImageDetail extends React.Component<Props> {
         if (evt.nativeEvent.changedTouches.length > 1) {
           const centerX =
             (evt.nativeEvent.changedTouches[0].pageX + evt.nativeEvent.changedTouches[1].pageX) / 2;
-          this._centerDiffX = centerX - WINDOW_WIDTH / 2;
+          this._centerDiffX = centerX - windowWidth / 2;
 
           const centerY =
             (evt.nativeEvent.changedTouches[0].pageY + evt.nativeEvent.changedTouches[1].pageY) / 2;
-          this._centerDiffY = centerY - WINDOW_HEIGHT / 2;
+          this._centerDiffY = centerY - windowHeight / 2;
         }
         if (this._longPressTimeout) {
           clearTimeout(this._longPressTimeout);
@@ -188,10 +188,9 @@ export default class ImageDetail extends React.Component<Props> {
               this._scale = 2;
 
               const diffScale = this._scale - beforeScale;
-              this._positionX = ((WINDOW_WIDTH / 2 - this._doubleClickX) * diffScale) / this._scale;
+              this._positionX = ((windowWidth / 2 - this._doubleClickX) * diffScale) / this._scale;
 
-              this._positionY =
-                ((WINDOW_HEIGHT / 2 - this._doubleClickY) * diffScale) / this._scale;
+              this._positionY = ((windowHeight / 2 - this._doubleClickY) * diffScale) / this._scale;
             }
 
             this._imageDidMove('centerOn');
@@ -233,6 +232,7 @@ export default class ImageDetail extends React.Component<Props> {
             diffY = 0;
           }
 
+          const windowWidth: number = Dimensions.get('window').width;
           this._lastPositionX = gestureState.dx;
           this._lastPositionY = gestureState.dy;
 
@@ -248,7 +248,7 @@ export default class ImageDetail extends React.Component<Props> {
           }
 
           if (this._swipeDownOffset === 0) {
-            if (WINDOW_WIDTH * this._scale > WINDOW_WIDTH) {
+            if (windowWidth * this._scale > windowWidth) {
               if (this._horizontalWholeOuterCounter > 0) {
                 if (diffX < 0) {
                   if (this._horizontalWholeOuterCounter > Math.abs(diffX)) {
@@ -277,7 +277,7 @@ export default class ImageDetail extends React.Component<Props> {
 
               this._positionX += diffX / this._scale;
 
-              const horizontalMax = (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
+              const horizontalMax = (windowWidth * this._scale - windowWidth) / 2 / this._scale;
               if (this._positionX < -horizontalMax) {
                 this._positionX = -horizontalMax;
                 this._horizontalWholeOuterCounter += -1 / 1e10;
@@ -413,6 +413,8 @@ export default class ImageDetail extends React.Component<Props> {
 
   private _panResponderReleaseResolve = (changedTouchesCount: number): void => {
     const { swipeToDismiss } = this.props;
+    const windowWidth: number = Dimensions.get('window').width;
+    const windowHeight: number = Dimensions.get('window').height;
     if (this._scale < 1) {
       this._scale = 1;
       Animated.timing(this._animatedScale, {
@@ -422,7 +424,7 @@ export default class ImageDetail extends React.Component<Props> {
       }).start();
     }
 
-    if (WINDOW_WIDTH * this._scale <= WINDOW_WIDTH) {
+    if (windowWidth * this._scale <= windowWidth) {
       this._positionX = 0;
       Animated.timing(this._animatedPositionX, {
         toValue: this._positionX,
@@ -431,7 +433,7 @@ export default class ImageDetail extends React.Component<Props> {
       }).start();
     }
 
-    if (WINDOW_HEIGHT * this._scale < WINDOW_HEIGHT) {
+    if (windowHeight * this._scale < windowHeight) {
       this._positionY = 0;
       Animated.timing(this._animatedPositionY, {
         toValue: this._positionY,
@@ -448,8 +450,8 @@ export default class ImageDetail extends React.Component<Props> {
       return;
     }
 
-    if (WINDOW_HEIGHT * this._scale > WINDOW_HEIGHT) {
-      const verticalMax = (WINDOW_HEIGHT * this._scale - WINDOW_HEIGHT) / 2 / this._scale;
+    if (windowHeight * this._scale > windowHeight) {
+      const verticalMax = (windowHeight * this._scale - windowHeight) / 2 / this._scale;
       if (this._positionY < -verticalMax) {
         this._positionY = -verticalMax;
       } else if (this._positionY > verticalMax) {
@@ -462,8 +464,8 @@ export default class ImageDetail extends React.Component<Props> {
       }).start();
     }
 
-    if (WINDOW_WIDTH * this._scale > WINDOW_WIDTH) {
-      const horizontalMax = (WINDOW_WIDTH * this._scale - WINDOW_WIDTH) / 2 / this._scale;
+    if (windowWidth * this._scale > windowWidth) {
+      const horizontalMax = (windowWidth * this._scale - windowWidth) / 2 / this._scale;
       if (this._positionX < -horizontalMax) {
         this._positionX = -horizontalMax;
       } else if (this._positionX > horizontalMax) {
@@ -505,6 +507,7 @@ export default class ImageDetail extends React.Component<Props> {
 
   public close = (): void => {
     const { isTranslucent, willClose, onClose } = this.props;
+    const windowHeight: number = Dimensions.get('window').height;
     if (isTranslucent) {
       StatusBar.setHidden(false);
     }
@@ -518,7 +521,7 @@ export default class ImageDetail extends React.Component<Props> {
         Animated.timing(this._animatedScale, { toValue: 1, useNativeDriver: false }),
         Animated.timing(this._animatedPositionX, { toValue: 0, useNativeDriver: false }),
         Animated.timing(this._animatedPositionY, { toValue: 0, useNativeDriver: false }),
-        Animated.timing(this._animatedOpacity, { toValue: WINDOW_HEIGHT, useNativeDriver: false }),
+        Animated.timing(this._animatedOpacity, { toValue: windowHeight, useNativeDriver: false }),
         Animated.spring(this._animatedFrame, { toValue: 0, useNativeDriver: false }),
       ]).start(() => {
         onClose();
@@ -528,7 +531,11 @@ export default class ImageDetail extends React.Component<Props> {
   };
 
   shouldComponentUpdate(nextProps: Props): boolean {
-    if (nextProps.isOpen !== this.props.isOpen || nextProps.origin.x !== this.props.origin.x) {
+    if (
+      nextProps.isOpen !== this.props.isOpen ||
+      nextProps.origin.x !== this.props.origin.x ||
+      nextProps.origin.y !== this.props.origin.y
+    ) {
       return true;
     }
     return false;
@@ -573,6 +580,8 @@ export default class ImageDetail extends React.Component<Props> {
   }
 
   render(): JSX.Element {
+    const windowWidth: number = Dimensions.get('window').width;
+    const windowHeight: number = Dimensions.get('window').height;
     const {
       renderToHardwareTextureAndroid,
       isOpen,
@@ -606,11 +615,11 @@ export default class ImageDetail extends React.Component<Props> {
       }),
       width: this._animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.width, WINDOW_WIDTH],
+        outputRange: [origin.width, windowWidth],
       }),
       height: this._animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.height, WINDOW_HEIGHT],
+        outputRange: [origin.height, windowHeight],
       }),
     };
 
@@ -622,7 +631,7 @@ export default class ImageDetail extends React.Component<Props> {
           { backgroundColor: backgroundColor },
           {
             opacity: this._animatedOpacity.interpolate({
-              inputRange: [0, WINDOW_HEIGHT],
+              inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
           },
@@ -636,7 +645,7 @@ export default class ImageDetail extends React.Component<Props> {
           Styles.header,
           {
             opacity: this._animatedOpacity.interpolate({
-              inputRange: [0, WINDOW_HEIGHT],
+              inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
           },
@@ -660,7 +669,7 @@ export default class ImageDetail extends React.Component<Props> {
           Styles.footer,
           {
             opacity: this._animatedOpacity.interpolate({
-              inputRange: [0, WINDOW_HEIGHT],
+              inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
           },
@@ -673,8 +682,8 @@ export default class ImageDetail extends React.Component<Props> {
       <View
         style={{
           overflow: 'hidden',
-          width: WINDOW_WIDTH || '100%',
-          height: WINDOW_HEIGHT || '100%',
+          width: '100%',
+          height: '100%',
         }}
         {...(this._imagePanResponder ? this._imagePanResponder.panHandlers : undefined)}>
         {background}
