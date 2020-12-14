@@ -14,6 +14,7 @@ import {
   ImageResizeMode,
   PanResponderInstance,
   StatusBar,
+  ImageStyle,
 } from 'react-native';
 
 import { OnTap, OnMove } from '../types';
@@ -79,6 +80,7 @@ interface Props {
   backgroundColor?: string;
   swipeToDismiss?: boolean;
   hideCloseButton?: boolean;
+  imageStyle?: ImageStyle;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   onTap?: (eventParams: OnTap) => void;
@@ -590,6 +592,7 @@ export default class ImageDetail extends React.Component<Props> {
       resizeMode,
       backgroundColor = '#000000',
       hideCloseButton,
+      imageStyle,
       renderHeader,
       renderFooter,
     } = this.props;
@@ -692,10 +695,13 @@ export default class ImageDetail extends React.Component<Props> {
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}>
           <Image
             resizeMode={resizeMode}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
+            style={[
+              imageStyle,
+              {
+                width: '100%',
+                height: '100%',
+              },
+            ]}
             source={source}
           />
         </Animated.View>
