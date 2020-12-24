@@ -5,6 +5,17 @@ react-native-image-modal is a simple full size modal image for iOS and Android.
 You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
 It supports react version >= 0.60 and <= 0.59.
 
+## Document
+
+- [Expo](#expo)
+- [Blog](#blog)
+- [Installation](#installation)
+- [How to use](#how-to-use)
+- [Properties](#properties)
+- [Demo](#demo)
+- [Example code](#example-code)
+- [Contribute](#contribute)
+
 ## Expo
 
 This library does not support Expo anymore. Because this library uses `react-native-fast-image`.
