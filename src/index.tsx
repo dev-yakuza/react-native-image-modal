@@ -1,15 +1,7 @@
 import React, { LegacyRef } from 'react';
-import {
-  Animated,
-  View,
-  TouchableOpacity,
-  Image,
-  ImageProps,
-  StatusBar,
-  Platform,
-  Dimensions,
-  ImageStyle,
-} from 'react-native';
+import { Animated, View, TouchableOpacity, StatusBar, Platform, Dimensions } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import type { ImageStyle, FastImageProps } from 'react-native-fast-image';
 
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
@@ -23,7 +15,7 @@ interface State {
     height: number;
   };
 }
-interface Props extends ImageProps {
+interface Props extends FastImageProps {
   renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
   swipeToDismiss?: boolean;
@@ -164,7 +156,7 @@ export default class ImageModal extends React.Component<Props, State> {
             style={{ alignSelf: 'baseline' }}
             onPress={this._open}
             onLongPress={onLongPressOriginImage}>
-            <Image {...this.props} />
+            <FastImage {...this.props} />
           </TouchableOpacity>
         </Animated.View>
         <ImageDetail

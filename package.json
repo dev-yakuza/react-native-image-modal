@@ -66,5 +66,7 @@
     "react-native": "*",
     "typescript": "4.0.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-native-fast-image": "8.3.4"
+  }
 }
