@@ -1,13 +1,7 @@
 import React, { LegacyRef } from 'react';
-import {
-  Animated,
-  View,
-  TouchableOpacity,
-  Image,
-  ImageProps,
-  StatusBar,
-  Platform,
-} from 'react-native';
+import { Animated, View, TouchableOpacity, StatusBar, Platform, Dimensions } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import type { ImageStyle, FastImageProps } from 'react-native-fast-image';
 
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
@@ -21,7 +15,7 @@ interface State {
     height: number;
   };
 }
-interface Props extends ImageProps {
+interface Props extends FastImageProps {
   renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
   swipeToDismiss?: boolean;
@@ -30,6 +24,7 @@ interface Props extends ImageProps {
   hideCloseButton?: boolean;
   modalRef?: LegacyRef<ImageDetail>;
   disabled?: boolean;
+  modalImageStyle?: ImageStyle;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -63,11 +58,15 @@ export default class ImageModal extends React.Component<Props, State> {
         height: 0,
       },
     };
+
+    Dimensions.addEventListener('change', () => {
+      setTimeout(() => {
+        this._setOrigin();
+      }, 100);
+    });
   }
 
-  private _open = (): void => {
-    if (this.props.disabled) return;
-
+  private _setOrigin = (): void => {
     if (this._root) {
       this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
         const { isTranslucent, onOpen } = this.props;
@@ -75,12 +74,10 @@ export default class ImageModal extends React.Component<Props, State> {
         if (typeof onOpen === 'function') {
           onOpen();
         }
-
         if (isTranslucent) {
           newY += StatusBar.currentHeight ? StatusBar.currentHeight : 0;
           StatusBar.setHidden(true);
         }
-
         this.setState({
           origin: {
             width,
@@ -89,16 +86,21 @@ export default class ImageModal extends React.Component<Props, State> {
             y: newY,
           },
         });
-
-        setTimeout(() => {
-          this.setState({
-            isOpen: true,
-          });
-        });
-
-        this._root && this._originImageOpacity.setValue(0);
       });
     }
+  };
+
+  private _open = (): void => {
+    if (this.props.disabled) return;
+
+    this._setOrigin();
+    setTimeout(() => {
+      this.setState({
+        isOpen: true,
+      });
+    });
+
+    this._root && this._originImageOpacity.setValue(0);
   };
 
   private _onClose = (): void => {
@@ -127,6 +129,7 @@ export default class ImageModal extends React.Component<Props, State> {
       overlayBackgroundColor,
       hideCloseButton,
       modalRef,
+      modalImageStyle,
       onLongPressOriginImage,
       renderHeader,
       renderFooter,
@@ -144,20 +147,6 @@ export default class ImageModal extends React.Component<Props, State> {
         ref={(component): void => {
           this._root = component;
         }}
-        onLayout={(): void => {
-          if (this._root) {
-            this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
-              this.setState({
-                origin: {
-                  width,
-                  height,
-                  x,
-                  y,
-                },
-              });
-            });
-          }
-        }}
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
         <Animated.View
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
@@ -167,7 +156,7 @@ export default class ImageModal extends React.Component<Props, State> {
             style={{ alignSelf: 'baseline' }}
             onPress={this._open}
             onLongPress={onLongPressOriginImage}>
-            <Image {...this.props} />
+            <FastImage {...this.props} />
           </TouchableOpacity>
         </Animated.View>
         <ImageDetail
@@ -181,6 +170,7 @@ export default class ImageModal extends React.Component<Props, State> {
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
+          imageStyle={modalImageStyle}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
           onTap={onTap}

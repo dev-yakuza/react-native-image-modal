@@ -5,6 +5,16 @@ react-native-image-modal is a simple full size modal image for iOS and Android.
 You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
 It supports react version >= 0.60 and <= 0.59.
 
+## Expo
+
+This library does not support Expo anymore. Because this library uses `react-native-fast-image`.
+
+`1.0.16` is deprecated, but the version supports Expo.
+
+```bash
+npm install --save react-native-image-modal@1.0.16
+```
+
 ## Blog
 
 There are blog posts about how to use `react-native-image-modal`.
@@ -19,6 +29,7 @@ Execute the command to install react-native-image-modal.
 
 ```bash
 npm install --save react-native-image-modal
+npx pod-install
 ```
 
 ## How to use
@@ -61,6 +72,7 @@ Below are react-native-image-modal specific properties.
 | overlayBackgroundColor         | X        | string                                                                                                                | background color for `the full size modal`(`default: #000000`)                                                                             |
 | modalRef                       | X        | ImageDetail                                                                                                           | You can use this Ref for closing the Modal programmatically.                                                                               |
 | disabled                       | X        | boolean                                                                                                               | disable opening the modal                                                                                                                  |
+| modalImageStyle                | X        | ImageStyle                                                                                                            | Image Style in Modal                                                                                                                       |
 | hideCloseButton                | X        | boolean                                                                                                               | hide hide the default close button                                                                                                         |
 | onLongPressOriginImage         | X        | () => void                                                                                                            | long press event callback for `the original image`                                                                                         |
 | renderHeader                   | X        | (close: () => void) => JSX.Element                                                                                    | Array<JSX.Element>                                                                                                                         | You can customize the header of `the full size modal` with react native components |
