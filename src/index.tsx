@@ -147,6 +147,7 @@ export default class ImageModal extends React.Component<Props, State> {
         ref={(component): void => {
           this._root = component;
         }}
+        onLayout={() => {}}
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
         <Animated.View
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
