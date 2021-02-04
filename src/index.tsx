@@ -16,6 +16,7 @@ interface State {
   };
 }
 interface Props extends FastImageProps {
+  isRTL?: boolean;
   renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
   swipeToDismiss?: boolean;
@@ -69,7 +70,7 @@ export default class ImageModal extends React.Component<Props, State> {
   private _setOrigin = (): void => {
     if (this._root) {
       this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
-        const { isTranslucent, onOpen } = this.props;
+        const { isTranslucent, onOpen, isRTL } = this.props;
         let newY: number = y;
         if (typeof onOpen === 'function') {
           onOpen();
@@ -78,11 +79,15 @@ export default class ImageModal extends React.Component<Props, State> {
           newY += StatusBar.currentHeight ? StatusBar.currentHeight : 0;
           StatusBar.setHidden(true);
         }
+        let newX: number = x;
+        if (isRTL) {
+            newX = Dimensions.get('window').width - width - x;
+        }
         this.setState({
           origin: {
             width,
             height,
-            x,
+            x: newX,
             y: newY,
           },
         });
