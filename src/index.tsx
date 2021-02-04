@@ -81,7 +81,7 @@ export default class ImageModal extends React.Component<Props, State> {
         }
         let newX: number = x;
         if (isRTL) {
-            newX = Dimensions.get('window').width - width - x;
+          newX = Dimensions.get('window').width - width - x;
         }
         this.setState({
           origin: {
