@@ -243,6 +243,62 @@ const App = () => {
             Tall are her knew poor now does then. Procured to contempt oh he
             raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
+          <Text
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
+            resizeMode: "center"{'\n'}modalImageResizeMode: none{'\n'}
+            modalImageResizeMode will use resizeMode
+          </Text>
+          <ImageModal
+            resizeMode="center"
+            imageBackgroundColor="#000000"
+            style={{
+              width: 40,
+              height: 40,
+            }}
+            source={require('./images/small.png')}
+          />
+          <Text
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
+            resizeMode: "center"{'\n'}modalImageResizeMode: "contain"
+          </Text>
+          <ImageModal
+            resizeMode="center"
+            modalImageResizeMode="contain"
+            imageBackgroundColor="#000000"
+            style={{
+              width: 40,
+              height: 40,
+            }}
+            source={require('./images/small.png')}
+          />
+          <Text
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
+            resizeMode: "center"{'\n'}modalImageResizeMode: "cover"
+          </Text>
+          <ImageModal
+            resizeMode="center"
+            modalImageResizeMode="cover"
+            imageBackgroundColor="#000000"
+            style={{
+              width: 40,
+              height: 40,
+            }}
+            source={require('./images/small.png')}
+          />
+          <Text style={Style.text}>
+            Affronting discretion as do is announcing. Now months esteem oppose
+            nearer enable too six. She numerous unlocked you perceive speedily.
+            Affixed offence spirits or ye of offices between. Real on shot it
+            were four an as. Absolute bachelor rendered six nay you juvenile.
+            Vanity entire an chatty to.
+          </Text>
+          <Text style={Style.text}>
+            Prepared is me marianne pleasure likewise debating. Wonder an unable
+            except better stairs do ye admire. His and eat secure sex called
+            esteem praise. So moreover as speedily differed branched ignorant.
+            Tall are her knew poor now does then. Procured to contempt oh he
+            raptures amounted occasion. One boy assure income spirit lovers set.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

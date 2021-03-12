@@ -1,6 +1,7 @@
 import React, { LegacyRef } from 'react';
 import { Animated, View, TouchableOpacity, StatusBar, Platform, Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import type { ResizeMode } from 'react-native-fast-image';
 import type { ImageStyle, FastImageProps } from 'react-native-fast-image';
 
 import { OnTap, OnMove } from './types';
@@ -26,6 +27,7 @@ interface Props extends FastImageProps {
   modalRef?: LegacyRef<ImageDetail>;
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
+  modalImageResizeMode?: ResizeMode;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -135,6 +137,7 @@ export default class ImageModal extends React.Component<Props, State> {
       hideCloseButton,
       modalRef,
       modalImageStyle,
+      modalImageResizeMode,
       onLongPressOriginImage,
       renderHeader,
       renderFooter,
@@ -172,7 +175,7 @@ export default class ImageModal extends React.Component<Props, State> {
           isOpen={isOpen}
           origin={origin}
           source={source}
-          resizeMode={resizeMode}
+          resizeMode={modalImageResizeMode || resizeMode}
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
