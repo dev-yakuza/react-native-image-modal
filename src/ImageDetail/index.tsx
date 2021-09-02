@@ -107,8 +107,8 @@ export default class ImageDetail extends React.Component<Props> {
   private _isLongPress = false;
   private _centerDiffX = 0;
   private _centerDiffY = 0;
-  private _singleClickTimeout: undefined | number = undefined;
-  private _longPressTimeout: undefined | number = undefined;
+  private _singleClickTimeout: undefined | NodeJS.Timeout = undefined;
+  private _longPressTimeout: undefined | NodeJS.Timeout = undefined;
   private _lastClickTime = 0;
   private _doubleClickX = 0;
   private _doubleClickY = 0;
