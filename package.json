@@ -10,19 +10,6 @@
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "prepare": "rm -rf dist && tsc"
   },
-  "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "eslint --ext .tsx --ext .ts src/ --fix"
-    ],
-    "./src/**": [
-      "prettier --write ."
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dev-yakuza/react-native-image-modal.git"
@@ -51,6 +38,7 @@
     "react-native-fast-image": "8.5.11"
   },
   "devDependencies": {
+    "@arkweid/lefthook": "^0.7.7",
     "@types/react": "17.0.2",
     "@types/react-native": "0.67.3",
     "@typescript-eslint/eslint-plugin": "4.33.0",
@@ -59,8 +47,6 @@
     "eslint-plugin-prettier": "3.1.4",
     "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.1.2",
-    "husky": "4.3.0",
-    "lint-staged": "10.4.0",
     "prettier": "2.1.2",
     "typescript": "4.6.3"
   }
