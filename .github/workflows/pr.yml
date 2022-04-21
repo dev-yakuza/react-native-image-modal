@@ -1,0 +1,28 @@
+name: Check the source code
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  check_linter:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.1.1
+        with:
+          node-version: '16'
+      - run: npm install -g npm@latest
+      - run: npm install
+      - run: npx eslint --ext .tsx --ext .ts src/
+  check_prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.1.1
+        with:
+          node-version: '16'
+      - run: npm install -g npm@latest
+      - run: npm install
+      - run: npx prettier --check ./src
