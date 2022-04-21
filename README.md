@@ -1,9 +1,8 @@
 # react-native-image-modal
 
-react-native-image-modal is a simple full size modal image for iOS and Android.
+`react-native-image-modal` is a simple full size modal image for iOS and Android.
 
 You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
-It supports react version >= 0.60 and <= 0.59.
 
 ## Document
 
@@ -43,7 +42,7 @@ npm install --save react-native-fast-image
 npx pod-install
 ```
 
-And then execute the command to install react-native-image-modal.
+And then execute the command to install `react-native-image-modal`.
 
 ```bash
 npm install --save react-native-image-modal
@@ -78,7 +77,7 @@ return (
 ## Properties
 
 You can use All props of React Native Image for the original image(not full size modal image).
-Below are react-native-image-modal specific properties.
+Below are `react-native-image-modal` specific properties.
 
 | Prop                           | required | Type                                                                                                                  | Description                                                                                                                                |
 | ------------------------------ | -------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -109,23 +108,23 @@ Below are react-native-image-modal specific properties.
 
 ## Demo
 
-- Open and close the image modal
+- Open and close the image modal.
 
 ![open and close image modal](demo/open-and-close-image-modal.gif)
 
-- pinch zoom in/out and move
+- Pinch zoom in/out and move.
 
 ![pinch zoom in/out and move](demo/pinch-zoom-and-move.gif)
 
-- double tap zoom in/out
+- Double tap zoom in/out.
 
 ![double tap zoom in/out](demo/double-tap-zoom.gif)
 
-- swipe to dismiss
+- Swipe to dismiss.
 
 ![swipe to dismiss](demo/swipe-to-dismiss.gif)
 
-- customize the component with the close button
+- Customize the component with the close button.
 
 ![customize the component](demo/custom-button.png)
 
@@ -150,7 +149,7 @@ cd ios
 pod install
 ```
 
-Execute the example project
+Execute the example project.
 
 ```bash
 # Example folder
@@ -164,16 +163,22 @@ npm run android
 
 You can follow below to contribute react-native-image-modal.
 
-Clone the repository
+Clone the repository.
 
 ```bash
 git clone https://github.com/dev-yakuza/react-native-image-modal.git
 ```
 
-Execute the typescript via npm script
+Install libraries and `Lefthook`.
 
 ```bash
 npm install
+npx @arkweid/lefthook install
+```
+
+Execute the following command to start the project.
+
+```bash
 npm start
 ```
 

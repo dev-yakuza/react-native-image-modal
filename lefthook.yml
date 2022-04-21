@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: true
+  commands:
+    pretty:
+      glob: './src/**'
+      run: npx prettier --check {staged_files}
+    linter:
+      glob: 'src/**/*.{ts,tsx}'
+      run: npx eslint {staged_files}
