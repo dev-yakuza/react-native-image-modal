@@ -8,7 +8,6 @@
     "lint": "eslint --ext .tsx --ext .ts src/",
     "format": "prettier --check ./src",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
-    "start:expo": "rm -rf DevelopWithExpo/dist && tsc -w --outDir DevelopWithExpo/dist",
     "prepare": "rm -rf dist && tsc"
   },
   "lint-staged": {
@@ -47,22 +46,22 @@
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-native-fast-image": "*"
+    "react": "17.0.2",
+    "react-native": "0.68.1",
+    "react-native-fast-image": "8.5.11"
   },
   "devDependencies": {
-    "@types/react": "*",
-    "@types/react-native": "*",
-    "@typescript-eslint/eslint-plugin": "4.2.0",
+    "@types/react": "17.0.2",
+    "@types/react-native": "0.67.3",
+    "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.2.0",
     "eslint": "7.9.0",
     "eslint-plugin-prettier": "3.1.4",
-    "eslint-plugin-react": "7.21.1",
+    "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.1.2",
-    "husky": "4.3.0",
+    "husky": "7.0.4",
     "lint-staged": "10.4.0",
     "prettier": "2.1.2",
-    "typescript": "4.0.3"
+    "typescript": "4.6.3"
   }
 }
