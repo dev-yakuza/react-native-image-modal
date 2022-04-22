@@ -156,15 +156,18 @@ export default class ImageModal extends React.Component<Props, State> {
           this._root = component;
         }}
         onLayout={() => {}}
-        style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
+        style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
+      >
         <Animated.View
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
-          style={{ opacity: this._originImageOpacity }}>
+          style={{ opacity: this._originImageOpacity }}
+        >
           <TouchableOpacity
             activeOpacity={1}
             style={{ alignSelf: 'baseline' }}
             onPress={this._open}
-            onLongPress={onLongPressOriginImage}>
+            onLongPress={onLongPressOriginImage}
+          >
             <FastImage {...this.props} />
           </TouchableOpacity>
         </Animated.View>
