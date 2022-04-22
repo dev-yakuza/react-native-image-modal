@@ -636,7 +636,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}></Animated.View>
+        ]}
+      ></Animated.View>
     );
 
     const header = (
@@ -650,7 +651,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}>
+        ]}
+      >
         {typeof renderHeader === 'function' ? (
           renderHeader(this.close)
         ) : !hideCloseButton ? (
@@ -674,7 +676,8 @@ export default class ImageDetail extends React.Component<Props> {
               outputRange: [1, 0],
             }),
           },
-        ]}>
+        ]}
+      >
         {renderFooter(this.close)}
       </Animated.View>
     );
@@ -686,11 +689,13 @@ export default class ImageDetail extends React.Component<Props> {
           width: '100%',
           height: '100%',
         }}
-        {...(this._imagePanResponder ? this._imagePanResponder.panHandlers : undefined)}>
+        {...(this._imagePanResponder ? this._imagePanResponder.panHandlers : undefined)}
+      >
         {background}
         <Animated.View
           style={animateConf}
-          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}>
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
+        >
           <FastImage
             resizeMode={resizeMode}
             style={[
@@ -720,7 +725,8 @@ export default class ImageDetail extends React.Component<Props> {
           'landscape',
           'landscape-left',
           'landscape-right',
-        ]}>
+        ]}
+      >
         {content}
       </Modal>
     );
