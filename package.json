@@ -40,7 +40,7 @@
   "devDependencies": {
     "@arkweid/lefthook": "^0.7.7",
     "@types/react": "18.0.9",
-    "@types/react-native": "0.67.7",
+    "@types/react-native": "0.71.0",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "eslint": "7.9.0",
