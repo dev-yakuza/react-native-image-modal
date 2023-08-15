@@ -65,6 +65,5 @@
     "react": "*",
     "react-native": "*",
     "typescript": "4.0.3"
-  },
-  "dependencies": {}
+  }
 }

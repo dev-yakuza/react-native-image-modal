@@ -9,6 +9,7 @@ import {
   Platform,
   Dimensions,
   ImageStyle,
+  ImageResizeMode,
 } from 'react-native';
 
 import { OnTap, OnMove } from './types';
@@ -33,6 +34,7 @@ interface Props extends ImageProps {
   modalRef?: LegacyRef<ImageDetail>;
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
+  modalImageResizeMode?: ImageResizeMode;
   onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
@@ -138,6 +140,7 @@ export default class ImageModal extends React.Component<Props, State> {
       hideCloseButton,
       modalRef,
       modalImageStyle,
+      modalImageResizeMode,
       onLongPressOriginImage,
       renderHeader,
       renderFooter,
@@ -174,7 +177,7 @@ export default class ImageModal extends React.Component<Props, State> {
           isOpen={isOpen}
           origin={origin}
           source={source}
-          resizeMode={resizeMode}
+          resizeMode={modalImageResizeMode || resizeMode}
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
