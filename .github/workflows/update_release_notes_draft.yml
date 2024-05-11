@@ -1,0 +1,33 @@
+name: Update Release Notes Draft
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_notes_draft:
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check PR Title
+        uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: '(feat|fix|style|refactor|test|chore|docs|ci|deps|dependencies|bump): .+'
+          helpMessage: 'The PR Title must follow the types: feat, fix, style, refactor, test, chore, docs, ci, deps, dependencies, bump'
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: danielchabr/pr-labels-checker@v3.3
+        with:
+          hasSome: breaking change,feature,bug,style,refactor,test,chore,docs,ci,dependencies
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
