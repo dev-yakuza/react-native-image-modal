@@ -73,7 +73,7 @@ interface Props {
     width: number;
     height: number;
   };
-  source: Source | number;
+  source: Source | number | undefined;
   resizeMode?: ResizeMode;
   backgroundColor?: string;
   swipeToDismiss?: boolean;
