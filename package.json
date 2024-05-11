@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
   "devDependencies": {
-    "@types/react": "18.0.9",
+    "@types/react": "18.3.2",
     "@types/react-native": "0.67.7",
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
@@ -46,7 +46,7 @@
     "eslint-plugin-react-hooks": "4.5.0",
     "lefthook": "^1.6.10",
     "prettier": "2.6.2",
-    "react": "17.0.2",
+    "react": "18.3.1",
     "react-native": "0.68.1",
     "react-native-fast-image": "8.5.11",
     "typescript": "4.6.4"
