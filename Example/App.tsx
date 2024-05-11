@@ -44,7 +44,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -84,7 +84,7 @@ const App = () => {
             propriety. She amiable all without say spirits shy clothes morning.
             Frankness in extensive to belonging improving so certainty.
             Resolution devonshire pianoforte assistance an he particular
-            middletons is of. Explain ten man uncivil engaged conduct. Am
+            middleton is of. Explain ten man uncivil engaged conduct. Am
             likewise betrayed as declared absolute do. Taste oh spoke about no
             solid of hills up shade. Occasion so bachelor humoured striking by
             attended doubtful be it.
@@ -203,7 +203,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -229,7 +229,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -259,7 +259,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -315,7 +315,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>

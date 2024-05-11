@@ -1,7 +1,7 @@
 {
   "name": "react-native-image-modal",
   "version": "2.0.4",
-  "description": "image fullscreen modal for react native",
+  "description": "image full screen modal for react native",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -9,6 +9,7 @@
     "postinstall": "lefthook install",
     "lint": "eslint --ext .tsx --ext .ts src/",
     "format": "prettier --check ./src",
+    "cspell": "cspell '**' --gitignore --show-suggestions",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
     "dev-ios": "cd Develop && npm run ios",
     "dev-android": "cd Develop && npm run android"
@@ -25,7 +26,7 @@
     "ios",
     "android",
     "ui",
-    "imagebox",
+    "image-box",
     "image",
     "gallery"
   ],
@@ -51,5 +52,8 @@
     "react-native-fast-image": "8.6.3",
     "typescript": "5.4.5"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "dependencies": {
+    "cspell": "^8.8.1"
+  }
 }
