@@ -184,9 +184,15 @@ npm start
 Execute the Develop project via the commands below.
 
 ```bash
+cd Develop
+npm install
+
 # android
-npm run dev-android
+npm run android
 
 # ios
-npm run dev-ios
+cd ios
+pod install
+cd ..
+npm run ios
 ```
