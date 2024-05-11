@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   check_code:
-    name: ESLint
+    name: Check the source code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
