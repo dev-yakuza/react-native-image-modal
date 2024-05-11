@@ -1,0 +1,40 @@
+name: Set reviewers
+
+on:
+  pull_request_target:
+    types:
+      - opened
+
+jobs:
+  set-reviewers:
+    name: Set reviewers
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Set reviewers
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            if(owner == 'dev-yakuza') {
+              return;
+            }
+
+            const prNumber = context.payload.pull_request.number;
+            const { data: assignedReviewers } = await github.rest.pulls.listRequestedReviewers({
+              owner,
+              repo,
+              pull_number: prNumber,
+            });
+
+            if (assignedReviewers.length == 0) {
+              const reviewers = [owner];
+
+              await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number: prNumber,
+                reviewers: reviewers
+              });
+            }
