@@ -169,11 +169,10 @@ Clone the repository.
 git clone https://github.com/dev-yakuza/react-native-image-modal.git
 ```
 
-Install libraries and `Lefthook`.
+Install libraries.
 
 ```bash
 npm install
-npx @arkweid/lefthook install
 ```
 
 Execute the following command to start the project.
@@ -185,15 +184,9 @@ npm start
 Execute the Develop project via the commands below.
 
 ```bash
-cd Develop
-npm install
-
 # android
-npm run android
+npm run dev-android
 
 # ios
-cd ios
-pod install
-cd ..
-npm run ios
+npm run dev-ios
 ```
