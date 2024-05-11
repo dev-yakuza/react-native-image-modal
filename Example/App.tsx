@@ -40,8 +40,7 @@ const App = () => {
           style={Style.contentsContainer}
           onLayout={(event: LayoutChangeEvent) => {
             setImageWidth(event.nativeEvent.layout.width);
-          }}
-        >
+          }}>
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
@@ -66,8 +65,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
             onLongPressOriginImage={() => console.log('onLongPressOriginImage')}
             onTap={() => console.log('onTap')}
@@ -100,8 +98,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg',
             }}
           />
           <Text style={Style.text}>
@@ -172,8 +169,7 @@ const App = () => {
                   height: 100,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <Text>CloseButton</Text>
               </TouchableOpacity>
             )}
@@ -195,8 +191,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
             onOpen={() => {
               console.log('onOpen');
@@ -228,8 +223,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
           />
           <Text style={Style.text}>
@@ -259,8 +253,7 @@ const App = () => {
               borderRadius: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
           />
           <Text style={Style.text}>
@@ -278,8 +271,7 @@ const App = () => {
             raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: none{'\n'}
             modalImageResizeMode will use resizeMode
           </Text>
@@ -293,8 +285,7 @@ const App = () => {
             source={require('./images/small.png')}
           />
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: "contain"
           </Text>
           <ImageModal
@@ -308,8 +299,7 @@ const App = () => {
             source={require('./images/small.png')}
           />
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: "cover"
           </Text>
           <ImageModal
