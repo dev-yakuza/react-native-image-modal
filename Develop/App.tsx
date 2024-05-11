@@ -39,12 +39,11 @@ const App = () => {
           style={Style.contentsContainer}
           onLayout={(event: LayoutChangeEvent) => {
             setImageWidth(event.nativeEvent.layout.width);
-          }}
-        >
+          }}>
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -65,8 +64,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
             onLongPressOriginImage={() => console.log('onLongPressOriginImage')}
             onTap={() => console.log('onTap')}
@@ -85,7 +83,7 @@ const App = () => {
             propriety. She amiable all without say spirits shy clothes morning.
             Frankness in extensive to belonging improving so certainty.
             Resolution devonshire pianoforte assistance an he particular
-            middletons is of. Explain ten man uncivil engaged conduct. Am
+            middleton is of. Explain ten man uncivil engaged conduct. Am
             likewise betrayed as declared absolute do. Taste oh spoke about no
             solid of hills up shade. Occasion so bachelor humoured striking by
             attended doubtful be it.
@@ -99,8 +97,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg',
             }}
           />
           <Text style={Style.text}>
@@ -171,8 +168,7 @@ const App = () => {
                   height: 100,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}
-              >
+                }}>
                 <Text>CloseButton</Text>
               </TouchableOpacity>
             )}
@@ -194,8 +190,7 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
             onOpen={() => {
               console.log('onOpen');
@@ -207,7 +202,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -227,14 +222,13 @@ const App = () => {
               height: 250,
             }}
             source={{
-              uri:
-                'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
           />
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>
@@ -246,8 +240,7 @@ const App = () => {
             raptures amounted occasion. One boy assure income spirit lovers set.
           </Text>
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: none{'\n'}
             modalImageResizeMode will use resizeMode
           </Text>
@@ -261,8 +254,7 @@ const App = () => {
             source={require('./images/small.png')}
           />
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: "contain"
           </Text>
           <ImageModal
@@ -276,8 +268,7 @@ const App = () => {
             source={require('./images/small.png')}
           />
           <Text
-            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}
-          >
+            style={{marginTop: 16, paddingHorizontal: 16, fontWeight: 'bold'}}>
             resizeMode: "center"{'\n'}modalImageResizeMode: "cover"
           </Text>
           <ImageModal
@@ -293,7 +284,7 @@ const App = () => {
           <Text style={Style.text}>
             Affronting discretion as do is announcing. Now months esteem oppose
             nearer enable too six. She numerous unlocked you perceive speedily.
-            Affixed offence spirits or ye of offices between. Real on shot it
+            Affixed offense spirits or ye of offices between. Real on shot it
             were four an as. Absolute bachelor rendered six nay you juvenile.
             Vanity entire an chatty to.
           </Text>

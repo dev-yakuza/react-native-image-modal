@@ -16,5 +16,7 @@ jobs:
         run: npm install
       - name: Prettier
         run: npm run format
+      - name: CSpell
+        run: npm run cspell
       - name: ESLint
         run: npm run lint
