@@ -2,10 +2,10 @@ pre-commit:
   parallel: true
   commands:
     Pretty:
-      glob: './src/**'
       run: npx prettier --check {staged_files}
     ESLint:
-      glob: 'src/**/*.{ts,tsx}'
+      root: src/
+      glob: '*.{ts,tsx}'
       run: npx eslint {staged_files}
     CSpell:
       run: npx cspell --gitignore --show-suggestions --no-must-find-files {staged_files}
