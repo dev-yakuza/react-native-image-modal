@@ -1,4 +1,4 @@
-import React, { LegacyRef } from 'react';
+import React, { LegacyRef, createRef, useState } from 'react';
 import { Animated, View, TouchableOpacity, StatusBar, Platform, Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import type { ResizeMode } from 'react-native-fast-image';
@@ -7,15 +7,6 @@ import type { ImageStyle, FastImageProps } from 'react-native-fast-image';
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
 
-interface State {
-  isOpen: boolean;
-  origin: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-}
 interface Props extends FastImageProps {
   isRTL?: boolean;
   renderToHardwareTextureAndroid?: boolean;
@@ -28,9 +19,9 @@ interface Props extends FastImageProps {
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
   modalImageResizeMode?: ResizeMode;
-  onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  onLongPressOriginImage?: () => void;
   onTap?: (eventParams: OnTap) => void;
   onDoubleTap?: () => void;
   onLongPress?: () => void;
@@ -41,162 +32,140 @@ interface Props extends FastImageProps {
   willClose?: () => void;
   onClose?: () => void;
 }
-export default class ImageModal extends React.Component<Props, State> {
-  private _root: View | null = null;
-  private _originImageOpacity = new Animated.Value(1);
 
-  constructor(props: Props) {
-    super(props);
-    const { isTranslucent } = props;
-    if (Platform.OS === 'android' && isTranslucent) {
-      StatusBar.setTranslucent(isTranslucent);
-    }
+const ImageModal = (props: Props) => {
+  const imageRef = createRef<View>();
+  const imageOpacity = new Animated.Value(1);
 
-    this.state = {
-      isOpen: false,
-      origin: {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-      },
-    };
+  const {
+    source,
+    resizeMode = 'contain',
+    isRTL,
+    renderToHardwareTextureAndroid = true,
+    isTranslucent,
+    swipeToDismiss = true,
+    imageBackgroundColor,
+    overlayBackgroundColor,
+    hideCloseButton,
+    modalRef,
+    disabled,
+    modalImageStyle,
+    modalImageResizeMode,
+    onLongPressOriginImage,
+    renderHeader,
+    renderFooter,
+    onTap,
+    onDoubleTap,
+    onLongPress,
+    onOpen,
+    didOpen,
+    onMove,
+    responderRelease,
+    willClose,
+    onClose,
+  } = props;
 
-    Dimensions.addEventListener('change', () => {
-      setTimeout(() => {
-        this._setOrigin();
-      }, 100);
-    });
+  const [originModal, setOriginModal] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (Platform.OS === 'android' && isTranslucent) {
+    StatusBar.setTranslucent(isTranslucent);
   }
 
-  private _setOrigin = (): void => {
-    if (this._root) {
-      this._root.measureInWindow((x: number, y: number, width: number, height: number) => {
-        const { isTranslucent, onOpen, isRTL } = this.props;
-        let newY: number = y;
-        if (typeof onOpen === 'function') {
-          onOpen();
-        }
-        if (isTranslucent) {
-          newY += StatusBar.currentHeight ? StatusBar.currentHeight : 0;
-          StatusBar.setHidden(true);
-        }
-        let newX: number = x;
-        if (isRTL) {
-          newX = Dimensions.get('window').width - width - x;
-        }
-        this.setState({
-          origin: {
-            width,
-            height,
-            x: newX,
-            y: newY,
-          },
-        });
-      });
-    }
-  };
-
-  private _open = (): void => {
-    if (this.props.disabled) return;
-
-    this._setOrigin();
-    setTimeout(() => {
-      this.setState({
-        isOpen: true,
-      });
-    });
-
-    this._root && this._originImageOpacity.setValue(0);
-  };
-
-  private _onClose = (): void => {
-    const { onClose } = this.props;
-    this._originImageOpacity.setValue(1);
-
-    setTimeout(() => {
-      this.setState({
-        isOpen: false,
-      });
-
-      if (typeof onClose === 'function') {
-        onClose();
+  const updateOriginModal = (): void => {
+    imageRef.current?.measureInWindow((x, y, width, height) => {
+      let newY = y;
+      if (isTranslucent) {
+        newY += StatusBar.currentHeight ? StatusBar.currentHeight : 0;
+        StatusBar.setHidden(true);
       }
+      let newX = x;
+      if (isRTL) {
+        newX = Dimensions.get('window').width - width - x;
+      }
+      setOriginModal({
+        width,
+        height,
+        x: newX,
+        y: newY,
+      });
     });
   };
 
-  render(): JSX.Element {
-    const {
-      source,
-      resizeMode,
-      renderToHardwareTextureAndroid,
-      isTranslucent,
-      swipeToDismiss = true,
-      imageBackgroundColor,
-      overlayBackgroundColor,
-      hideCloseButton,
-      modalRef,
-      modalImageStyle,
-      modalImageResizeMode,
-      onLongPressOriginImage,
-      renderHeader,
-      renderFooter,
-      onTap,
-      onDoubleTap,
-      onLongPress,
-      didOpen,
-      onMove,
-      responderRelease,
-      willClose,
-    } = this.props;
-    const { isOpen, origin } = this.state;
-    return (
-      <View
-        ref={(component): void => {
-          this._root = component;
-        }}
-        onLayout={() => {}}
-        style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
-      >
-        <Animated.View
-          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
-          style={{ opacity: this._originImageOpacity }}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            style={{ alignSelf: 'baseline' }}
-            onPress={this._open}
-            onLongPress={onLongPressOriginImage}
-          >
-            <FastImage {...this.props} />
-          </TouchableOpacity>
-        </Animated.View>
-        <ImageDetail
-          ref={modalRef}
-          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-          isTranslucent={isTranslucent}
-          isOpen={isOpen}
-          origin={origin}
-          source={source}
-          resizeMode={modalImageResizeMode || resizeMode}
-          backgroundColor={overlayBackgroundColor}
-          swipeToDismiss={swipeToDismiss}
-          hideCloseButton={hideCloseButton}
-          imageStyle={modalImageStyle}
-          renderHeader={renderHeader}
-          renderFooter={renderFooter}
-          onTap={onTap}
-          onDoubleTap={onDoubleTap}
-          onLongPress={onLongPress}
-          didOpen={didOpen}
-          onMove={onMove}
-          responderRelease={responderRelease}
-          willClose={willClose}
-          onClose={this._onClose}
-        />
-      </View>
-    );
-  }
-}
+  Dimensions.addEventListener('change', updateOriginModal);
 
+  const handleOpen = (): void => {
+    if (disabled) return;
+
+    onOpen?.();
+    updateOriginModal();
+    setTimeout(() => {
+      setIsOpen(true);
+    });
+
+    imageOpacity.setValue(0);
+  };
+
+  const handleClose = (): void => {
+    imageOpacity.setValue(1);
+
+    setTimeout(() => {
+      setIsOpen(false);
+
+      onClose?.();
+    });
+  };
+
+  return (
+    <View
+      ref={imageRef}
+      onLayout={() => {}}
+      style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
+    >
+      <Animated.View
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+        style={{ opacity: imageOpacity }}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={{ alignSelf: 'baseline' }}
+          onPress={handleOpen}
+          onLongPress={onLongPressOriginImage}
+        >
+          <FastImage resizeMode={resizeMode} {...props} />
+        </TouchableOpacity>
+      </Animated.View>
+      <ImageDetail
+        ref={modalRef}
+        isOpen={isOpen}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+        isTranslucent={isTranslucent}
+        origin={originModal}
+        source={source}
+        resizeMode={modalImageResizeMode ?? resizeMode}
+        backgroundColor={overlayBackgroundColor}
+        swipeToDismiss={swipeToDismiss}
+        hideCloseButton={hideCloseButton}
+        imageStyle={modalImageStyle}
+        renderHeader={renderHeader}
+        renderFooter={renderFooter}
+        onTap={onTap}
+        onDoubleTap={onDoubleTap}
+        onLongPress={onLongPress}
+        didOpen={didOpen}
+        onMove={onMove}
+        responderRelease={responderRelease}
+        willClose={willClose}
+        onClose={handleClose}
+      />
+    </View>
+  );
+};
+
+export default ImageModal;
 export { ImageDetail };

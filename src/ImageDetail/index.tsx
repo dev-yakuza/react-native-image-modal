@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,7 +9,6 @@ import {
   PanResponder,
   Modal,
   SafeAreaView,
-  PanResponderInstance,
   StatusBar,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -64,7 +63,7 @@ const Styles = StyleSheet.create({
 });
 
 interface Props {
-  renderToHardwareTextureAndroid?: boolean;
+  renderToHardwareTextureAndroid: boolean;
   isTranslucent?: boolean;
   isOpen: boolean;
   origin: {
@@ -90,221 +89,251 @@ interface Props {
   willClose?: () => void;
   onClose: () => void;
 }
-export default class ImageDetail extends React.Component<Props> {
-  private _animatedScale = new Animated.Value(1);
-  private _animatedPositionX = new Animated.Value(0);
-  private _animatedPositionY = new Animated.Value(0);
-  private _animatedFrame = new Animated.Value(0);
-  private _animatedOpacity = new Animated.Value(Dimensions.get('window').height);
-  private _imagePanResponder?: PanResponderInstance = undefined;
 
-  private _lastPositionX: null | number = null;
-  private _lastPositionY: null | number = null;
-  private _zoomLastDistance: null | number = null;
-  private _horizontalWholeCounter = 0;
-  private _verticalWholeCounter = 0;
-  private _isDoubleClick = false;
-  private _isLongPress = false;
-  private _centerDiffX = 0;
-  private _centerDiffY = 0;
-  private _singleClickTimeout: undefined | NodeJS.Timeout = undefined;
-  private _longPressTimeout: undefined | NodeJS.Timeout = undefined;
-  private _lastClickTime = 0;
-  private _doubleClickX = 0;
-  private _doubleClickY = 0;
-  private _scale = 1;
-  private _positionX = 0;
-  private _positionY = 0;
-  private _zoomCurrentDistance = 0;
-  private _swipeDownOffset = 0;
-  private _horizontalWholeOuterCounter = 0;
-  private _isAnimated = false;
+type ImageDetail = {
+  close: () => void;
+};
+// eslint-disable-next-line react/display-name
+const ImageDetail = forwardRef<ImageDetail, Props>(
+  (
+    {
+      renderToHardwareTextureAndroid,
+      isTranslucent,
+      isOpen,
+      origin,
+      source,
+      resizeMode = 'contain',
+      backgroundColor = '#000000',
+      swipeToDismiss,
+      hideCloseButton,
+      imageStyle,
+      renderHeader,
+      renderFooter,
+      onTap,
+      onDoubleTap,
+      onLongPress,
+      didOpen,
+      onMove,
+      responderRelease,
+      willClose,
+      onClose,
+    }: Props,
+    ref,
+  ) => {
+    const _animatedScale = new Animated.Value(1);
+    const _animatedPositionX = new Animated.Value(0);
+    const _animatedPositionY = new Animated.Value(0);
+    const _animatedFrame = new Animated.Value(0);
+    const _animatedOpacity = new Animated.Value(Dimensions.get('window').height);
 
-  constructor(props: Props) {
-    super(props);
-    const { onLongPress, onDoubleTap, swipeToDismiss, onTap, responderRelease } = props;
-    this._imagePanResponder = PanResponder.create({
+    const _lastPositionX = useRef<number | null>(null);
+    const _lastPositionY = useRef<number | null>(null);
+    const _zoomLastDistance = useRef<number | null>(null);
+    const _horizontalWholeCounter = useRef(0);
+    const _verticalWholeCounter = useRef(0);
+    const _isDoubleClick = useRef(false);
+    const _isLongPress = useRef(false);
+    const _centerDiffX = useRef(0);
+    const _centerDiffY = useRef(0);
+    const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined);
+    const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined);
+    const _lastClickTime = useRef(0);
+    const _doubleClickX = useRef(0);
+    const _doubleClickY = useRef(0);
+    const _scale = useRef(1);
+    const _positionX = useRef(0);
+    const _positionY = useRef(0);
+    const _zoomCurrentDistance = useRef(0);
+    const _swipeDownOffset = useRef(0);
+    const _horizontalWholeOuterCounter = useRef(0);
+    const _isAnimated = useRef(false);
+
+    const _imagePanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderTerminationRequest: () => false,
 
       onPanResponderGrant: (evt) => {
-        if (this._isAnimated) {
+        if (_isAnimated.current) {
           return;
         }
         const windowWidth: number = Dimensions.get('window').width;
         const windowHeight: number = Dimensions.get('window').height;
-        this._lastPositionX = null;
-        this._lastPositionY = null;
-        this._zoomLastDistance = null;
-        this._horizontalWholeCounter = 0;
-        this._verticalWholeCounter = 0;
-        this._isDoubleClick = false;
-        this._isLongPress = false;
+        _lastPositionX.current = null;
+        _lastPositionY.current = null;
+        _zoomLastDistance.current = null;
+        _horizontalWholeCounter.current = 0;
+        _verticalWholeCounter.current = 0;
+        _isDoubleClick.current = false;
+        _isLongPress.current = false;
 
-        if (this._singleClickTimeout) {
-          clearTimeout(this._singleClickTimeout);
+        if (_singleClickTimeout.current) {
+          clearTimeout(_singleClickTimeout.current);
+          _singleClickTimeout.current = undefined;
         }
 
         if (evt.nativeEvent.changedTouches.length > 1) {
           const centerX =
             (evt.nativeEvent.changedTouches[0].pageX + evt.nativeEvent.changedTouches[1].pageX) / 2;
-          this._centerDiffX = centerX - windowWidth / 2;
+          _centerDiffX.current = centerX - windowWidth / 2;
 
           const centerY =
             (evt.nativeEvent.changedTouches[0].pageY + evt.nativeEvent.changedTouches[1].pageY) / 2;
-          this._centerDiffY = centerY - windowHeight / 2;
+          _centerDiffY.current = centerY - windowHeight / 2;
         }
-        if (this._longPressTimeout) {
-          clearTimeout(this._longPressTimeout);
+        if (_longPressTimeout.current) {
+          clearTimeout(_longPressTimeout.current);
+          _longPressTimeout.current = undefined;
         }
-        this._longPressTimeout = setTimeout(() => {
-          this._isLongPress = true;
-          if (typeof onLongPress === 'function') {
-            onLongPress();
-          }
+        _longPressTimeout.current = setTimeout(() => {
+          _isLongPress.current = true;
+          onLongPress?.();
         }, LONG_PRESS_TIME);
 
         if (evt.nativeEvent.changedTouches.length <= 1) {
-          if (new Date().getTime() - this._lastClickTime < (DOUBLE_CLICK_INTERVAL || 0)) {
-            this._lastClickTime = 0;
-            if (typeof onDoubleTap === 'function') {
-              onDoubleTap();
-            }
+          if (new Date().getTime() - _lastClickTime.current < (DOUBLE_CLICK_INTERVAL || 0)) {
+            _lastClickTime.current = 0;
+            onDoubleTap?.();
 
-            clearTimeout(this._longPressTimeout);
+            clearTimeout(_longPressTimeout.current);
+            _longPressTimeout.current = undefined;
 
-            this._doubleClickX = evt.nativeEvent.changedTouches[0].pageX;
-            this._doubleClickY = evt.nativeEvent.changedTouches[0].pageY;
+            _doubleClickX.current = evt.nativeEvent.changedTouches[0].pageX;
+            _doubleClickY.current = evt.nativeEvent.changedTouches[0].pageY;
 
-            this._isDoubleClick = true;
+            _isDoubleClick.current = true;
 
-            if (this._scale > 1 || this._scale < 1) {
-              this._scale = 1;
+            if (_scale.current > 1 || _scale.current < 1) {
+              _scale.current = 1;
 
-              this._positionX = 0;
-              this._positionY = 0;
+              _positionX.current = 0;
+              _positionY.current = 0;
             } else {
-              const beforeScale = this._scale;
-              this._scale = 2;
+              const beforeScale = _scale.current;
+              _scale.current = 2;
 
-              const diffScale = this._scale - beforeScale;
-              this._positionX = ((windowWidth / 2 - this._doubleClickX) * diffScale) / this._scale;
+              const diffScale = _scale.current - beforeScale;
+              _positionX.current =
+                ((windowWidth / 2 - _doubleClickX.current) * diffScale) / _scale.current;
 
-              this._positionY = ((windowHeight / 2 - this._doubleClickY) * diffScale) / this._scale;
+              _positionY.current =
+                ((windowHeight / 2 - _doubleClickY.current) * diffScale) / _scale.current;
             }
 
-            this._imageDidMove('centerOn');
+            _imageDidMove('centerOn');
 
             Animated.parallel([
-              Animated.timing(this._animatedScale, {
-                toValue: this._scale,
+              Animated.timing(_animatedScale, {
+                toValue: _scale.current,
                 duration: 100,
                 useNativeDriver: false,
               }),
-              Animated.timing(this._animatedPositionX, {
-                toValue: this._positionX,
+              Animated.timing(_animatedPositionX, {
+                toValue: _positionX.current,
                 duration: 100,
                 useNativeDriver: false,
               }),
-              Animated.timing(this._animatedPositionY, {
-                toValue: this._positionY,
+              Animated.timing(_animatedPositionY, {
+                toValue: _positionY.current,
                 duration: 100,
                 useNativeDriver: false,
               }),
             ]).start();
           } else {
-            this._lastClickTime = new Date().getTime();
+            _lastClickTime.current = new Date().getTime();
           }
         }
       },
       onPanResponderMove: (evt, gestureState) => {
-        if (this._isDoubleClick || this._isAnimated) {
+        if (_isDoubleClick.current || _isAnimated.current) {
           return;
         }
 
         if (evt.nativeEvent.changedTouches.length <= 1) {
-          let diffX = gestureState.dx - (this._lastPositionX || 0);
-          if (this._lastPositionX === null) {
+          let diffX = gestureState.dx - (_lastPositionX.current || 0);
+          if (_lastPositionX === null) {
             diffX = 0;
           }
-          let diffY = gestureState.dy - (this._lastPositionY || 0);
-          if (this._lastPositionY === null) {
+          let diffY = gestureState.dy - (_lastPositionY.current || 0);
+          if (_lastPositionY === null) {
             diffY = 0;
           }
 
           const windowWidth: number = Dimensions.get('window').width;
-          this._lastPositionX = gestureState.dx;
-          this._lastPositionY = gestureState.dy;
+          _lastPositionX.current = gestureState.dx;
+          _lastPositionY.current = gestureState.dy;
 
-          this._horizontalWholeCounter += diffX;
-          this._verticalWholeCounter += diffY;
+          _horizontalWholeCounter.current += diffX;
+          _verticalWholeCounter.current += diffY;
 
           if (
-            (Math.abs(this._horizontalWholeCounter) > 5 ||
-              Math.abs(this._verticalWholeCounter) > 5) &&
-            this._longPressTimeout
+            (Math.abs(_horizontalWholeCounter.current) > 5 ||
+              Math.abs(_verticalWholeCounter.current) > 5) &&
+            _longPressTimeout.current
           ) {
-            clearTimeout(this._longPressTimeout);
+            clearTimeout(_longPressTimeout.current);
+            _longPressTimeout.current = undefined;
           }
 
-          if (this._swipeDownOffset === 0) {
-            if (windowWidth * this._scale > windowWidth) {
-              if (this._horizontalWholeOuterCounter > 0) {
+          if (_swipeDownOffset.current === 0) {
+            if (windowWidth * _scale.current > windowWidth) {
+              if (_horizontalWholeOuterCounter.current > 0) {
                 if (diffX < 0) {
-                  if (this._horizontalWholeOuterCounter > Math.abs(diffX)) {
-                    this._horizontalWholeOuterCounter += diffX;
+                  if (_horizontalWholeOuterCounter.current > Math.abs(diffX)) {
+                    _horizontalWholeOuterCounter.current += diffX;
                     diffX = 0;
                   } else {
-                    diffX += this._horizontalWholeOuterCounter;
-                    this._horizontalWholeOuterCounter = 0;
+                    diffX += _horizontalWholeOuterCounter.current;
+                    _horizontalWholeOuterCounter.current = 0;
                   }
                 } else {
-                  this._horizontalWholeOuterCounter += diffX;
+                  _horizontalWholeOuterCounter.current += diffX;
                 }
-              } else if (this._horizontalWholeOuterCounter < 0) {
+              } else if (_horizontalWholeOuterCounter.current < 0) {
                 if (diffX > 0) {
-                  if (Math.abs(this._horizontalWholeOuterCounter) > diffX) {
-                    this._horizontalWholeOuterCounter += diffX;
+                  if (Math.abs(_horizontalWholeOuterCounter.current) > diffX) {
+                    _horizontalWholeOuterCounter.current += diffX;
                     diffX = 0;
                   } else {
-                    diffX += this._horizontalWholeOuterCounter;
-                    this._horizontalWholeOuterCounter = 0;
+                    diffX += _horizontalWholeOuterCounter.current;
+                    _horizontalWholeOuterCounter.current = 0;
                   }
                 } else {
-                  this._horizontalWholeOuterCounter += diffX;
+                  _horizontalWholeOuterCounter.current += diffX;
                 }
               }
 
-              this._positionX += diffX / this._scale;
+              _positionX.current += diffX / _scale.current;
 
-              const horizontalMax = (windowWidth * this._scale - windowWidth) / 2 / this._scale;
-              if (this._positionX < -horizontalMax) {
-                this._positionX = -horizontalMax;
-                this._horizontalWholeOuterCounter += -1 / 1e10;
-              } else if (this._positionX > horizontalMax) {
-                this._positionX = horizontalMax;
-                this._horizontalWholeOuterCounter += 1 / 1e10;
+              const horizontalMax =
+                (windowWidth * _scale.current - windowWidth) / 2 / _scale.current;
+              if (_positionX.current < -horizontalMax) {
+                _positionX.current = -horizontalMax;
+                _horizontalWholeOuterCounter.current += -1 / 1e10;
+              } else if (_positionX.current > horizontalMax) {
+                _positionX.current = horizontalMax;
+                _horizontalWholeOuterCounter.current += 1 / 1e10;
               }
-              this._animatedPositionX.setValue(this._positionX);
+              _animatedPositionX.setValue(_positionX.current);
             } else {
-              this._horizontalWholeOuterCounter += diffX;
+              _horizontalWholeOuterCounter.current += diffX;
             }
 
-            if (this._horizontalWholeOuterCounter > (MAX_OVERFLOW || 0)) {
-              this._horizontalWholeOuterCounter = MAX_OVERFLOW || 0;
-            } else if (this._horizontalWholeOuterCounter < -(MAX_OVERFLOW || 0)) {
-              this._horizontalWholeOuterCounter = -(MAX_OVERFLOW || 0);
+            if (_horizontalWholeOuterCounter.current > (MAX_OVERFLOW || 0)) {
+              _horizontalWholeOuterCounter.current = MAX_OVERFLOW || 0;
+            } else if (_horizontalWholeOuterCounter.current < -(MAX_OVERFLOW || 0)) {
+              _horizontalWholeOuterCounter.current = -(MAX_OVERFLOW || 0);
             }
           }
 
-          this._positionY += diffY / this._scale;
-          this._animatedPositionY.setValue(this._positionY);
-          if (swipeToDismiss && this._scale === 1) {
-            this._animatedOpacity.setValue(Math.abs(gestureState.dy));
+          _positionY.current += diffY / _scale.current;
+          _animatedPositionY.setValue(_positionY.current);
+          if (swipeToDismiss && _scale.current === 1) {
+            _animatedOpacity.setValue(Math.abs(gestureState.dy));
           }
         } else {
-          if (this._longPressTimeout) {
-            clearTimeout(this._longPressTimeout);
+          if (_longPressTimeout.current) {
+            clearTimeout(_longPressTimeout.current);
+            _longPressTimeout.current = undefined;
           }
 
           let minX: number;
@@ -338,11 +367,11 @@ export default class ImageDetail extends React.Component<Props> {
           const diagonalDistance = Math.sqrt(
             widthDistance * widthDistance + heightDistance * heightDistance,
           );
-          this._zoomCurrentDistance = Number(diagonalDistance.toFixed(1));
+          _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1));
 
-          if (this._zoomLastDistance !== null) {
-            const distanceDiff = (this._zoomCurrentDistance - this._zoomLastDistance) / 200;
-            let zoom = this._scale + distanceDiff;
+          if (_zoomLastDistance.current !== null) {
+            const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200;
+            let zoom = _scale.current + distanceDiff;
 
             if (zoom < MIN_SCALE) {
               zoom = MIN_SCALE;
@@ -351,28 +380,29 @@ export default class ImageDetail extends React.Component<Props> {
               zoom = MAX_SCALE;
             }
 
-            const beforeScale = this._scale;
+            const beforeScale = _scale;
 
-            this._scale = zoom;
-            this._animatedScale.setValue(this._scale);
+            _scale.current = zoom;
+            _animatedScale.setValue(_scale.current);
 
-            const diffScale = this._scale - beforeScale;
-            this._positionX -= (this._centerDiffX * diffScale) / this._scale;
-            this._positionY -= (this._centerDiffY * diffScale) / this._scale;
-            this._animatedPositionX.setValue(this._positionX);
-            this._animatedPositionY.setValue(this._positionY);
+            const diffScale = _scale.current - beforeScale.current;
+            _positionX.current -= (_centerDiffX.current * diffScale) / _scale.current;
+            _positionY.current -= (_centerDiffY.current * diffScale) / _scale.current;
+            _animatedPositionX.setValue(_positionX.current);
+            _animatedPositionY.setValue(_positionY.current);
           }
-          this._zoomLastDistance = this._zoomCurrentDistance;
+          _zoomLastDistance.current = _zoomCurrentDistance.current;
         }
 
-        this._imageDidMove('onPanResponderMove');
+        _imageDidMove('onPanResponderMove');
       },
       onPanResponderRelease: (evt, gestureState) => {
-        if (this._longPressTimeout) {
-          clearTimeout(this._longPressTimeout);
+        if (_longPressTimeout.current) {
+          clearTimeout(_longPressTimeout.current);
+          _longPressTimeout.current = undefined;
         }
 
-        if (this._isDoubleClick || this._isLongPress || this._isAnimated) {
+        if (_isDoubleClick.current || _isLongPress.current || _isAnimated.current) {
           return;
         }
 
@@ -382,243 +412,168 @@ export default class ImageDetail extends React.Component<Props> {
         const { locationX, locationY, pageX, pageY } = evt.nativeEvent;
 
         if (evt.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
-          this._singleClickTimeout = setTimeout(() => {
-            if (typeof onTap === 'function') {
-              onTap({ locationX, locationY, pageX, pageY });
-            }
+          _singleClickTimeout.current = setTimeout(() => {
+            onTap?.({ locationX, locationY, pageX, pageY });
           }, DOUBLE_CLICK_INTERVAL);
         } else {
-          if (typeof responderRelease === 'function') {
-            responderRelease(gestureState.vx, this._scale);
-          }
-
-          this._panResponderReleaseResolve(evt.nativeEvent.changedTouches.length);
+          responderRelease?.(gestureState.vx, _scale.current);
+          _panResponderReleaseResolve(evt.nativeEvent.changedTouches.length);
         }
       },
     });
-  }
 
-  private _imageDidMove = (type: string): void => {
-    const { onMove } = this.props;
-    if (typeof onMove === 'function') {
-      onMove({
+    const _imageDidMove = (type: string): void => {
+      onMove?.({
         type,
-        positionX: this._positionX,
-        positionY: this._positionY,
-        scale: this._scale,
-        zoomCurrentDistance: this._zoomCurrentDistance,
+        positionX: _positionX.current,
+        positionY: _positionY.current,
+        scale: _scale.current,
+        zoomCurrentDistance: _zoomCurrentDistance.current,
       });
-    }
-  };
+    };
 
-  private _panResponderReleaseResolve = (changedTouchesCount: number): void => {
-    const { swipeToDismiss } = this.props;
-    const windowWidth: number = Dimensions.get('window').width;
-    const windowHeight: number = Dimensions.get('window').height;
-    if (this._scale < 1) {
-      this._scale = 1;
-      Animated.timing(this._animatedScale, {
-        toValue: this._scale,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    if (windowWidth * this._scale <= windowWidth) {
-      this._positionX = 0;
-      Animated.timing(this._animatedPositionX, {
-        toValue: this._positionX,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    if (windowHeight * this._scale < windowHeight) {
-      this._positionY = 0;
-      Animated.timing(this._animatedPositionY, {
-        toValue: this._positionY,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    } else if (
-      swipeToDismiss &&
-      this._scale === 1 &&
-      changedTouchesCount === 1 &&
-      Math.abs(this._positionY) > DRAG_DISMISS_THRESHOLD
-    ) {
-      this.close();
-      return;
-    }
-
-    if (windowHeight * this._scale > windowHeight) {
-      const verticalMax = (windowHeight * this._scale - windowHeight) / 2 / this._scale;
-      if (this._positionY < -verticalMax) {
-        this._positionY = -verticalMax;
-      } else if (this._positionY > verticalMax) {
-        this._positionY = verticalMax;
-      }
-      Animated.timing(this._animatedPositionY, {
-        toValue: this._positionY,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    if (windowWidth * this._scale > windowWidth) {
-      const horizontalMax = (windowWidth * this._scale - windowWidth) / 2 / this._scale;
-      if (this._positionX < -horizontalMax) {
-        this._positionX = -horizontalMax;
-      } else if (this._positionX > horizontalMax) {
-        this._positionX = horizontalMax;
-      }
-      Animated.timing(this._animatedPositionX, {
-        toValue: this._positionX,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    if (this._scale === 1) {
-      this._positionX = 0;
-      this._positionY = 0;
-      Animated.timing(this._animatedPositionX, {
-        toValue: this._positionX,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-      Animated.timing(this._animatedPositionY, {
-        toValue: this._positionY,
-        duration: 100,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    Animated.timing(this._animatedOpacity, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: false,
-    }).start();
-
-    this._horizontalWholeOuterCounter = 0;
-    this._swipeDownOffset = 0;
-
-    this._imageDidMove('onPanResponderRelease');
-  };
-
-  public close = (): void => {
-    const { isTranslucent, willClose, onClose } = this.props;
-    const windowHeight: number = Dimensions.get('window').height;
-    if (isTranslucent) {
-      StatusBar.setHidden(false);
-    }
-    setTimeout(() => {
-      this._isAnimated = true;
-      if (typeof willClose === 'function') {
-        willClose();
+    const _panResponderReleaseResolve = (changedTouchesCount: number): void => {
+      const windowWidth: number = Dimensions.get('window').width;
+      const windowHeight: number = Dimensions.get('window').height;
+      if (_scale.current < 1) {
+        _scale.current = 1;
+        Animated.timing(_animatedScale, {
+          toValue: _scale.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
       }
 
-      Animated.parallel([
-        Animated.timing(this._animatedScale, { toValue: 1, useNativeDriver: false }),
-        Animated.timing(this._animatedPositionX, { toValue: 0, useNativeDriver: false }),
-        Animated.timing(this._animatedPositionY, { toValue: 0, useNativeDriver: false }),
-        Animated.timing(this._animatedOpacity, { toValue: windowHeight, useNativeDriver: false }),
-        Animated.spring(this._animatedFrame, { toValue: 0, useNativeDriver: false }),
-      ]).start(() => {
-        onClose();
-        this._isAnimated = false;
-      });
-    });
-  };
+      if (windowWidth * _scale.current <= windowWidth) {
+        _positionX.current = 0;
+        Animated.timing(_animatedPositionX, {
+          toValue: _positionX.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      }
 
-  shouldComponentUpdate(nextProps: Props): boolean {
-    if (
-      nextProps.isOpen !== this.props.isOpen ||
-      nextProps.origin.x !== this.props.origin.x ||
-      nextProps.origin.y !== this.props.origin.y
-    ) {
-      return true;
-    }
-    return false;
-  }
+      if (windowHeight * _scale.current < windowHeight) {
+        _positionY.current = 0;
+        Animated.timing(_animatedPositionY, {
+          toValue: _positionY.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      } else if (
+        swipeToDismiss &&
+        _scale.current === 1 &&
+        changedTouchesCount === 1 &&
+        Math.abs(_positionY.current) > DRAG_DISMISS_THRESHOLD
+      ) {
+        handleClose();
+        return;
+      }
 
-  componentDidUpdate(): void {
-    const { isOpen, didOpen } = this.props;
-
-    if (isOpen) {
-      this._lastPositionX = null;
-      this._lastPositionY = null;
-      this._zoomLastDistance = null;
-      this._horizontalWholeCounter = 0;
-      this._verticalWholeCounter = 0;
-      this._isDoubleClick = false;
-      this._isLongPress = false;
-      this._centerDiffX = 0;
-      this._centerDiffY = 0;
-      this._singleClickTimeout = undefined;
-      this._longPressTimeout = undefined;
-      this._lastClickTime = 0;
-      this._doubleClickX = 0;
-      this._doubleClickY = 0;
-      this._scale = 1;
-      this._positionX = 0;
-      this._positionY = 0;
-      this._zoomCurrentDistance = 0;
-      this._swipeDownOffset = 0;
-      this._horizontalWholeOuterCounter = 0;
-      this._isAnimated = true;
-
-      Animated.parallel([
-        Animated.timing(this._animatedOpacity, { toValue: 0, useNativeDriver: false }),
-        Animated.spring(this._animatedFrame, { toValue: 1, useNativeDriver: false }),
-      ]).start(() => {
-        this._isAnimated = false;
-        if (typeof didOpen === 'function') {
-          didOpen();
+      if (windowHeight * _scale.current > windowHeight) {
+        const verticalMax = (windowHeight * _scale.current - windowHeight) / 2 / _scale.current;
+        if (_positionY.current < -verticalMax) {
+          _positionY.current = -verticalMax;
+        } else if (_positionY.current > verticalMax) {
+          _positionY.current = verticalMax;
         }
-      });
-    }
-  }
+        Animated.timing(_animatedPositionY, {
+          toValue: _positionY.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      }
 
-  render(): JSX.Element {
+      if (windowWidth * _scale.current > windowWidth) {
+        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current;
+        if (_positionX.current < -horizontalMax) {
+          _positionX.current = -horizontalMax;
+        } else if (_positionX.current > horizontalMax) {
+          _positionX.current = horizontalMax;
+        }
+        Animated.timing(_animatedPositionX, {
+          toValue: _positionX.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      }
+
+      if (_scale.current === 1) {
+        _positionX.current = 0;
+        _positionY.current = 0;
+        Animated.timing(_animatedPositionX, {
+          toValue: _positionX.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+        Animated.timing(_animatedPositionY, {
+          toValue: _positionY.current,
+          duration: 100,
+          useNativeDriver: false,
+        }).start();
+      }
+
+      Animated.timing(_animatedOpacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: false,
+      }).start();
+
+      _horizontalWholeOuterCounter.current = 0;
+      _swipeDownOffset.current = 0;
+
+      _imageDidMove('onPanResponderRelease');
+    };
+
+    const handleClose = (): void => {
+      const windowHeight: number = Dimensions.get('window').height;
+      if (isTranslucent) {
+        StatusBar.setHidden(false);
+      }
+      setTimeout(() => {
+        _isAnimated.current = true;
+        willClose?.();
+
+        Animated.parallel([
+          Animated.timing(_animatedScale, { toValue: 1, useNativeDriver: false }),
+          Animated.timing(_animatedPositionX, { toValue: 0, useNativeDriver: false }),
+          Animated.timing(_animatedPositionY, { toValue: 0, useNativeDriver: false }),
+          Animated.timing(_animatedOpacity, { toValue: windowHeight, useNativeDriver: false }),
+          Animated.spring(_animatedFrame, { toValue: 0, useNativeDriver: false }),
+        ]).start(() => {
+          onClose();
+          _isAnimated.current = false;
+        });
+      });
+    };
+
     const windowWidth: number = Dimensions.get('window').width;
     const windowHeight: number = Dimensions.get('window').height;
-    const {
-      renderToHardwareTextureAndroid,
-      isOpen,
-      origin,
-      source,
-      resizeMode,
-      backgroundColor = '#000000',
-      hideCloseButton,
-      imageStyle,
-      renderHeader,
-      renderFooter,
-    } = this.props;
     const animateConf = {
       transform: [
         {
-          scale: this._animatedScale,
+          scale: _animatedScale,
         },
         {
-          translateX: this._animatedPositionX,
+          translateX: _animatedPositionX,
         },
         {
-          translateY: this._animatedPositionY,
+          translateY: _animatedPositionY,
         },
       ],
-      left: this._animatedFrame.interpolate({
+      left: _animatedFrame.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.x, 0],
       }),
-      top: this._animatedFrame.interpolate({
+      top: _animatedFrame.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.y, 0],
       }),
-      width: this._animatedFrame.interpolate({
+      width: _animatedFrame.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.width, windowWidth],
       }),
-      height: this._animatedFrame.interpolate({
+      height: _animatedFrame.interpolate({
         inputRange: [0, 1],
         outputRange: [origin.height, windowHeight],
       }),
@@ -626,12 +581,12 @@ export default class ImageDetail extends React.Component<Props> {
 
     const background = (
       <Animated.View
-        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         style={[
           Styles.background,
           { backgroundColor: backgroundColor },
           {
-            opacity: this._animatedOpacity.interpolate({
+            opacity: _animatedOpacity.interpolate({
               inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
@@ -642,11 +597,11 @@ export default class ImageDetail extends React.Component<Props> {
 
     const header = (
       <Animated.View
-        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         style={[
           Styles.header,
           {
-            opacity: this._animatedOpacity.interpolate({
+            opacity: _animatedOpacity.interpolate({
               inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
@@ -654,10 +609,10 @@ export default class ImageDetail extends React.Component<Props> {
         ]}
       >
         {typeof renderHeader === 'function' ? (
-          renderHeader(this.close)
+          renderHeader(handleClose)
         ) : !hideCloseButton ? (
-          <SafeAreaView>
-            <TouchableOpacity onPress={this.close}>
+          <SafeAreaView style={{ marginTop: isTranslucent ? StatusBar.currentHeight : 0 }}>
+            <TouchableOpacity onPress={handleClose}>
               <Text style={Styles.closeButton}>×</Text>
             </TouchableOpacity>
           </SafeAreaView>
@@ -667,18 +622,18 @@ export default class ImageDetail extends React.Component<Props> {
 
     const footer = renderFooter && (
       <Animated.View
-        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         style={[
           Styles.footer,
           {
-            opacity: this._animatedOpacity.interpolate({
+            opacity: _animatedOpacity.interpolate({
               inputRange: [0, windowHeight],
               outputRange: [1, 0],
             }),
           },
         ]}
       >
-        {renderFooter(this.close)}
+        {renderFooter(handleClose)}
       </Animated.View>
     );
 
@@ -688,13 +643,14 @@ export default class ImageDetail extends React.Component<Props> {
           overflow: 'hidden',
           width: '100%',
           height: '100%',
+          flex: 1,
         }}
-        {...(this._imagePanResponder ? this._imagePanResponder.panHandlers : undefined)}
+        {..._imagePanResponder?.panHandlers}
       >
         {background}
         <Animated.View
           style={animateConf}
-          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid === false ? false : true}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         >
           <FastImage
             resizeMode={resizeMode}
@@ -713,12 +669,29 @@ export default class ImageDetail extends React.Component<Props> {
       </View>
     );
 
+    Animated.parallel([
+      Animated.timing(_animatedOpacity, { toValue: 0, useNativeDriver: false }),
+      Animated.spring(_animatedFrame, { toValue: 1, useNativeDriver: false }),
+    ]).start(() => {
+      _isAnimated.current = false;
+      if (isOpen) {
+        didOpen?.();
+      }
+    });
+
+    useImperativeHandle(ref, () => ({
+      close() {
+        handleClose();
+      },
+    }));
+
     return (
       <Modal
-        hardwareAccelerated={true}
+        hardwareAccelerated
         visible={isOpen}
-        transparent={true}
-        onRequestClose={(): void => this.close()}
+        transparent
+        statusBarTranslucent={isTranslucent}
+        onRequestClose={handleClose}
         supportedOrientations={[
           'portrait',
           'portrait-upside-down',
@@ -727,8 +700,11 @@ export default class ImageDetail extends React.Component<Props> {
           'landscape-right',
         ]}
       >
+        {isTranslucent && <StatusBar backgroundColor={'transparent'} translucent={true} />}
         {content}
       </Modal>
     );
-  }
-}
+  },
+);
+
+export default ImageDetail;
