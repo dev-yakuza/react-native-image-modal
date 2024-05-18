@@ -19,9 +19,9 @@ interface Props extends FastImageProps {
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
   modalImageResizeMode?: ResizeMode;
-  onLongPressOriginImage?: () => void;
   renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
   renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  onLongPressOriginImage?: () => void;
   onTap?: (eventParams: OnTap) => void;
   onDoubleTap?: () => void;
   onLongPress?: () => void;
@@ -39,11 +39,11 @@ const ImageModal = (props: Props) => {
 
   const {
     source,
-    resizeMode,
+    resizeMode = 'contain',
     isRTL,
     renderToHardwareTextureAndroid = true,
     isTranslucent,
-    swipeToDismiss,
+    swipeToDismiss = true,
     imageBackgroundColor,
     overlayBackgroundColor,
     hideCloseButton,
@@ -104,11 +104,11 @@ const ImageModal = (props: Props) => {
 
     onOpen?.();
     updateOriginModal();
-    setIsOpen(true);
-
     setTimeout(() => {
-      imageOpacity.setValue(0);
+      setIsOpen(true);
     });
+
+    imageOpacity.setValue(0);
   };
 
   const handleClose = (): void => {
@@ -137,7 +137,7 @@ const ImageModal = (props: Props) => {
           onPress={handleOpen}
           onLongPress={onLongPressOriginImage}
         >
-          <FastImage {...props} />
+          <FastImage resizeMode={resizeMode} {...props} />
         </TouchableOpacity>
       </Animated.View>
       <ImageDetail
