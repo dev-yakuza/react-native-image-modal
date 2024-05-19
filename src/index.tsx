@@ -140,29 +140,31 @@ const ImageModal = (props: Props) => {
           <FastImage resizeMode={resizeMode} {...props} />
         </TouchableOpacity>
       </Animated.View>
-      <ImageDetail
-        ref={modalRef}
-        isOpen={isOpen}
-        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-        isTranslucent={isTranslucent}
-        origin={originModal}
-        source={source}
-        resizeMode={modalImageResizeMode ?? resizeMode}
-        backgroundColor={overlayBackgroundColor}
-        swipeToDismiss={swipeToDismiss}
-        hideCloseButton={hideCloseButton}
-        imageStyle={modalImageStyle}
-        renderHeader={renderHeader}
-        renderFooter={renderFooter}
-        onTap={onTap}
-        onDoubleTap={onDoubleTap}
-        onLongPress={onLongPress}
-        didOpen={didOpen}
-        onMove={onMove}
-        responderRelease={responderRelease}
-        willClose={willClose}
-        onClose={handleClose}
-      />
+      {isOpen && (
+        <ImageDetail
+          ref={modalRef}
+          isOpen={isOpen}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+          isTranslucent={isTranslucent}
+          origin={originModal}
+          source={source}
+          resizeMode={modalImageResizeMode ?? resizeMode}
+          backgroundColor={overlayBackgroundColor}
+          swipeToDismiss={swipeToDismiss}
+          hideCloseButton={hideCloseButton}
+          imageStyle={modalImageStyle}
+          renderHeader={renderHeader}
+          renderFooter={renderFooter}
+          onTap={onTap}
+          onDoubleTap={onDoubleTap}
+          onLongPress={onLongPress}
+          didOpen={didOpen}
+          onMove={onMove}
+          responderRelease={responderRelease}
+          willClose={willClose}
+          onClose={handleClose}
+        />
+      )}
     </View>
   );
 };
