@@ -1,11 +1,15 @@
 {
   "version": "0.2",
-  "ignorePaths": ["*.svg", "*.lock", "*.snap", ".gitignore", "Podfile", "ios/", "Gemfile", "android/"],
-  "words": [
-    "lefthook",
-    "yakuza",
-    "Deku",
-    "tada",
-    "Podfile"
-  ]
+  "ignorePaths": [
+    "*.svg",
+    "*.lock",
+    "*.snap",
+    ".gitignore",
+    "Podfile",
+    "ios/",
+    "Gemfile",
+    "android/",
+    ".eslintrc.js"
+  ],
+  "words": ["lefthook", "yakuza", "Deku", "tada", "Podfile"]
 }
