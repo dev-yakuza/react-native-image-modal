@@ -4,6 +4,7 @@ pre-commit:
     Pretty:
       run: npx prettier --check {staged_files}
     ESLint:
+      exclude: 'Develop|Example'
       glob: '*.{ts,tsx}'
       run: npx eslint -c .eslintrc.js {staged_files}
     CSpell:
