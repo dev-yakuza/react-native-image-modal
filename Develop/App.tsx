@@ -8,7 +8,10 @@ import {
   StyleSheet,
   LayoutChangeEvent,
   TouchableOpacity,
+  ImageRequireSource,
+  StyleProp,
 } from 'react-native';
+import FastImage, {ImageStyle, ResizeMode} from 'react-native-fast-image';
 
 const Style = StyleSheet.create({
   container: {
@@ -397,6 +400,23 @@ const App = () => {
             source={{
               uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
             }}
+          />
+          <Text style={Style.heading}>Use FastImage</Text>
+          <ImageModal
+            style={{
+              width: imageWidth,
+              height: 250,
+            }}
+            source={{
+              uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+            }}
+            renderImageComponent={({source, resizeMode, style}) => (
+              <FastImage
+                style={style as StyleProp<ImageStyle>}
+                source={source as ImageRequireSource}
+                resizeMode={resizeMode as ResizeMode}
+              />
+            )}
           />
         </View>
       </ScrollView>

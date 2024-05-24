@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { ReactNode, forwardRef, useImperativeHandle, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,9 +10,12 @@ import {
   Modal,
   SafeAreaView,
   StatusBar,
+  Image,
+  ImageResizeMode,
+  StyleProp,
+  ImageStyle,
+  ImageSourcePropType,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import type { Source, ResizeMode, ImageStyle } from 'react-native-fast-image';
 
 import { OnTap, OnMove } from '../types';
 
@@ -72,14 +75,19 @@ interface Props {
     width: number;
     height: number;
   };
-  source: Source | number | undefined;
-  resizeMode?: ResizeMode;
+  source: ImageSourcePropType;
+  resizeMode?: ImageResizeMode;
   backgroundColor?: string;
   swipeToDismiss?: boolean;
   hideCloseButton?: boolean;
-  imageStyle?: ImageStyle;
-  renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
-  renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  imageStyle?: StyleProp<ImageStyle>;
+  renderHeader?: (close: () => void) => ReactNode;
+  renderFooter?: (close: () => void) => ReactNode;
+  renderImageComponent?: (params: {
+    source: ImageSourcePropType;
+    style?: StyleProp<ImageStyle>;
+    resizeMode?: ImageResizeMode;
+  }) => ReactNode;
   onTap?: (eventParams: OnTap) => void;
   onDoubleTap?: () => void;
   onLongPress?: () => void;
@@ -109,6 +117,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       imageStyle,
       renderHeader,
       renderFooter,
+      renderImageComponent,
       onTap,
       onDoubleTap,
       onLongPress,
@@ -652,17 +661,31 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           style={animateConf}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         >
-          <FastImage
-            resizeMode={resizeMode}
-            style={[
-              imageStyle,
-              {
-                width: '100%',
-                height: '100%',
-              },
-            ]}
-            source={source}
-          />
+          {typeof renderImageComponent === 'function' ? (
+            renderImageComponent({
+              source,
+              resizeMode,
+              style: [
+                imageStyle,
+                {
+                  width: '100%',
+                  height: '100%',
+                },
+              ],
+            })
+          ) : (
+            <Image
+              resizeMode={resizeMode}
+              style={[
+                imageStyle,
+                {
+                  width: '100%',
+                  height: '100%',
+                },
+              ]}
+              source={source}
+            />
+          )}
         </Animated.View>
         {header}
         {typeof renderFooter === 'function' && footer}
