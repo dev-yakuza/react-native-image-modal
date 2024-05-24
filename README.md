@@ -6,7 +6,6 @@ You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
 
 ## Document
 
-- [Expo](#expo)
 - [Blog](#blog)
 - [Installation](#installation)
 - [How to use](#how-to-use)
@@ -14,16 +13,6 @@ You can pinch zoom-in/out, double-tap zoom-in/out, move and swipe-to-dismiss.
 - [Demo](#demo)
 - [Example code](#example-code)
 - [Contribute](#contribute)
-
-## Expo
-
-This library does not support Expo anymore. Because this library uses `react-native-fast-image`.
-
-`1.0.16` is deprecated, but the version supports Expo.
-
-```bash
-npm install --save react-native-image-modal@1.0.16
-```
 
 ## Blog
 
@@ -74,6 +63,31 @@ return (
 );
 ```
 
+### Custom Image component
+
+If you want to use a custom image component like `react-native-fast-image` or `expo-image`, you can use `renderImageComponent` property.
+
+```js
+import FastImage, {ImageStyle, ResizeMode} from 'react-native-fast-image';
+
+<ImageModal
+  style={{
+    width: imageWidth,
+    height: 250,
+  }}
+  source={{
+    uri: 'https://cdn.pixabay.com/photo/2018/01/11/09/52/three-3075752_960_720.jpg',
+  }}
+  renderImageComponent={({source, resizeMode, style}) => (
+    <FastImage
+      style={style as StyleProp<ImageStyle>}
+      source={source as ImageRequireSource}
+      resizeMode={resizeMode as ResizeMode}
+    />
+  )}
+/>
+```
+
 ## Properties
 
 You can use All props of React Native Image for the original image(not full size modal image).
@@ -93,8 +107,9 @@ Below are `react-native-image-modal` specific properties.
 | modalImageResizeMode           | X        | ResizeMode('contain', 'cover', 'stretch','center')                                                                    | Image resizeMode for modal image. If it is not passed, it will follow the `resizeMode`.                                                    |
 | hideCloseButton                | X        | boolean                                                                                                               | hide hide the default close button                                                                                                         |
 | onLongPressOriginImage         | X        | () => void                                                                                                            | long press event callback for `the original image`                                                                                         |
-| renderHeader                   | X        | (close: () => void) => JSX.                                                                                           | You can customize the header of `the full size modal` with react native components                                                         |
-| renderFooter                   | X        | (close: () => void) => JSX.                                                                                           | You can customize the footer of `the full size modal` with react native components                                                         |
+| renderHeader                   | X        | (close: () => void) => ReactNode                                                                                      | You can customize the header of `the full size modal` with react native components                                                         |
+| renderFooter                   | X        | (close: () => void) => ReactNode                                                                                      | You can customize the footer of `the full size modal` with react native components                                                         |
+| renderImageComponent           | X        | ({ source: ImageSourcePropType, style?: StyleProp<ImageStyle>, resizeMode?: ImageResizeMode}) => ReactNode            | You can customize the footer of `the full size modal` with react native components                                                         |
 | isRTL                          | X        | boolean                                                                                                               | You can use this library with right-to-left-devices. ([#35](https://github.com/dev-yakuza/react-native-image-modal/issues/35))             |
 | onTap                          | X        | (eventParams: {locationX: number; locationY: number; pageX: number; pageY: number;}) => void                          | one tap event callback for `the full size modal`                                                                                           |
 | onDoubleTap                    | X        | () => void                                                                                                            | double tap event callback for `the full size modal`                                                                                        |

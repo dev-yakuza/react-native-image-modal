@@ -1,13 +1,24 @@
-import React, { LegacyRef, createRef, useState } from 'react';
-import { Animated, View, TouchableOpacity, StatusBar, Platform, Dimensions } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import type { ResizeMode } from 'react-native-fast-image';
-import type { ImageStyle, FastImageProps } from 'react-native-fast-image';
+import React, { LegacyRef, ReactNode, createRef, useState } from 'react';
+import {
+  Animated,
+  View,
+  TouchableOpacity,
+  StatusBar,
+  Dimensions,
+  Image,
+  StyleProp,
+  ImageStyle,
+  ImageResizeMode,
+  ImageSourcePropType,
+} from 'react-native';
 
 import { OnTap, OnMove } from './types';
 import ImageDetail from './ImageDetail';
 
-interface Props extends FastImageProps {
+interface Props {
+  source: ImageSourcePropType;
+  style?: StyleProp<ImageStyle>;
+  resizeMode?: ImageResizeMode;
   isRTL?: boolean;
   renderToHardwareTextureAndroid?: boolean;
   isTranslucent?: boolean;
@@ -18,9 +29,14 @@ interface Props extends FastImageProps {
   modalRef?: LegacyRef<ImageDetail>;
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
-  modalImageResizeMode?: ResizeMode;
-  renderHeader?: (close: () => void) => JSX.Element | Array<JSX.Element>;
-  renderFooter?: (close: () => void) => JSX.Element | Array<JSX.Element>;
+  modalImageResizeMode?: ImageResizeMode;
+  renderHeader?: (close: () => void) => ReactNode;
+  renderFooter?: (close: () => void) => ReactNode;
+  renderImageComponent?: (params: {
+    source: ImageSourcePropType;
+    style?: StyleProp<ImageStyle>;
+    resizeMode?: ImageResizeMode;
+  }) => ReactNode;
   onLongPressOriginImage?: () => void;
   onTap?: (eventParams: OnTap) => void;
   onDoubleTap?: () => void;
@@ -39,6 +55,7 @@ const ImageModal = (props: Props) => {
 
   const {
     source,
+    style,
     resizeMode = 'contain',
     isRTL,
     renderToHardwareTextureAndroid = true,
@@ -54,6 +71,7 @@ const ImageModal = (props: Props) => {
     onLongPressOriginImage,
     renderHeader,
     renderFooter,
+    renderImageComponent,
     onTap,
     onDoubleTap,
     onLongPress,
@@ -72,10 +90,6 @@ const ImageModal = (props: Props) => {
     height: 0,
   });
   const [isOpen, setIsOpen] = useState(false);
-
-  if (Platform.OS === 'android' && isTranslucent) {
-    StatusBar.setTranslucent(isTranslucent);
-  }
 
   const updateOriginModal = (): void => {
     imageRef.current?.measureInWindow((x, y, width, height) => {
@@ -137,24 +151,29 @@ const ImageModal = (props: Props) => {
           onPress={handleOpen}
           onLongPress={onLongPressOriginImage}
         >
-          <FastImage resizeMode={resizeMode} {...props} />
+          {typeof renderImageComponent === 'function' ? (
+            renderImageComponent(props)
+          ) : (
+            <Image source={source} style={style} resizeMode={resizeMode} />
+          )}
         </TouchableOpacity>
       </Animated.View>
       {isOpen && (
         <ImageDetail
+          source={source}
+          resizeMode={modalImageResizeMode ?? resizeMode}
+          imageStyle={modalImageStyle}
           ref={modalRef}
           isOpen={isOpen}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
           isTranslucent={isTranslucent}
           origin={originModal}
-          source={source}
-          resizeMode={modalImageResizeMode ?? resizeMode}
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
-          imageStyle={modalImageStyle}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
+          renderImageComponent={renderImageComponent}
           onTap={onTap}
           onDoubleTap={onDoubleTap}
           onLongPress={onLongPress}
