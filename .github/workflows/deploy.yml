@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - name: Get variables
+        id: version
+        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.1
+      - name: Install dependencies
+        run: npm install
+      - name: Update package.json version
+        run: npm version ${{ steps.semver.outputs.version }} --no-git-tag-version
+      - name: Commit package.json
+        run: |
+          git config user.email "dev.yakuza@gmail.com"
+          git config user.name "dev-yakuza"
+          git add .
+          git commit -m "chore: Release v${{ steps.version.outputs.version }}"
+          git push origin HEAD:main -f
+          git tag ${{ steps.version.outputs.version }} -f
+          git push origin ${{ steps.version.outputs.version }} -f
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # For release notes
+      - uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter-for-word.yml
+          tag: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

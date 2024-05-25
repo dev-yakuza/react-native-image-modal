@@ -10,9 +10,7 @@
     "lint": "eslint --ext .tsx --ext .ts src/",
     "format": "prettier --check ./src",
     "cspell": "cspell '**' --gitignore --show-suggestions",
-    "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist",
-    "dev-ios": "cd Develop && npm run ios",
-    "dev-android": "cd Develop && npm run android"
+    "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist"
   },
   "repository": {
     "type": "git",
