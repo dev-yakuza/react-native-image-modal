@@ -32,7 +32,7 @@ jobs:
         run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
       - name: Commit package.json
         run: |
-          if [ "$(git diff --name-only HEAD^..HEAD)" ]; then
+          if [[ `git status --porcelain` ]]; then
             git config user.email "dev.yakuza@gmail.com"
             git config user.name "dev-yakuza"
             git add .
