@@ -32,13 +32,15 @@ jobs:
         run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
       - name: Commit package.json
         run: |
-          git config user.email "dev.yakuza@gmail.com"
-          git config user.name "dev-yakuza"
-          git add .
-          git commit -m "chore: Release v${{ steps.version.outputs.version }}"
-          git push origin HEAD:main -f
-          git tag ${{ steps.version.outputs.version }} -f
-          git push origin ${{ steps.version.outputs.version }} -f
+          if [ "$(git diff --name-only HEAD^..HEAD)" ]; then
+            git config user.email "dev.yakuza@gmail.com"
+            git config user.name "dev-yakuza"
+            git add .
+            git commit -m "chore: Release v${{ steps.version.outputs.version }}"
+            git push origin HEAD:main -f
+            git tag ${{ steps.version.outputs.version }} -f
+            git push origin ${{ steps.version.outputs.version }} -f
+          fi
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
