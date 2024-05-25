@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Update package.json version
-        run: npm version ${{ steps.semver.outputs.version }} --no-git-tag-version
+        run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version
       - name: Commit package.json
         run: |
           git config user.email "dev.yakuza@gmail.com"
