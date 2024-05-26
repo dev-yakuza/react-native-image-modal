@@ -47,7 +47,6 @@ jobs:
       # For release notes
       - uses: release-drafter/release-drafter@v6
         with:
-          config-name: release-drafter-for-word.yml
           tag: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
           version: ${{ steps.version.outputs.version }}
