@@ -240,7 +240,6 @@ const App = () => {
               height: 250,
             }}
             source={require('./images/vertical.jpg')}
-            hideCloseButton
             renderHeader={onClose => (
               <TouchableOpacity
                 onPress={onClose}

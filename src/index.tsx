@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { OnTap, OnMove } from './types';
-import ImageDetail from './ImageDetail';
+import { ImageDetail } from './ImageDetail';
 
 const VISIBLE_OPACITY = 1;
 const INVISIBLE_OPACITY = 0;
