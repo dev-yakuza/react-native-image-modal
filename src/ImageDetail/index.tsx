@@ -6,7 +6,6 @@ import {
   Animated,
   PanResponder,
   Modal,
-  StatusBar,
   Image,
   ImageResizeMode,
   StyleProp,
@@ -18,6 +17,7 @@ import {
 
 import { OnTap, OnMove } from '../types';
 import { Background, Footer, Header } from './Components';
+import { DisplayImageArea } from './Components/DisplayImageArea';
 
 const LONG_PRESS_TIME = 800;
 const DOUBLE_CLICK_INTERVAL = 250;
@@ -56,6 +56,12 @@ interface Props {
   swipeToDismiss?: boolean;
   hideCloseButton?: boolean;
   imageStyle?: StyleProp<ImageStyle>;
+  parentLayout?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   renderHeader?: (close: () => void) => ReactNode;
   renderFooter?: (close: () => void) => ReactNode;
   renderImageComponent?: (params: {
@@ -86,6 +92,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       swipeToDismiss,
       hideCloseButton = false,
       imageStyle,
+      parentLayout,
       renderHeader,
       renderFooter,
       renderImageComponent,
@@ -491,9 +498,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     });
 
     const handleClose = (): void => {
-      if (isTranslucent) {
-        StatusBar.setHidden(false);
-      }
       setTimeout(() => {
         _isAnimated.current = true;
         willClose?.();
@@ -524,11 +528,11 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       ],
       left: _animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.x, 0],
+        outputRange: [origin.x - (parentLayout?.x ?? 0) / 2, 0],
       }),
       top: _animatedFrame.interpolate({
         inputRange: [0, 1],
-        outputRange: [origin.y, 0],
+        outputRange: [origin.y - (parentLayout?.y ?? 0), 0],
       }),
       width: _animatedFrame.interpolate({
         inputRange: [0, 1],
@@ -571,57 +575,61 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           'landscape-right',
         ]}
       >
-        {isTranslucent && <StatusBar backgroundColor={'transparent'} translucent={true} />}
-        <View
-          style={{
-            overflow: 'hidden',
-            width: '100%',
-            height: '100%',
-            flex: 1,
-          }}
-          {..._imagePanResponder?.panHandlers}
+        <Background
+          animatedOpacity={_animatedOpacity}
+          backgroundColor={backgroundColor}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+        />
+        <DisplayImageArea
+          animatedFrame={_animatedFrame}
+          parentLayout={parentLayout}
+          isTranslucent={isTranslucent}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         >
-          <Background
-            animatedOpacity={_animatedOpacity}
-            backgroundColor={backgroundColor}
-            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-          />
-          <Animated.View
-            style={animateConf}
-            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+          <View
+            style={{
+              overflow: 'hidden',
+              flex: 1,
+            }}
+            {..._imagePanResponder?.panHandlers}
           >
-            {typeof renderImageComponent === 'function' ? (
-              renderImageComponent({
-                source,
-                resizeMode,
-                style: [imageStyle, Styles['image']],
-              })
-            ) : (
-              <Image
-                resizeMode={resizeMode}
-                style={[imageStyle, Styles['image']]}
-                source={source}
-              />
-            )}
-          </Animated.View>
-          <Header
-            isTranslucent={isTranslucent}
-            hideCloseButton={hideCloseButton}
-            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            animatedOpacity={_animatedOpacity}
-            onClose={handleClose}
-          >
-            {typeof renderHeader === 'function' ? renderHeader(handleClose) : undefined}
-          </Header>
-          {typeof renderFooter === 'function' && (
-            <Footer
+            <Animated.View
+              style={animateConf}
               renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-              animatedOpacity={_animatedOpacity}
             >
-              {renderFooter(handleClose)}
-            </Footer>
-          )}
-        </View>
+              {typeof renderImageComponent === 'function' ? (
+                renderImageComponent({
+                  source,
+                  resizeMode,
+                  style: [imageStyle, Styles['image']],
+                })
+              ) : (
+                <Image
+                  resizeMode={resizeMode}
+                  style={[imageStyle, Styles['image']]}
+                  source={source}
+                />
+              )}
+            </Animated.View>
+          </View>
+        </DisplayImageArea>
+        <Header
+          isTranslucent={isTranslucent}
+          hideCloseButton={hideCloseButton}
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+          animatedOpacity={_animatedOpacity}
+          onClose={handleClose}
+        >
+          {typeof renderHeader === 'function' ? renderHeader(handleClose) : undefined}
+        </Header>
+        {typeof renderFooter === 'function' && (
+          <Footer
+            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+            animatedOpacity={_animatedOpacity}
+          >
+            {renderFooter(handleClose)}
+          </Footer>
+        )}
       </Modal>
     );
   },

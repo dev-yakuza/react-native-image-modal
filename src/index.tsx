@@ -3,7 +3,6 @@ import {
   Animated,
   View,
   TouchableOpacity,
-  StatusBar,
   Dimensions,
   Image,
   StyleProp,
@@ -33,6 +32,12 @@ interface Props {
   disabled?: boolean;
   modalImageStyle?: ImageStyle;
   modalImageResizeMode?: ImageResizeMode;
+  parentLayout?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   renderHeader?: (close: () => void) => ReactNode;
   renderFooter?: (close: () => void) => ReactNode;
   renderImageComponent?: (params: {
@@ -67,6 +72,7 @@ const ImageModal = ({
   disabled,
   modalImageStyle,
   modalImageResizeMode,
+  parentLayout,
   onLongPressOriginImage,
   renderHeader,
   renderFooter,
@@ -98,20 +104,13 @@ const ImageModal = ({
     }
     return x;
   };
-  const getModalPositionY = (y: number): number => {
-    if (isTranslucent) {
-      StatusBar.setHidden(true);
-      return y + (StatusBar.currentHeight ? StatusBar.currentHeight : 0);
-    }
-    return y;
-  };
   const updateModalInitialPosition = (): void => {
     imageRef.current?.measureInWindow((x, y, width, height) => {
       setModalInitialPosition({
         width,
         height,
         x: getModalPositionX(x, width),
-        y: getModalPositionY(y),
+        y,
       });
     });
   };
@@ -181,6 +180,7 @@ const ImageModal = ({
           backgroundColor={overlayBackgroundColor}
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
+          parentLayout={parentLayout}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
           renderImageComponent={renderImageComponent}
