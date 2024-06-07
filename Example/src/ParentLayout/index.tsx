@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import ImageModal from '../../dist';
+import ImageModal from 'react-native-image-modal';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 
