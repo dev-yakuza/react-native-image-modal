@@ -182,14 +182,14 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         }).start();
       }
 
+      // When image is normal and finger is released with swipe up or down,
+      // Close image detail.
       if (
         swipeToDismiss &&
         _scale.current === INITIAL_SCALE &&
         changedTouchesCount === 1 &&
         Math.abs(_position.current.y) > DRAG_DISMISS_THRESHOLD
       ) {
-        // When image is normal and finger is released with swipe up or down,
-        // Close image detail.
         handleClose();
         return;
       }
@@ -232,11 +232,13 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       _isDoubleClick.current = false;
       _isLongPress.current = false;
 
+      // Clear single click timeout
       if (_singleClickTimeout.current) {
         clearTimeout(_singleClickTimeout.current);
         _singleClickTimeout.current = undefined;
       }
 
+      // Calculate center diff for pinch to zoom
       if (event.nativeEvent.changedTouches.length > 1) {
         const centerX =
           (event.nativeEvent.changedTouches[0].pageX + event.nativeEvent.changedTouches[1].pageX) /
@@ -249,6 +251,8 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           y: centerY - windowHeight / 2,
         };
       }
+
+      // Clear long press timeout
       if (_longPressTimeout.current) {
         clearTimeout(_longPressTimeout.current);
         _longPressTimeout.current = undefined;
@@ -258,6 +262,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         onLongPress?.();
       }, LONG_PRESS_TIME);
 
+      // Double tap to zoom
       if (event.nativeEvent.changedTouches.length <= 1) {
         if (new Date().getTime() - _lastClickTime.current < (DOUBLE_CLICK_INTERVAL || 0)) {
           _lastClickTime.current = 0;
@@ -318,6 +323,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         return;
       }
 
+      // Single tap to move image
       if (event.nativeEvent.changedTouches.length <= 1) {
         const { x, y } = _lastPosition.current;
         const { dx, dy } = gestureState;
@@ -396,11 +402,11 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           _animatedOpacity.setValue(Math.abs(gestureState.dy));
         }
       } else {
+        // Pinch to zoom
         if (_longPressTimeout.current) {
           clearTimeout(_longPressTimeout.current);
           _longPressTimeout.current = undefined;
         }
-
         let minX: number;
         let maxX: number;
         if (
@@ -413,7 +419,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           minX = event.nativeEvent.changedTouches[0].pageX;
           maxX = event.nativeEvent.changedTouches[1].pageX;
         }
-
         let minY: number;
         let maxY: number;
         if (
@@ -426,33 +431,28 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           minY = event.nativeEvent.changedTouches[0].pageY;
           maxY = event.nativeEvent.changedTouches[1].pageY;
         }
-
         const widthDistance = maxX - minX;
         const heightDistance = maxY - minY;
         const diagonalDistance = Math.sqrt(
           widthDistance * widthDistance + heightDistance * heightDistance,
         );
         _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1));
-
         if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
+          // Update zoom
           const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200;
           let zoom = _scale.current + distanceDiff;
-
           if (zoom < MIN_SCALE) {
             zoom = MIN_SCALE;
           }
           if (zoom > MAX_SCALE) {
             zoom = MAX_SCALE;
           }
-
-          const beforeScale = _scale;
-
           _scale.current = zoom;
           _animatedScale.setValue(_scale.current);
 
-          const diffScale = _scale.current - beforeScale.current;
-          _position.current.x -= (_centerDiff.current.x * diffScale) / _scale.current;
-          _position.current.y -= (_centerDiff.current.y * diffScale) / _scale.current;
+          // Update image position
+          _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom;
+          _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom;
           _animatedPosition.setValue(_position.current);
         }
         _zoomLastDistance.current = _zoomCurrentDistance.current;
