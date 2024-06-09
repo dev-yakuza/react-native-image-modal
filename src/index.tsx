@@ -1,4 +1,4 @@
-import React, { LegacyRef, ReactNode, createRef, useState } from 'react';
+import React, { LegacyRef, ReactNode, createRef, useRef, useState } from 'react';
 import {
   Animated,
   View,
@@ -88,7 +88,7 @@ const ImageModal = ({
   onClose,
 }: Props) => {
   const imageRef = createRef<View>();
-  const imageOpacity = new Animated.Value(VISIBLE_OPACITY);
+  const imageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current;
 
   const [modalInitialPosition, setModalInitialPosition] = useState({
     x: 0,
@@ -132,7 +132,11 @@ const ImageModal = ({
 
   const handleOpen = (): void => {
     showModal();
-    imageOpacity.setValue(INVISIBLE_OPACITY);
+    Animated.timing(imageOpacity, {
+      toValue: INVISIBLE_OPACITY,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
   };
 
   const handleClose = (): void => {

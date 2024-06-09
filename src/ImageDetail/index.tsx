@@ -152,7 +152,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
           duration: 100,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
         return;
       }
@@ -178,7 +178,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         Animated.timing(_animatedPosition, {
           toValue: { x: positionX, y: positionY },
           duration: 100,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
       }
 
@@ -204,7 +204,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
           duration: 100,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
       }
 
@@ -213,7 +213,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       Animated.timing(_animatedOpacity, {
         toValue: 0,
         duration: 100,
-        useNativeDriver: false,
+        useNativeDriver: true,
       }).start();
 
       _horizontalWholeOuterCounter.current = 0;
@@ -301,12 +301,12 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             Animated.timing(_animatedScale, {
               toValue: _scale.current,
               duration: 100,
-              useNativeDriver: false,
+              useNativeDriver: true,
             }),
             Animated.timing(_animatedPosition, {
               toValue: _position.current,
               duration: 100,
-              useNativeDriver: false,
+              useNativeDriver: true,
             }),
           ]).start();
         } else {
@@ -503,10 +503,10 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         willClose?.();
 
         Animated.parallel([
-          Animated.timing(_animatedScale, { toValue: INITIAL_SCALE, useNativeDriver: false }),
-          Animated.timing(_animatedPosition, { toValue: 0, useNativeDriver: false }),
-          Animated.timing(_animatedOpacity, { toValue: windowHeight, useNativeDriver: false }),
-          Animated.spring(_animatedFrame, { toValue: 0, useNativeDriver: false }),
+          Animated.timing(_animatedScale, { toValue: INITIAL_SCALE, useNativeDriver: true }),
+          Animated.timing(_animatedPosition, { toValue: 0, useNativeDriver: true }),
+          Animated.timing(_animatedOpacity, { toValue: windowHeight, useNativeDriver: true }),
+          Animated.spring(_animatedFrame, { toValue: 0, useNativeDriver: true }),
         ]).start(() => {
           onClose();
           _isAnimated.current = false;
@@ -545,8 +545,8 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     };
 
     Animated.parallel([
-      Animated.timing(_animatedOpacity, { toValue: 0, useNativeDriver: false }),
-      Animated.spring(_animatedFrame, { toValue: 1, useNativeDriver: false }),
+      Animated.timing(_animatedOpacity, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(_animatedFrame, { toValue: 1, useNativeDriver: true }),
     ]).start(() => {
       _isAnimated.current = false;
       if (isOpen) {
