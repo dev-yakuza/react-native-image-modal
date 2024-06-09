@@ -135,7 +135,7 @@ const ImageModal = ({
     Animated.timing(imageOpacity, {
       toValue: INVISIBLE_OPACITY,
       duration: 100,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   };
 
