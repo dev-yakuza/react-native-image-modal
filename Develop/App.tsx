@@ -19,6 +19,7 @@ import {Disabled} from './src/Disabled';
 import {ModalImageStyle} from './src/ModalImageStyle';
 import {ExternalLibrary} from './src/ExternalLibrary';
 import {ParentLayout} from './src/ParentLayout';
+import {AnimationDuration} from './src/AnimationDuration';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -65,6 +66,7 @@ const App = () => {
         <Stack.Screen name="ModalImageStyle" component={ModalImageStyle} />
         <Stack.Screen name="ExternalLibrary" component={ExternalLibrary} />
         <Stack.Screen name="ParentLayout" component={ParentLayout} />
+        <Stack.Screen name="AnimationDuration" component={AnimationDuration} />
       </Stack.Navigator>
     </NavigationContainer>
   );

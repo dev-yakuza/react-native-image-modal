@@ -17,6 +17,7 @@ type RootStackParamList = {
   ModalImageStyle: undefined;
   ExternalLibrary: undefined;
   ParentLayout: undefined;
+  AnimationDuration: undefined;
 };
 
 export type {RootStackParamList};

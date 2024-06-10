@@ -62,6 +62,7 @@ interface Props {
     width: number;
     height: number;
   };
+  animationDuration: number;
   renderHeader?: (close: () => void) => ReactNode;
   renderFooter?: (close: () => void) => ReactNode;
   renderImageComponent?: (params: {
@@ -93,6 +94,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       hideCloseButton = false,
       imageStyle,
       parentLayout,
+      animationDuration,
       renderHeader,
       renderFooter,
       renderImageComponent,
@@ -107,12 +109,20 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     }: Props,
     ref,
   ) => {
+    const imageOriginX = origin.x - (parentLayout?.x ?? 0) / 2;
+    const imageOriginY = origin.y - (parentLayout?.y ?? 0);
+    const imageOriginWidth = origin.width;
+    const imageOriginHeight = origin.height;
+
     const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
     const _scale = useRef(INITIAL_SCALE);
     const _animatedScale = new Animated.Value(INITIAL_SCALE);
     const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 });
     const _animatedFrame = new Animated.Value(0);
     const _animatedOpacity = new Animated.Value(windowHeight);
+    const _imagePosition = new Animated.ValueXY({ x: imageOriginX, y: imageOriginY });
+    const _imageWidth = new Animated.Value(imageOriginWidth);
+    const _imageHeight = new Animated.Value(imageOriginHeight);
 
     const _position = useRef({ x: 0, y: 0 });
     const _lastPosition = useRef({ x: 0, y: 0 });
@@ -151,7 +161,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         };
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
-          duration: 100,
+          duration: animationDuration,
           useNativeDriver: false,
         }).start();
         return;
@@ -177,7 +187,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
 
         Animated.timing(_animatedPosition, {
           toValue: { x: positionX, y: positionY },
-          duration: 100,
+          duration: animationDuration,
           useNativeDriver: false,
         }).start();
       }
@@ -203,7 +213,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         };
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
-          duration: 100,
+          duration: animationDuration,
           useNativeDriver: false,
         }).start();
       }
@@ -212,7 +222,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       // background should return to its normal opacity.
       Animated.timing(_animatedOpacity, {
         toValue: 0,
-        duration: 100,
+        duration: animationDuration,
         useNativeDriver: false,
       }).start();
 
@@ -300,12 +310,12 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           Animated.parallel([
             Animated.timing(_animatedScale, {
               toValue: _scale.current,
-              duration: 100,
+              duration: animationDuration,
               useNativeDriver: false,
             }),
             Animated.timing(_animatedPosition, {
               toValue: _position.current,
-              duration: 100,
+              duration: animationDuration,
               useNativeDriver: false,
             }),
           ]).start();
@@ -503,10 +513,43 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         willClose?.();
 
         Animated.parallel([
-          Animated.timing(_animatedScale, { toValue: INITIAL_SCALE, useNativeDriver: false }),
-          Animated.timing(_animatedPosition, { toValue: 0, useNativeDriver: false }),
-          Animated.timing(_animatedOpacity, { toValue: windowHeight, useNativeDriver: false }),
-          Animated.spring(_animatedFrame, { toValue: 0, useNativeDriver: false }),
+          Animated.timing(_animatedScale, {
+            toValue: INITIAL_SCALE,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
+          Animated.timing(_animatedPosition, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
+          Animated.timing(_animatedOpacity, {
+            toValue: windowHeight,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
+          Animated.timing(_imagePosition, {
+            toValue: {
+              x: imageOriginX,
+              y: imageOriginY,
+            },
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.timing(_imageWidth, {
+            toValue: imageOriginWidth,
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.timing(_imageHeight, {
+            toValue: imageOriginHeight,
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.spring(_animatedFrame, {
+            toValue: 0,
+            useNativeDriver: false,
+          }),
         ]).start(() => {
           onClose();
           _isAnimated.current = false;
@@ -526,27 +569,40 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           translateY: _animatedPosition.y,
         },
       ],
-      left: _animatedFrame.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.x - (parentLayout?.x ?? 0) / 2, 0],
-      }),
-      top: _animatedFrame.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.y - (parentLayout?.y ?? 0), 0],
-      }),
-      width: _animatedFrame.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.width, windowWidth],
-      }),
-      height: _animatedFrame.interpolate({
-        inputRange: [0, 1],
-        outputRange: [origin.height, windowHeight],
-      }),
+      left: _imagePosition.x,
+      top: _imagePosition.y,
+      width: _imageWidth,
+      height: _imageHeight,
     };
 
     Animated.parallel([
-      Animated.timing(_animatedOpacity, { toValue: 0, useNativeDriver: false }),
-      Animated.spring(_animatedFrame, { toValue: 1, useNativeDriver: false }),
+      Animated.timing(_animatedOpacity, {
+        toValue: 0,
+        useNativeDriver: false,
+        duration: animationDuration,
+      }),
+      Animated.timing(_imagePosition, {
+        toValue: {
+          x: 0,
+          y: 0,
+        },
+        useNativeDriver: false,
+        duration: animationDuration * 2,
+      }),
+      Animated.timing(_imageWidth, {
+        toValue: windowWidth,
+        useNativeDriver: false,
+        duration: animationDuration * 2,
+      }),
+      Animated.timing(_imageHeight, {
+        toValue: windowHeight,
+        useNativeDriver: false,
+        duration: animationDuration * 2,
+      }),
+      Animated.spring(_animatedFrame, {
+        toValue: 1,
+        useNativeDriver: false,
+      }),
     ]).start(() => {
       _isAnimated.current = false;
       if (isOpen) {
