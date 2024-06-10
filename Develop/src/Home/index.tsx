@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, ScrollView, Button} from 'react-native';
+import {SafeAreaView, ScrollView, Button, View} from 'react-native';
 import {RootStackParamList} from '../type';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
@@ -80,16 +80,18 @@ const Home = ({navigation}: RootStackProps) => {
       title: 'Parent Layout',
       screen: 'ParentLayout',
     },
+    {
+      title: 'Animation Duration',
+      screen: 'AnimationDuration',
+    },
   ];
   return (
     <SafeAreaView>
       <ScrollView>
         {list.map(({title, screen}, index) => (
-          <Button
-            key={index}
-            title={title}
-            onPress={() => navigation.navigate(screen)}
-          />
+          <View key={index} style={{margin: 10}}>
+            <Button title={title} onPress={() => navigation.navigate(screen)} />
+          </View>
         ))}
       </ScrollView>
     </SafeAreaView>

@@ -38,6 +38,7 @@ interface Props {
     width: number;
     height: number;
   };
+  animationDuration?: number;
   renderHeader?: (close: () => void) => ReactNode;
   renderFooter?: (close: () => void) => ReactNode;
   renderImageComponent?: (params: {
@@ -73,6 +74,7 @@ const ImageModal = ({
   modalImageStyle,
   modalImageResizeMode,
   parentLayout,
+  animationDuration = 100,
   onLongPressOriginImage,
   renderHeader,
   renderFooter,
@@ -185,6 +187,7 @@ const ImageModal = ({
           swipeToDismiss={swipeToDismiss}
           hideCloseButton={hideCloseButton}
           parentLayout={parentLayout}
+          animationDuration={animationDuration}
           renderHeader={renderHeader}
           renderFooter={renderFooter}
           renderImageComponent={renderImageComponent}
