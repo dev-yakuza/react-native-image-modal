@@ -10,7 +10,7 @@ import {ImageBackgroundColor} from './src/ImageBackgroundColor';
 import {CustomizeFooter} from './src/CustomizeFooter';
 import {CustomizeHeader} from './src/CustomizeHeader';
 import {DisableSwipeToDismiss} from './src/DisableSwipeToDismiss';
-import {CloseModalProgrammatically} from './src/CloseModalProgrammatically';
+import {OpenCloseModalProgrammatically} from './src/OpenCloseModalProgrammatically';
 import {ModalImageResizeMode} from './src/ModalImageResizeMode';
 import {RTL} from './src/RTL';
 import {RenderToHardwareTextureAndroid} from './src/RenderToHardwareTextureAndroid';
@@ -46,8 +46,8 @@ const App = () => {
           component={DisableSwipeToDismiss}
         />
         <Stack.Screen
-          name="CloseModalProgrammatically"
-          component={CloseModalProgrammatically}
+          name="OpenCloseModalProgrammatically"
+          component={OpenCloseModalProgrammatically}
         />
         <Stack.Screen name="RTL" component={RTL} />
         <Stack.Screen
