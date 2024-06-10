@@ -8,7 +8,7 @@ type RootStackParamList = {
   CustomizeFooter: undefined;
   CustomizeHeader: undefined;
   DisableSwipeToDismiss: undefined;
-  CloseModalProgrammatically: undefined;
+  OpenCloseModalProgrammatically: undefined;
   ModalImageResizeMode: undefined;
   RTL: undefined;
   RenderToHardwareTextureAndroid: undefined;

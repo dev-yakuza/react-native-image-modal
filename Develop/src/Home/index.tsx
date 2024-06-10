@@ -45,8 +45,8 @@ const Home = ({navigation}: RootStackProps) => {
       screen: 'DisableSwipeToDismiss',
     },
     {
-      title: 'Close Modal Programmatically',
-      screen: 'CloseModalProgrammatically',
+      title: 'Open and Close Modal Programmatically',
+      screen: 'OpenCloseModalProgrammatically',
     },
     {
       title: 'Modal Image ResizeMode',
