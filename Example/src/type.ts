@@ -8,7 +8,7 @@ type RootStackParamList = {
   CustomizeFooter: undefined;
   CustomizeHeader: undefined;
   DisableSwipeToDismiss: undefined;
-  CloseModalProgrammatically: undefined;
+  OpenCloseModalProgrammatically: undefined;
   ModalImageResizeMode: undefined;
   RTL: undefined;
   RenderToHardwareTextureAndroid: undefined;
@@ -17,6 +17,7 @@ type RootStackParamList = {
   ModalImageStyle: undefined;
   ExternalLibrary: undefined;
   ParentLayout: undefined;
+  AnimationDuration: undefined;
 };
 
 export type {RootStackParamList};

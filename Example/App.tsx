@@ -10,7 +10,7 @@ import {ImageBackgroundColor} from './src/ImageBackgroundColor';
 import {CustomizeFooter} from './src/CustomizeFooter';
 import {CustomizeHeader} from './src/CustomizeHeader';
 import {DisableSwipeToDismiss} from './src/DisableSwipeToDismiss';
-import {CloseModalProgrammatically} from './src/CloseModalProgrammatically';
+import {OpenCloseModalProgrammatically} from './src/OpenCloseModalProgrammatically';
 import {ModalImageResizeMode} from './src/ModalImageResizeMode';
 import {RTL} from './src/RTL';
 import {RenderToHardwareTextureAndroid} from './src/RenderToHardwareTextureAndroid';
@@ -19,6 +19,7 @@ import {Disabled} from './src/Disabled';
 import {ModalImageStyle} from './src/ModalImageStyle';
 import {ExternalLibrary} from './src/ExternalLibrary';
 import {ParentLayout} from './src/ParentLayout';
+import {AnimationDuration} from './src/AnimationDuration';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -45,8 +46,8 @@ const App = () => {
           component={DisableSwipeToDismiss}
         />
         <Stack.Screen
-          name="CloseModalProgrammatically"
-          component={CloseModalProgrammatically}
+          name="OpenCloseModalProgrammatically"
+          component={OpenCloseModalProgrammatically}
         />
         <Stack.Screen name="RTL" component={RTL} />
         <Stack.Screen
@@ -65,6 +66,7 @@ const App = () => {
         <Stack.Screen name="ModalImageStyle" component={ModalImageStyle} />
         <Stack.Screen name="ExternalLibrary" component={ExternalLibrary} />
         <Stack.Screen name="ParentLayout" component={ParentLayout} />
+        <Stack.Screen name="AnimationDuration" component={AnimationDuration} />
       </Stack.Navigator>
     </NavigationContainer>
   );
