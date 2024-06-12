@@ -25,6 +25,16 @@ const TranslucentStatusBar = () => {
           <Text style={style.text}>
             You can set true to isTranslucent to make status bar translucent.
           </Text>
+          <Text style={style.text}>- Not configure isTranslucent</Text>
+          <ImageModal
+            imageBackgroundColor="#000000"
+            style={{
+              width: imageWidth,
+              height: 175,
+            }}
+            source={require('../../images/horizontal.jpg')}
+          />
+          <Text style={style.text}>- Configure isTranslucent</Text>
           <ImageModal
             isTranslucent
             imageBackgroundColor="#000000"
