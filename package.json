@@ -6,7 +6,6 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "rm -rf dist && tsc",
-    "postinstall": "lefthook install",
     "lint": "eslint --ext .tsx --ext .ts src/",
     "format": "prettier --check ./src",
     "cspell": "cspell '**' --gitignore --show-suggestions",

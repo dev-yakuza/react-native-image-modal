@@ -191,6 +191,7 @@ Install libraries.
 
 ```bash
 npm install
+npx lefthook install
 ```
 
 Execute the following command to start the project.
