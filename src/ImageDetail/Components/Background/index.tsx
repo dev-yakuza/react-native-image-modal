@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, ColorValue, Dimensions, StyleSheet } from 'react-native';
+import { Animated, ColorValue, StyleSheet } from 'react-native';
 
 const Styles = StyleSheet.create({
   background: {
@@ -22,20 +22,13 @@ const Background = ({
   backgroundColor,
   renderToHardwareTextureAndroid,
 }: Props) => {
-  const { height: windowHeight } = Dimensions.get('window');
-
   return (
     <Animated.View
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
       style={[
         Styles['background'],
         { backgroundColor: backgroundColor },
-        {
-          opacity: animatedOpacity.interpolate({
-            inputRange: [0, windowHeight],
-            outputRange: [1, 0],
-          }),
-        },
+        { opacity: animatedOpacity },
       ]}
     />
   );
