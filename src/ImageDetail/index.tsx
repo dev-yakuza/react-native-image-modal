@@ -119,7 +119,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     const _animatedScale = new Animated.Value(INITIAL_SCALE);
     const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 });
     const _animatedFrame = new Animated.Value(0);
-    const _animatedOpacity = new Animated.Value(windowHeight);
+    const _animatedOpacity = new Animated.Value(0);
     const _imagePosition = new Animated.ValueXY({ x: imageOriginX, y: imageOriginY });
     const _imageWidth = new Animated.Value(imageOriginWidth);
     const _imageHeight = new Animated.Value(imageOriginHeight);
@@ -221,7 +221,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       // When finger is released,
       // background should return to its normal opacity.
       Animated.timing(_animatedOpacity, {
-        toValue: 0,
+        toValue: 1,
         duration: animationDuration,
         useNativeDriver: false,
       }).start();
@@ -409,7 +409,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         _position.current.y = positionY;
         _animatedPosition.setValue(_position.current);
         if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
-          _animatedOpacity.setValue(Math.abs(gestureState.dy));
+          _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight);
         }
       } else {
         // Pinch to zoom
@@ -524,7 +524,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             duration: animationDuration,
           }),
           Animated.timing(_animatedOpacity, {
-            toValue: windowHeight,
+            toValue: 0,
             useNativeDriver: false,
             duration: animationDuration,
           }),
@@ -577,7 +577,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
 
     Animated.parallel([
       Animated.timing(_animatedOpacity, {
-        toValue: 0,
+        toValue: 1,
         useNativeDriver: false,
         duration: animationDuration,
       }),
