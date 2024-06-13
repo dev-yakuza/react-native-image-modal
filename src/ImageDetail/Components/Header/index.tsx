@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import {
   Animated,
-  Dimensions,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -10,18 +9,14 @@ import {
 } from 'react-native';
 
 const Styles = StyleSheet.create({
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    backgroundColor: 'transparent',
-  },
   closeButton: {
+    width: 40,
+    height: 40,
+  },
+  label: {
     fontSize: 35,
     color: 'white',
     lineHeight: 40,
-    width: 40,
     textAlign: 'center',
     shadowOffset: {
       width: 0,
@@ -50,20 +45,14 @@ const Header = ({
   children,
   onClose,
 }: Props) => {
-  const { height: windowHeight } = Dimensions.get('window');
-
   if (hideCloseButton) return;
 
   return (
     <Animated.View
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
       style={[
-        Styles['header'],
         {
-          opacity: animatedOpacity.interpolate({
-            inputRange: [0, windowHeight],
-            outputRange: [1, 0],
-          }),
+          opacity: animatedOpacity,
         },
       ]}
     >
@@ -71,8 +60,8 @@ const Header = ({
         children
       ) : (
         <SafeAreaView style={{ marginTop: isTranslucent ? StatusBar.currentHeight : 0 }}>
-          <TouchableOpacity onPress={onClose}>
-            <Text style={Styles['closeButton']}>×</Text>
+          <TouchableOpacity style={Styles['closeButton']} onPress={onClose}>
+            <Text style={Styles['label']}>×</Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}
