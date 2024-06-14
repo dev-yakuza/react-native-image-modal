@@ -126,7 +126,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
 
     const _position = useRef({ x: 0, y: 0 });
     const _lastPosition = useRef({ x: 0, y: 0 });
-    const _doubleClickPosition = useRef({ x: 0, y: 0 });
     const _centerDiff = useRef({ x: 0, y: 0 });
     const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE);
     const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE);
@@ -281,7 +280,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           clearTimeout(_longPressTimeout.current);
           _longPressTimeout.current = undefined;
 
-          _doubleClickPosition.current = {
+          const doubleClickPosition = {
             x: event.nativeEvent.changedTouches[0].pageX,
             y: event.nativeEvent.changedTouches[0].pageY,
           };
@@ -292,7 +291,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             _scale.current = INITIAL_SCALE;
             _position.current = { x: 0, y: 0 };
           } else {
-            const { x: doubleClickX, y: doubleClickY } = _doubleClickPosition.current;
+            const { x: doubleClickX, y: doubleClickY } = doubleClickPosition;
             const beforeScale = _scale.current;
             _scale.current = 2;
 
