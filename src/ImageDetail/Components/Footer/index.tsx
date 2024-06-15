@@ -1,5 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Animated, Dimensions, StyleSheet } from 'react-native';
+import type { ReactNode } from 'react'
+import React from 'react'
+import { Animated, Dimensions, StyleSheet } from 'react-native'
 
 const Styles = StyleSheet.create({
   footer: {
@@ -9,16 +10,16 @@ const Styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'transparent',
   },
-});
+})
 
 interface Props {
-  renderToHardwareTextureAndroid: boolean;
-  animatedOpacity: Animated.Value;
-  children: ReactNode;
+  readonly renderToHardwareTextureAndroid: boolean
+  readonly animatedOpacity: Animated.Value
+  readonly children: ReactNode
 }
 
 const Footer = ({ renderToHardwareTextureAndroid, animatedOpacity, children }: Props) => {
-  const { height: windowHeight } = Dimensions.get('window');
+  const { height: windowHeight } = Dimensions.get('window')
 
   return (
     <Animated.View
@@ -35,7 +36,7 @@ const Footer = ({ renderToHardwareTextureAndroid, animatedOpacity, children }: P
     >
       {children}
     </Animated.View>
-  );
-};
+  )
+}
 
-export { Footer };
+export { Footer }

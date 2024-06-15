@@ -1,17 +1,18 @@
-import React, { ReactNode } from 'react';
-import { Animated, Dimensions, Platform, StatusBar } from 'react-native';
+import type { ReactNode } from 'react'
+import React from 'react'
+import { Animated, Dimensions, Platform, StatusBar } from 'react-native'
 
 interface Props {
-  animatedFrame: Animated.Value;
-  parentLayout?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  isTranslucent: boolean;
-  renderToHardwareTextureAndroid: boolean;
-  children: ReactNode;
+  readonly animatedFrame: Animated.Value
+  readonly parentLayout?: {
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+  }
+  readonly isTranslucent: boolean
+  readonly renderToHardwareTextureAndroid: boolean
+  readonly children: ReactNode
 }
 const DisplayImageArea = ({
   animatedFrame,
@@ -22,11 +23,11 @@ const DisplayImageArea = ({
 }: Props) => {
   // parentLayout is not passed in the props,
   // clipping is not needed, so clipping area should be full screen.
-  const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+  const { width: windowWidth, height: windowHeight } = Dimensions.get('window')
 
   // On Android, the status bar height should be added to the top position of the image.
   const statusBarHeight =
-    isTranslucent && Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0;
+    isTranslucent && Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0
   const containerAnimateConf = {
     left: animatedFrame.interpolate({
       inputRange: [0, 1],
@@ -44,7 +45,7 @@ const DisplayImageArea = ({
       inputRange: [0, 1],
       outputRange: [parentLayout?.height ?? windowHeight, windowHeight],
     }),
-  };
+  }
 
   return (
     <Animated.View
@@ -53,7 +54,7 @@ const DisplayImageArea = ({
     >
       {children}
     </Animated.View>
-  );
-};
+  )
+}
 
-export { DisplayImageArea };
+export { DisplayImageArea }
