@@ -16,7 +16,6 @@ import { DisplayImageArea } from './Components/DisplayImageArea'
 
 const LONG_PRESS_TIME = 800
 const DOUBLE_CLICK_INTERVAL = 250
-const MAX_OVERFLOW = 100
 const INITIAL_SCALE = 1
 const MIN_SCALE = 0.6
 const MAX_SCALE = 10
@@ -124,14 +123,11 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     const _centerDiff = useRef({ x: 0, y: 0 })
     const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
     const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE)
-    const _horizontalWholeCounter = useRef(0)
-    const _verticalWholeCounter = useRef(0)
     const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
     const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
     const _lastClickTime = useRef(0)
     const _isDoubleClick = useRef(false)
     const _isLongPress = useRef(false)
-    const _horizontalWholeOuterCounter = useRef(0)
     const _isAnimated = useRef(true)
 
     const handleImageMove = (type: string): void => {
@@ -220,8 +216,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         useNativeDriver: false,
       }).start()
 
-      _horizontalWholeOuterCounter.current = 0
-
       handleImageMove('onPanResponderRelease')
     }
 
@@ -231,8 +225,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       }
       _lastPosition.current = { x: 0, y: 0 }
       _zoomLastDistance.current = INITIAL_ZOOM_DISTANCE
-      _horizontalWholeCounter.current = 0
-      _verticalWholeCounter.current = 0
       _isDoubleClick.current = false
       _isLongPress.current = false
 
@@ -319,6 +311,102 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       }
     }
 
+    const moveImageToGesture = (gestureState: PanResponderGestureState) => {
+      const { x, y } = _lastPosition.current
+      const { dx, dy } = gestureState
+      const diffX = dx - x
+      const diffY = dy - y
+
+      console.log(gestureState)
+      console.log(diffX, diffY)
+
+      _lastPosition.current = { x: dx, y: dy }
+
+      if (_longPressTimeout.current) {
+        clearTimeout(_longPressTimeout.current)
+        _longPressTimeout.current = undefined
+      }
+
+      if (_scale.current > 1) {
+        let x = _position.current.x
+        x += diffX / _scale.current
+
+        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
+        if (x < -horizontalMax) {
+          x = -horizontalMax
+        } else if (x > horizontalMax) {
+          x = horizontalMax
+        }
+        _position.current.x = x
+        _animatedPosition.setValue(_position.current)
+      }
+
+      let positionY = _position.current.y
+      positionY += diffY / _scale.current
+      _position.current.y = positionY
+      _animatedPosition.setValue(_position.current)
+      if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
+        _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight)
+      }
+    }
+
+    const pinchZoom = (event: GestureResponderEvent) => {
+      // Pinch to zoom
+      if (_longPressTimeout.current) {
+        clearTimeout(_longPressTimeout.current)
+        _longPressTimeout.current = undefined
+      }
+      let minX: number
+      let maxX: number
+      if (
+        event.nativeEvent.changedTouches[0].locationX >
+        event.nativeEvent.changedTouches[1].locationX
+      ) {
+        minX = event.nativeEvent.changedTouches[1].pageX
+        maxX = event.nativeEvent.changedTouches[0].pageX
+      } else {
+        minX = event.nativeEvent.changedTouches[0].pageX
+        maxX = event.nativeEvent.changedTouches[1].pageX
+      }
+      let minY: number
+      let maxY: number
+      if (
+        event.nativeEvent.changedTouches[0].locationY >
+        event.nativeEvent.changedTouches[1].locationY
+      ) {
+        minY = event.nativeEvent.changedTouches[1].pageY
+        maxY = event.nativeEvent.changedTouches[0].pageY
+      } else {
+        minY = event.nativeEvent.changedTouches[0].pageY
+        maxY = event.nativeEvent.changedTouches[1].pageY
+      }
+      const widthDistance = maxX - minX
+      const heightDistance = maxY - minY
+      const diagonalDistance = Math.sqrt(
+        widthDistance * widthDistance + heightDistance * heightDistance,
+      )
+      _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1))
+      if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
+        // Update zoom
+        const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200
+        let zoom = _scale.current + distanceDiff
+        if (zoom < MIN_SCALE) {
+          zoom = MIN_SCALE
+        }
+        if (zoom > MAX_SCALE) {
+          zoom = MAX_SCALE
+        }
+        _scale.current = zoom
+        _animatedScale.setValue(_scale.current)
+
+        // Update image position
+        _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom
+        _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom
+        _animatedPosition.setValue(_position.current)
+      }
+      _zoomLastDistance.current = _zoomCurrentDistance.current
+    }
+
     const handlePanResponderMove = (
       event: GestureResponderEvent,
       gestureState: PanResponderGestureState,
@@ -329,137 +417,9 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
 
       // Single tap to move image
       if (event.nativeEvent.changedTouches.length <= 1) {
-        const { x, y } = _lastPosition.current
-        const { dx, dy } = gestureState
-        let diffX = dx - x
-        const diffY = dy - y
-
-        _lastPosition.current = { x: dx, y: dy }
-
-        _horizontalWholeCounter.current += diffX
-        _verticalWholeCounter.current += diffY
-
-        if (
-          (Math.abs(_horizontalWholeCounter.current) > 5 ||
-            Math.abs(_verticalWholeCounter.current) > 5) &&
-          _longPressTimeout.current
-        ) {
-          clearTimeout(_longPressTimeout.current)
-          _longPressTimeout.current = undefined
-        }
-
-        if (windowWidth * _scale.current > windowWidth) {
-          if (_horizontalWholeOuterCounter.current > 0) {
-            if (diffX < 0) {
-              if (_horizontalWholeOuterCounter.current > Math.abs(diffX)) {
-                _horizontalWholeOuterCounter.current += diffX
-                diffX = 0
-              } else {
-                diffX += _horizontalWholeOuterCounter.current
-                _horizontalWholeOuterCounter.current = 0
-              }
-            } else {
-              _horizontalWholeOuterCounter.current += diffX
-            }
-          } else if (_horizontalWholeOuterCounter.current < 0) {
-            if (diffX > 0) {
-              if (Math.abs(_horizontalWholeOuterCounter.current) > diffX) {
-                _horizontalWholeOuterCounter.current += diffX
-                diffX = 0
-              } else {
-                diffX += _horizontalWholeOuterCounter.current
-                _horizontalWholeOuterCounter.current = 0
-              }
-            } else {
-              _horizontalWholeOuterCounter.current += diffX
-            }
-          }
-
-          let x = _position.current.x
-          x += diffX / _scale.current
-
-          const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
-          if (x < -horizontalMax) {
-            x = -horizontalMax
-            _horizontalWholeOuterCounter.current += -1 / 1e10
-          } else if (x > horizontalMax) {
-            x = horizontalMax
-            _horizontalWholeOuterCounter.current += 1 / 1e10
-          }
-          _position.current.x = x
-          _animatedPosition.setValue(_position.current)
-        } else {
-          _horizontalWholeOuterCounter.current += diffX
-        }
-
-        if (_horizontalWholeOuterCounter.current > (MAX_OVERFLOW || 0)) {
-          _horizontalWholeOuterCounter.current = MAX_OVERFLOW || 0
-        } else if (_horizontalWholeOuterCounter.current < -(MAX_OVERFLOW || 0)) {
-          _horizontalWholeOuterCounter.current = -(MAX_OVERFLOW || 0)
-        }
-
-        let positionY = _position.current.y
-        positionY += diffY / _scale.current
-        _position.current.y = positionY
-        _animatedPosition.setValue(_position.current)
-        if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
-          _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight)
-        }
+        moveImageToGesture(gestureState)
       } else {
-        // Pinch to zoom
-        if (_longPressTimeout.current) {
-          clearTimeout(_longPressTimeout.current)
-          _longPressTimeout.current = undefined
-        }
-        let minX: number
-        let maxX: number
-        if (
-          event.nativeEvent.changedTouches[0].locationX >
-          event.nativeEvent.changedTouches[1].locationX
-        ) {
-          minX = event.nativeEvent.changedTouches[1].pageX
-          maxX = event.nativeEvent.changedTouches[0].pageX
-        } else {
-          minX = event.nativeEvent.changedTouches[0].pageX
-          maxX = event.nativeEvent.changedTouches[1].pageX
-        }
-        let minY: number
-        let maxY: number
-        if (
-          event.nativeEvent.changedTouches[0].locationY >
-          event.nativeEvent.changedTouches[1].locationY
-        ) {
-          minY = event.nativeEvent.changedTouches[1].pageY
-          maxY = event.nativeEvent.changedTouches[0].pageY
-        } else {
-          minY = event.nativeEvent.changedTouches[0].pageY
-          maxY = event.nativeEvent.changedTouches[1].pageY
-        }
-        const widthDistance = maxX - minX
-        const heightDistance = maxY - minY
-        const diagonalDistance = Math.sqrt(
-          widthDistance * widthDistance + heightDistance * heightDistance,
-        )
-        _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1))
-        if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
-          // Update zoom
-          const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200
-          let zoom = _scale.current + distanceDiff
-          if (zoom < MIN_SCALE) {
-            zoom = MIN_SCALE
-          }
-          if (zoom > MAX_SCALE) {
-            zoom = MAX_SCALE
-          }
-          _scale.current = zoom
-          _animatedScale.setValue(_scale.current)
-
-          // Update image position
-          _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom
-          _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom
-          _animatedPosition.setValue(_position.current)
-        }
-        _zoomLastDistance.current = _zoomCurrentDistance.current
+        pinchZoom(event)
       }
 
       handleImageMove('onPanResponderMove')
