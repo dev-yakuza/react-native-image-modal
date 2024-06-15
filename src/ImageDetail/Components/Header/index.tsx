@@ -1,12 +1,6 @@
-import React, { ReactNode } from 'react';
-import {
-  Animated,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import type { ReactNode } from 'react'
+import React from 'react'
+import { Animated, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native'
 
 const Styles = StyleSheet.create({
   closeButton: {
@@ -26,15 +20,15 @@ const Styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOpacity: 0.8,
   },
-});
+})
 
 interface Props {
-  isTranslucent: boolean;
-  hideCloseButton: boolean;
-  renderToHardwareTextureAndroid: boolean;
-  animatedOpacity: Animated.Value;
-  children?: ReactNode;
-  onClose: () => void;
+  readonly isTranslucent: boolean
+  readonly hideCloseButton: boolean
+  readonly renderToHardwareTextureAndroid: boolean
+  readonly animatedOpacity: Animated.Value
+  readonly children?: ReactNode
+  onClose(): void
 }
 
 const Header = ({
@@ -45,7 +39,7 @@ const Header = ({
   children,
   onClose,
 }: Props) => {
-  if (hideCloseButton) return;
+  if (hideCloseButton) return
 
   return (
     <Animated.View
@@ -66,7 +60,7 @@ const Header = ({
         </SafeAreaView>
       )}
     </Animated.View>
-  );
-};
+  )
+}
 
-export { Header };
+export { Header }

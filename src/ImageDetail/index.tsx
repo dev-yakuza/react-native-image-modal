@@ -1,83 +1,78 @@
-import React, { ReactNode, forwardRef, useImperativeHandle, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  Animated,
-  PanResponder,
-  Modal,
-  Image,
+import type { ReactNode } from 'react'
+import React, { forwardRef, useImperativeHandle, useRef } from 'react'
+import type {
   ImageResizeMode,
   StyleProp,
   ImageStyle,
   ImageSourcePropType,
   GestureResponderEvent,
   PanResponderGestureState,
-} from 'react-native';
+} from 'react-native'
+import { StyleSheet, View, Dimensions, Animated, PanResponder, Modal, Image } from 'react-native'
 
-import { OnTap, OnMove } from '../types';
-import { Background, Footer, Header } from './Components';
-import { DisplayImageArea } from './Components/DisplayImageArea';
+import type { OnTap, OnMove } from '../types'
+import { Background, Footer, Header } from './Components'
+import { DisplayImageArea } from './Components/DisplayImageArea'
 
-const LONG_PRESS_TIME = 800;
-const DOUBLE_CLICK_INTERVAL = 250;
-const MAX_OVERFLOW = 100;
-const INITIAL_SCALE = 1;
-const MIN_SCALE = 0.6;
-const MAX_SCALE = 10;
-const CLICK_DISTANCE = 10;
-const DRAG_DISMISS_THRESHOLD = 150;
-const INITIAL_ZOOM_DISTANCE = -1;
+const LONG_PRESS_TIME = 800
+const DOUBLE_CLICK_INTERVAL = 250
+const MAX_OVERFLOW = 100
+const INITIAL_SCALE = 1
+const MIN_SCALE = 0.6
+const MAX_SCALE = 10
+const CLICK_DISTANCE = 10
+const DRAG_DISMISS_THRESHOLD = 150
+const INITIAL_ZOOM_DISTANCE = -1
 
 const Styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
   },
-});
+})
 
 type ImageDetail = {
-  close: () => void;
-};
+  close(): void
+}
 
 interface Props {
-  renderToHardwareTextureAndroid: boolean;
-  isTranslucent?: boolean;
-  isOpen: boolean;
-  origin: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  source: ImageSourcePropType;
-  resizeMode?: ImageResizeMode;
-  backgroundColor?: string;
-  swipeToDismiss?: boolean;
-  hideCloseButton?: boolean;
-  imageStyle?: StyleProp<ImageStyle>;
-  parentLayout?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  animationDuration: number;
-  renderHeader?: (close: () => void) => ReactNode;
-  renderFooter?: (close: () => void) => ReactNode;
-  renderImageComponent?: (params: {
-    source: ImageSourcePropType;
-    style?: StyleProp<ImageStyle>;
-    resizeMode?: ImageResizeMode;
-  }) => ReactNode;
-  onTap?: (eventParams: OnTap) => void;
-  onDoubleTap?: () => void;
-  onLongPress?: () => void;
-  didOpen?: () => void;
-  onMove?: (position: OnMove) => void;
-  responderRelease?: (vx?: number, scale?: number) => void;
-  willClose?: () => void;
-  onClose: () => void;
+  readonly renderToHardwareTextureAndroid: boolean
+  readonly isTranslucent?: boolean
+  readonly isOpen: boolean
+  readonly origin: {
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+  }
+  readonly source: ImageSourcePropType
+  readonly resizeMode?: ImageResizeMode
+  readonly backgroundColor?: string
+  readonly swipeToDismiss?: boolean
+  readonly hideCloseButton?: boolean
+  readonly imageStyle?: StyleProp<ImageStyle>
+  readonly parentLayout?: {
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+  }
+  readonly animationDuration: number
+  renderHeader?(close: () => void): ReactNode
+  renderFooter?(close: () => void): ReactNode
+  renderImageComponent?(params: {
+    readonly source: ImageSourcePropType
+    readonly style?: StyleProp<ImageStyle>
+    readonly resizeMode?: ImageResizeMode
+  }): ReactNode
+  onTap?(eventParams: OnTap): void
+  onDoubleTap?(): void
+  onLongPress?(): void
+  didOpen?(): void
+  onMove?(position: OnMove): void
+  responderRelease?(vx?: number, scale?: number): void
+  willClose?(): void
+  onClose(): void
 }
 
 const ImageDetail = forwardRef<ImageDetail, Props>(
@@ -109,46 +104,46 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     }: Props,
     ref,
   ) => {
-    const imageOriginX = origin.x - (parentLayout?.x ?? 0) / 2;
-    const imageOriginY = origin.y - (parentLayout?.y ?? 0);
-    const imageOriginWidth = origin.width;
-    const imageOriginHeight = origin.height;
+    const imageOriginX = origin.x - (parentLayout?.x ?? 0) / 2
+    const imageOriginY = origin.y - (parentLayout?.y ?? 0)
+    const imageOriginWidth = origin.width
+    const imageOriginHeight = origin.height
 
-    const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
-    const _scale = useRef(INITIAL_SCALE);
-    const _animatedScale = new Animated.Value(INITIAL_SCALE);
-    const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 });
-    const _animatedFrame = new Animated.Value(0);
-    const _animatedOpacity = new Animated.Value(0);
-    const _imagePosition = new Animated.ValueXY({ x: imageOriginX, y: imageOriginY });
-    const _imageWidth = new Animated.Value(imageOriginWidth);
-    const _imageHeight = new Animated.Value(imageOriginHeight);
+    const { width: windowWidth, height: windowHeight } = Dimensions.get('window')
+    const _scale = useRef(INITIAL_SCALE)
+    const _animatedScale = new Animated.Value(INITIAL_SCALE)
+    const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 })
+    const _animatedFrame = new Animated.Value(0)
+    const _animatedOpacity = new Animated.Value(0)
+    const _imagePosition = new Animated.ValueXY({ x: imageOriginX, y: imageOriginY })
+    const _imageWidth = new Animated.Value(imageOriginWidth)
+    const _imageHeight = new Animated.Value(imageOriginHeight)
 
-    const _position = useRef({ x: 0, y: 0 });
-    const _lastPosition = useRef({ x: 0, y: 0 });
-    const _centerDiff = useRef({ x: 0, y: 0 });
-    const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE);
-    const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE);
-    const _horizontalWholeCounter = useRef(0);
-    const _verticalWholeCounter = useRef(0);
-    const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined);
-    const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined);
-    const _lastClickTime = useRef(0);
-    const _isDoubleClick = useRef(false);
-    const _isLongPress = useRef(false);
-    const _horizontalWholeOuterCounter = useRef(0);
-    const _isAnimated = useRef(true);
+    const _position = useRef({ x: 0, y: 0 })
+    const _lastPosition = useRef({ x: 0, y: 0 })
+    const _centerDiff = useRef({ x: 0, y: 0 })
+    const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
+    const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE)
+    const _horizontalWholeCounter = useRef(0)
+    const _verticalWholeCounter = useRef(0)
+    const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
+    const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
+    const _lastClickTime = useRef(0)
+    const _isDoubleClick = useRef(false)
+    const _isLongPress = useRef(false)
+    const _horizontalWholeOuterCounter = useRef(0)
+    const _isAnimated = useRef(true)
 
     const handleImageMove = (type: string): void => {
-      const { x: positionX, y: positionY } = _position.current;
+      const { x: positionX, y: positionY } = _position.current
       onMove?.({
         type,
         positionX,
         positionY,
         scale: _scale.current,
         zoomCurrentDistance: _zoomCurrentDistance.current,
-      });
-    };
+      })
+    }
 
     const handlePanResponderReleaseResolve = (changedTouchesCount: number): void => {
       // When image is zoomed out and finger is released,
@@ -157,38 +152,38 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         _position.current = {
           x: 0,
           y: 0,
-        };
+        }
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
           duration: animationDuration,
           useNativeDriver: false,
-        }).start();
-        return;
+        }).start()
+        return
       }
 
       // When image is zoomed in and finger is released,
       // Move image position
       if (_scale.current > INITIAL_SCALE) {
-        const verticalMax = (windowHeight * _scale.current - windowHeight) / 2 / _scale.current;
-        let { x: positionX, y: positionY } = _position.current;
+        const verticalMax = (windowHeight * _scale.current - windowHeight) / 2 / _scale.current
+        let { x: positionX, y: positionY } = _position.current
         if (positionY < -verticalMax) {
-          positionY = -verticalMax;
+          positionY = -verticalMax
         } else if (positionY > verticalMax) {
-          positionY = verticalMax;
+          positionY = verticalMax
         }
 
-        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current;
+        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
         if (positionX < -horizontalMax) {
-          positionX = -horizontalMax;
+          positionX = -horizontalMax
         } else if (positionX > horizontalMax) {
-          positionX = horizontalMax;
+          positionX = horizontalMax
         }
 
         Animated.timing(_animatedPosition, {
           toValue: { x: positionX, y: positionY },
           duration: animationDuration,
           useNativeDriver: false,
-        }).start();
+        }).start()
       }
 
       // When image is normal and finger is released with swipe up or down,
@@ -199,8 +194,8 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         changedTouchesCount === 1 &&
         Math.abs(_position.current.y) > DRAG_DISMISS_THRESHOLD
       ) {
-        handleClose();
-        return;
+        handleClose()
+        return
       }
 
       // When finger is released in original size of image,
@@ -209,12 +204,12 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         _position.current = {
           x: 0,
           y: 0,
-        };
+        }
         Animated.timing(_animatedPosition, {
           toValue: _position.current,
           duration: animationDuration,
           useNativeDriver: false,
-        }).start();
+        }).start()
       }
 
       // When finger is released,
@@ -223,88 +218,88 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         toValue: 1,
         duration: animationDuration,
         useNativeDriver: false,
-      }).start();
+      }).start()
 
-      _horizontalWholeOuterCounter.current = 0;
+      _horizontalWholeOuterCounter.current = 0
 
-      handleImageMove('onPanResponderRelease');
-    };
+      handleImageMove('onPanResponderRelease')
+    }
 
     const handlePanResponderGrant = (event: GestureResponderEvent) => {
       if (_isAnimated.current) {
-        return;
+        return
       }
-      _lastPosition.current = { x: 0, y: 0 };
-      _zoomLastDistance.current = INITIAL_ZOOM_DISTANCE;
-      _horizontalWholeCounter.current = 0;
-      _verticalWholeCounter.current = 0;
-      _isDoubleClick.current = false;
-      _isLongPress.current = false;
+      _lastPosition.current = { x: 0, y: 0 }
+      _zoomLastDistance.current = INITIAL_ZOOM_DISTANCE
+      _horizontalWholeCounter.current = 0
+      _verticalWholeCounter.current = 0
+      _isDoubleClick.current = false
+      _isLongPress.current = false
 
       // Clear single click timeout
       if (_singleClickTimeout.current) {
-        clearTimeout(_singleClickTimeout.current);
-        _singleClickTimeout.current = undefined;
+        clearTimeout(_singleClickTimeout.current)
+        _singleClickTimeout.current = undefined
       }
 
       // Calculate center diff for pinch to zoom
       if (event.nativeEvent.changedTouches.length > 1) {
         const centerX =
           (event.nativeEvent.changedTouches[0].pageX + event.nativeEvent.changedTouches[1].pageX) /
-          2;
+          2
         const centerY =
           (event.nativeEvent.changedTouches[0].pageY + event.nativeEvent.changedTouches[1].pageY) /
-          2;
+          2
         _centerDiff.current = {
           x: centerX - windowWidth / 2,
           y: centerY - windowHeight / 2,
-        };
+        }
       }
 
       // Clear long press timeout
       if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current);
-        _longPressTimeout.current = undefined;
+        clearTimeout(_longPressTimeout.current)
+        _longPressTimeout.current = undefined
       }
       _longPressTimeout.current = setTimeout(() => {
-        _isLongPress.current = true;
-        onLongPress?.();
-      }, LONG_PRESS_TIME);
+        _isLongPress.current = true
+        onLongPress?.()
+      }, LONG_PRESS_TIME)
 
       // Double tap to zoom
       if (event.nativeEvent.changedTouches.length <= 1) {
         if (new Date().getTime() - _lastClickTime.current < (DOUBLE_CLICK_INTERVAL || 0)) {
-          _lastClickTime.current = 0;
-          onDoubleTap?.();
+          _lastClickTime.current = 0
+          onDoubleTap?.()
 
-          clearTimeout(_longPressTimeout.current);
-          _longPressTimeout.current = undefined;
+          clearTimeout(_longPressTimeout.current)
+          _longPressTimeout.current = undefined
 
           const doubleClickPosition = {
             x: event.nativeEvent.changedTouches[0].pageX,
             y: event.nativeEvent.changedTouches[0].pageY,
-          };
+          }
 
-          _isDoubleClick.current = true;
+          _isDoubleClick.current = true
 
           if (_scale.current !== INITIAL_SCALE) {
-            _scale.current = INITIAL_SCALE;
-            _position.current = { x: 0, y: 0 };
+            _scale.current = INITIAL_SCALE
+            _position.current = { x: 0, y: 0 }
           } else {
-            const { x: doubleClickX, y: doubleClickY } = doubleClickPosition;
-            const beforeScale = _scale.current;
-            _scale.current = 2;
+            const { x: doubleClickX, y: doubleClickY } = doubleClickPosition
+            const beforeScale = _scale.current
+            _scale.current = 2
 
-            const diffScale = _scale.current - beforeScale;
-            const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current;
-            const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current;
+            const diffScale = _scale.current - beforeScale
+            const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current
+            const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current
             _position.current = {
               x,
               y,
-            };
+            }
           }
 
-          handleImageMove('centerOn');
+          handleImageMove('centerOn')
 
           Animated.parallel([
             Animated.timing(_animatedScale, {
@@ -317,186 +312,186 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
               duration: animationDuration,
               useNativeDriver: false,
             }),
-          ]).start();
+          ]).start()
         } else {
-          _lastClickTime.current = new Date().getTime();
+          _lastClickTime.current = new Date().getTime()
         }
       }
-    };
+    }
 
     const handlePanResponderMove = (
       event: GestureResponderEvent,
       gestureState: PanResponderGestureState,
     ) => {
       if (_isDoubleClick.current || _isAnimated.current) {
-        return;
+        return
       }
 
       // Single tap to move image
       if (event.nativeEvent.changedTouches.length <= 1) {
-        const { x, y } = _lastPosition.current;
-        const { dx, dy } = gestureState;
-        let diffX = dx - x;
-        const diffY = dy - y;
+        const { x, y } = _lastPosition.current
+        const { dx, dy } = gestureState
+        let diffX = dx - x
+        const diffY = dy - y
 
-        _lastPosition.current = { x: dx, y: dy };
+        _lastPosition.current = { x: dx, y: dy }
 
-        _horizontalWholeCounter.current += diffX;
-        _verticalWholeCounter.current += diffY;
+        _horizontalWholeCounter.current += diffX
+        _verticalWholeCounter.current += diffY
 
         if (
           (Math.abs(_horizontalWholeCounter.current) > 5 ||
             Math.abs(_verticalWholeCounter.current) > 5) &&
           _longPressTimeout.current
         ) {
-          clearTimeout(_longPressTimeout.current);
-          _longPressTimeout.current = undefined;
+          clearTimeout(_longPressTimeout.current)
+          _longPressTimeout.current = undefined
         }
 
         if (windowWidth * _scale.current > windowWidth) {
           if (_horizontalWholeOuterCounter.current > 0) {
             if (diffX < 0) {
               if (_horizontalWholeOuterCounter.current > Math.abs(diffX)) {
-                _horizontalWholeOuterCounter.current += diffX;
-                diffX = 0;
+                _horizontalWholeOuterCounter.current += diffX
+                diffX = 0
               } else {
-                diffX += _horizontalWholeOuterCounter.current;
-                _horizontalWholeOuterCounter.current = 0;
+                diffX += _horizontalWholeOuterCounter.current
+                _horizontalWholeOuterCounter.current = 0
               }
             } else {
-              _horizontalWholeOuterCounter.current += diffX;
+              _horizontalWholeOuterCounter.current += diffX
             }
           } else if (_horizontalWholeOuterCounter.current < 0) {
             if (diffX > 0) {
               if (Math.abs(_horizontalWholeOuterCounter.current) > diffX) {
-                _horizontalWholeOuterCounter.current += diffX;
-                diffX = 0;
+                _horizontalWholeOuterCounter.current += diffX
+                diffX = 0
               } else {
-                diffX += _horizontalWholeOuterCounter.current;
-                _horizontalWholeOuterCounter.current = 0;
+                diffX += _horizontalWholeOuterCounter.current
+                _horizontalWholeOuterCounter.current = 0
               }
             } else {
-              _horizontalWholeOuterCounter.current += diffX;
+              _horizontalWholeOuterCounter.current += diffX
             }
           }
 
-          let x = _position.current.x;
-          x += diffX / _scale.current;
+          let x = _position.current.x
+          x += diffX / _scale.current
 
-          const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current;
+          const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
           if (x < -horizontalMax) {
-            x = -horizontalMax;
-            _horizontalWholeOuterCounter.current += -1 / 1e10;
+            x = -horizontalMax
+            _horizontalWholeOuterCounter.current += -1 / 1e10
           } else if (x > horizontalMax) {
-            x = horizontalMax;
-            _horizontalWholeOuterCounter.current += 1 / 1e10;
+            x = horizontalMax
+            _horizontalWholeOuterCounter.current += 1 / 1e10
           }
-          _position.current.x = x;
-          _animatedPosition.setValue(_position.current);
+          _position.current.x = x
+          _animatedPosition.setValue(_position.current)
         } else {
-          _horizontalWholeOuterCounter.current += diffX;
+          _horizontalWholeOuterCounter.current += diffX
         }
 
         if (_horizontalWholeOuterCounter.current > (MAX_OVERFLOW || 0)) {
-          _horizontalWholeOuterCounter.current = MAX_OVERFLOW || 0;
+          _horizontalWholeOuterCounter.current = MAX_OVERFLOW || 0
         } else if (_horizontalWholeOuterCounter.current < -(MAX_OVERFLOW || 0)) {
-          _horizontalWholeOuterCounter.current = -(MAX_OVERFLOW || 0);
+          _horizontalWholeOuterCounter.current = -(MAX_OVERFLOW || 0)
         }
 
-        let positionY = _position.current.y;
-        positionY += diffY / _scale.current;
-        _position.current.y = positionY;
-        _animatedPosition.setValue(_position.current);
+        let positionY = _position.current.y
+        positionY += diffY / _scale.current
+        _position.current.y = positionY
+        _animatedPosition.setValue(_position.current)
         if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
-          _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight);
+          _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight)
         }
       } else {
         // Pinch to zoom
         if (_longPressTimeout.current) {
-          clearTimeout(_longPressTimeout.current);
-          _longPressTimeout.current = undefined;
+          clearTimeout(_longPressTimeout.current)
+          _longPressTimeout.current = undefined
         }
-        let minX: number;
-        let maxX: number;
+        let minX: number
+        let maxX: number
         if (
           event.nativeEvent.changedTouches[0].locationX >
           event.nativeEvent.changedTouches[1].locationX
         ) {
-          minX = event.nativeEvent.changedTouches[1].pageX;
-          maxX = event.nativeEvent.changedTouches[0].pageX;
+          minX = event.nativeEvent.changedTouches[1].pageX
+          maxX = event.nativeEvent.changedTouches[0].pageX
         } else {
-          minX = event.nativeEvent.changedTouches[0].pageX;
-          maxX = event.nativeEvent.changedTouches[1].pageX;
+          minX = event.nativeEvent.changedTouches[0].pageX
+          maxX = event.nativeEvent.changedTouches[1].pageX
         }
-        let minY: number;
-        let maxY: number;
+        let minY: number
+        let maxY: number
         if (
           event.nativeEvent.changedTouches[0].locationY >
           event.nativeEvent.changedTouches[1].locationY
         ) {
-          minY = event.nativeEvent.changedTouches[1].pageY;
-          maxY = event.nativeEvent.changedTouches[0].pageY;
+          minY = event.nativeEvent.changedTouches[1].pageY
+          maxY = event.nativeEvent.changedTouches[0].pageY
         } else {
-          minY = event.nativeEvent.changedTouches[0].pageY;
-          maxY = event.nativeEvent.changedTouches[1].pageY;
+          minY = event.nativeEvent.changedTouches[0].pageY
+          maxY = event.nativeEvent.changedTouches[1].pageY
         }
-        const widthDistance = maxX - minX;
-        const heightDistance = maxY - minY;
+        const widthDistance = maxX - minX
+        const heightDistance = maxY - minY
         const diagonalDistance = Math.sqrt(
           widthDistance * widthDistance + heightDistance * heightDistance,
-        );
-        _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1));
+        )
+        _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1))
         if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
           // Update zoom
-          const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200;
-          let zoom = _scale.current + distanceDiff;
+          const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200
+          let zoom = _scale.current + distanceDiff
           if (zoom < MIN_SCALE) {
-            zoom = MIN_SCALE;
+            zoom = MIN_SCALE
           }
           if (zoom > MAX_SCALE) {
-            zoom = MAX_SCALE;
+            zoom = MAX_SCALE
           }
-          _scale.current = zoom;
-          _animatedScale.setValue(_scale.current);
+          _scale.current = zoom
+          _animatedScale.setValue(_scale.current)
 
           // Update image position
-          _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom;
-          _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom;
-          _animatedPosition.setValue(_position.current);
+          _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom
+          _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom
+          _animatedPosition.setValue(_position.current)
         }
-        _zoomLastDistance.current = _zoomCurrentDistance.current;
+        _zoomLastDistance.current = _zoomCurrentDistance.current
       }
 
-      handleImageMove('onPanResponderMove');
-    };
+      handleImageMove('onPanResponderMove')
+    }
 
     const handlePanResponderRelease = (
       event: GestureResponderEvent,
       gestureState: PanResponderGestureState,
     ) => {
       if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current);
-        _longPressTimeout.current = undefined;
+        clearTimeout(_longPressTimeout.current)
+        _longPressTimeout.current = undefined
       }
 
       if (_isDoubleClick.current || _isLongPress.current || _isAnimated.current) {
-        return;
+        return
       }
 
       const moveDistance = Math.sqrt(
         gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy,
-      );
-      const { locationX, locationY, pageX, pageY } = event.nativeEvent;
+      )
+      const { locationX, locationY, pageX, pageY } = event.nativeEvent
 
       if (event.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
         _singleClickTimeout.current = setTimeout(() => {
-          onTap?.({ locationX, locationY, pageX, pageY });
-        }, DOUBLE_CLICK_INTERVAL);
+          onTap?.({ locationX, locationY, pageX, pageY })
+        }, DOUBLE_CLICK_INTERVAL)
       } else {
-        responderRelease?.(gestureState.vx, _scale.current);
-        handlePanResponderReleaseResolve(event.nativeEvent.changedTouches.length);
+        responderRelease?.(gestureState.vx, _scale.current)
+        handlePanResponderReleaseResolve(event.nativeEvent.changedTouches.length)
       }
-    };
+    }
 
     const _imagePanResponder = PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -504,12 +499,12 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       onPanResponderGrant: handlePanResponderGrant,
       onPanResponderMove: handlePanResponderMove,
       onPanResponderRelease: handlePanResponderRelease,
-    });
+    })
 
     const handleClose = (): void => {
       setTimeout(() => {
-        _isAnimated.current = true;
-        willClose?.();
+        _isAnimated.current = true
+        willClose?.()
 
         Animated.parallel([
           Animated.timing(_animatedScale, {
@@ -550,11 +545,11 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             useNativeDriver: false,
           }),
         ]).start(() => {
-          onClose();
-          _isAnimated.current = false;
-        });
-      });
-    };
+          onClose()
+          _isAnimated.current = false
+        })
+      })
+    }
 
     const animateConf = {
       transform: [
@@ -572,7 +567,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       top: _imagePosition.y,
       width: _imageWidth,
       height: _imageHeight,
-    };
+    }
 
     Animated.parallel([
       Animated.timing(_animatedOpacity, {
@@ -603,17 +598,17 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         useNativeDriver: false,
       }),
     ]).start(() => {
-      _isAnimated.current = false;
+      _isAnimated.current = false
       if (isOpen) {
-        didOpen?.();
+        didOpen?.()
       }
-    });
+    })
 
     useImperativeHandle(ref, () => ({
       close() {
-        handleClose();
+        handleClose()
       },
-    }));
+    }))
 
     return (
       <Modal
@@ -686,8 +681,8 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           </Footer>
         )}
       </Modal>
-    );
+    )
   },
-);
+)
 
-export { ImageDetail };
+export { ImageDetail }

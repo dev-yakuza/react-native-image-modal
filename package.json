@@ -6,8 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "rm -rf dist && tsc",
-    "lint": "eslint --ext .tsx --ext .ts src/",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --check ./src",
+    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,md}\"",
     "cspell": "cspell '**' --gitignore --show-suggestions",
     "start": "rm -rf Develop/dist && tsc -w --outDir Develop/dist"
   },
@@ -38,15 +40,18 @@
     "@types/react-native": "0.73.0",
     "@typescript-eslint/eslint-plugin": "7.13.0",
     "@typescript-eslint/parser": "7.13.0",
+    "cspell": "^8.8.4",
     "eslint": "8.57.0",
-    "eslint-plugin-prettier": "5.1.3",
+    "eslint-plugin-functional": "^6.5.1",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react": "7.34.2",
     "eslint-plugin-react-hooks": "4.6.2",
+    "eslint-plugin-unicorn": "^54.0.0",
+    "eslint-plugin-unused-imports": "^3.2.0",
     "lefthook": "^1.6.15",
     "prettier": "3.3.2",
     "react": "18.3.1",
     "react-native": "0.74.2",
-    "typescript": "5.4.5",
-    "cspell": "^8.8.4"
+    "typescript": "5.4.5"
   }
 }

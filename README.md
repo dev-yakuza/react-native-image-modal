@@ -42,7 +42,7 @@ npm install --save react-native-image-modal
 Import react-native-image-modal.
 
 ```js
-import ImageModal from 'react-native-image-modal';
+import ImageModal from 'react-native-image-modal'
 ```
 
 Add the source code below to where you want to use it.
@@ -50,8 +50,8 @@ Add the source code below to where you want to use it.
 ```js
 return (
   <ImageModal
-    resizeMode="contain"
-    imageBackgroundColor="#000000"
+    resizeMode='contain'
+    imageBackgroundColor='#000000'
     style={{
       width: 250,
       height: 250,
@@ -60,7 +60,7 @@ return (
       uri: 'https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg',
     }}
   />
-);
+)
 ```
 
 ### Custom Image component

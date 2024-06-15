@@ -18,7 +18,7 @@
     "outDir": "dist",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "removeComments": true
+    "removeComments": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "Develop", "DevelopWithExpo", "Example", "ExampleWithExpo", "dist"]

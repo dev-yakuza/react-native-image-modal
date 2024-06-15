@@ -1,5 +1,6 @@
-import React from 'react';
-import { Animated, ColorValue, StyleSheet } from 'react-native';
+import React from 'react'
+import type { ColorValue } from 'react-native'
+import { Animated, StyleSheet } from 'react-native'
 
 const Styles = StyleSheet.create({
   background: {
@@ -9,12 +10,12 @@ const Styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-});
+})
 
 interface Props {
-  animatedOpacity: Animated.Value;
-  backgroundColor: ColorValue;
-  renderToHardwareTextureAndroid: boolean;
+  readonly animatedOpacity: Animated.Value
+  readonly backgroundColor: ColorValue
+  readonly renderToHardwareTextureAndroid: boolean
 }
 
 const Background = ({
@@ -31,7 +32,7 @@ const Background = ({
         { opacity: animatedOpacity },
       ]}
     />
-  );
-};
+  )
+}
 
-export { Background };
+export { Background }

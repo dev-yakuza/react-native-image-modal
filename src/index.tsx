@@ -1,78 +1,62 @@
-import React, {
-  ReactNode,
-  RefObject,
-  createRef,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Animated,
-  View,
-  TouchableOpacity,
-  Dimensions,
-  Image,
-  StyleProp,
-  ImageStyle,
-  ImageResizeMode,
-  ImageSourcePropType,
-} from 'react-native';
+import type { ReactNode, RefObject } from 'react'
+import React, { createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import type { StyleProp, ImageStyle, ImageResizeMode, ImageSourcePropType } from 'react-native'
+import { Animated, View, TouchableOpacity, Dimensions, Image } from 'react-native'
 
-import { OnTap, OnMove } from './types';
-import { ImageDetail } from './ImageDetail';
+import { ImageDetail } from './ImageDetail'
+import type { OnTap, OnMove } from './types'
 
-const VISIBLE_OPACITY = 1;
-const INVISIBLE_OPACITY = 0;
+const VISIBLE_OPACITY = 1
+const INVISIBLE_OPACITY = 0
 
 type ReactNativeImageModal = {
-  isOpen: boolean;
-  open: () => void;
-  close: () => void;
-};
+  readonly isOpen: boolean
+  open(): void
+  close(): void
+}
 
 interface Props {
-  source: ImageSourcePropType;
-  style?: StyleProp<ImageStyle>;
-  resizeMode?: ImageResizeMode;
-  isRTL?: boolean;
-  renderToHardwareTextureAndroid?: boolean;
-  isTranslucent?: boolean;
-  swipeToDismiss?: boolean;
-  imageBackgroundColor?: string;
-  overlayBackgroundColor?: string;
-  hideCloseButton?: boolean;
+  readonly source: ImageSourcePropType
+  readonly style?: StyleProp<ImageStyle>
+  readonly resizeMode?: ImageResizeMode
+  readonly isRTL?: boolean
+  readonly renderToHardwareTextureAndroid?: boolean
+  readonly isTranslucent?: boolean
+  readonly swipeToDismiss?: boolean
+  readonly imageBackgroundColor?: string
+  readonly overlayBackgroundColor?: string
+  readonly hideCloseButton?: boolean
   /**
    * @deprecated This prop is deprecated and will be removed in future releases. Use `ref` instead.
    */
-  modalRef?: RefObject<ImageDetail>;
-  disabled?: boolean;
-  modalImageStyle?: ImageStyle;
-  modalImageResizeMode?: ImageResizeMode;
-  parentLayout?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  animationDuration?: number;
-  renderHeader?: (close: () => void) => ReactNode;
-  renderFooter?: (close: () => void) => ReactNode;
-  renderImageComponent?: (params: {
-    source: ImageSourcePropType;
-    style?: StyleProp<ImageStyle>;
-    resizeMode?: ImageResizeMode;
-  }) => ReactNode;
-  onLongPressOriginImage?: () => void;
-  onTap?: (eventParams: OnTap) => void;
-  onDoubleTap?: () => void;
-  onLongPress?: () => void;
-  onOpen?: () => void;
-  didOpen?: () => void;
-  onMove?: (position: OnMove) => void;
-  responderRelease?: (vx?: number, scale?: number) => void;
-  willClose?: () => void;
-  onClose?: () => void;
+  readonly modalRef?: RefObject<ImageDetail>
+  readonly disabled?: boolean
+  readonly modalImageStyle?: ImageStyle
+  readonly modalImageResizeMode?: ImageResizeMode
+  readonly parentLayout?: {
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+  }
+  readonly animationDuration?: number
+  renderHeader?(close: () => void): ReactNode
+  renderFooter?(close: () => void): ReactNode
+  renderImageComponent?(params: {
+    readonly source: ImageSourcePropType
+    readonly style?: StyleProp<ImageStyle>
+    readonly resizeMode?: ImageResizeMode
+  }): ReactNode
+  onLongPressOriginImage?(): void
+  onTap?(eventParams: OnTap): void
+  onDoubleTap?(): void
+  onLongPress?(): void
+  onOpen?(): void
+  didOpen?(): void
+  onMove?(position: OnMove): void
+  responderRelease?(vx?: number, scale?: number): void
+  willClose?(): void
+  onClose?(): void
 }
 
 const ImageModal = forwardRef<ReactNativeImageModal, Props>(
@@ -110,24 +94,24 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
     }: Props,
     ref,
   ) => {
-    const imageRef = createRef<View>();
-    const imageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current;
-    const imageDetailRef = modalRef ?? useRef<ImageDetail>(null);
+    const imageRef = createRef<View>()
+    const imageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
+    const imageDetailRef = modalRef ?? useRef<ImageDetail>(null)
 
     const [modalInitialPosition, setModalInitialPosition] = useState({
       x: 0,
       y: 0,
       width: 0,
       height: 0,
-    });
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    })
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const getModalPositionX = (x: number, width: number): number => {
       if (isRTL) {
-        return Dimensions.get('window').width - width - x;
+        return Dimensions.get('window').width - width - x
       }
-      return x;
-    };
+      return x
+    }
     const updateModalInitialPosition = (): void => {
       imageRef.current?.measureInWindow((x, y, width, height) => {
         setModalInitialPosition({
@@ -135,48 +119,48 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
           height,
           x: getModalPositionX(x, width),
           y,
-        });
-      });
-    };
-    Dimensions.addEventListener('change', updateModalInitialPosition);
+        })
+      })
+    }
+    Dimensions.addEventListener('change', updateModalInitialPosition)
 
     const showModal = (): void => {
-      onOpen?.();
-      updateModalInitialPosition();
+      onOpen?.()
+      updateModalInitialPosition()
       setTimeout(() => {
-        setIsModalOpen(true);
-      });
-    };
+        setIsModalOpen(true)
+      })
+    }
     const hideModal = (): void => {
       setTimeout(() => {
-        setIsModalOpen(false);
-        onClose?.();
-      });
-    };
+        setIsModalOpen(false)
+        onClose?.()
+      })
+    }
 
     const handleOpen = (): void => {
-      showModal();
+      showModal()
       Animated.timing(imageOpacity, {
         toValue: INVISIBLE_OPACITY,
         duration: 100,
         useNativeDriver: false,
-      }).start();
-    };
+      }).start()
+    }
 
     const handleClose = (): void => {
-      imageOpacity.setValue(VISIBLE_OPACITY);
-      hideModal();
-    };
+      imageOpacity.setValue(VISIBLE_OPACITY)
+      hideModal()
+    }
 
     useImperativeHandle(ref, () => ({
       isOpen: isModalOpen,
       open() {
-        handleOpen();
+        handleOpen()
       },
       close() {
-        imageDetailRef.current?.close();
+        imageDetailRef?.current?.close()
       },
-    }));
+    }))
 
     return (
       <View
@@ -234,9 +218,9 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
           />
         )}
       </View>
-    );
+    )
   },
-);
+)
 
-export default ImageModal;
-export type { ReactNativeImageModal, ImageDetail };
+export default ImageModal
+export type { ReactNativeImageModal, ImageDetail }
