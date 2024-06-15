@@ -90,8 +90,8 @@ module.exports = {
     eqeqeq: 'error',
     'no-empty-function': 'off',
     semi: 'off',
-    // complexity: 'error',
-    // 'max-depth': 'error',
+    complexity: 'error',
+    'max-depth': 'error',
   },
   settings: {
     react: {
