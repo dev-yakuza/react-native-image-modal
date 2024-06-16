@@ -317,9 +317,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       const diffX = dx - x
       const diffY = dy - y
 
-      console.log(gestureState)
-      console.log(diffX, diffY)
-
       _lastPosition.current = { x: dx, y: dy }
 
       if (_longPressTimeout.current) {
