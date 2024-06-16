@@ -8,11 +8,10 @@ import type {
   GestureResponderEvent,
   PanResponderGestureState,
 } from 'react-native'
-import { StyleSheet, View, Dimensions, Animated, PanResponder, Modal, Image } from 'react-native'
+import { View, Dimensions, Animated, PanResponder, Modal } from 'react-native'
 
 import type { OnTap, OnMove } from '../types'
-import { Background, Footer, Header } from './Components'
-import { DisplayImageArea } from './Components/DisplayImageArea'
+import { Background, DisplayImageArea, Footer, Header, ImageArea } from './Components'
 
 const LONG_PRESS_TIME = 800
 const DOUBLE_CLICK_INTERVAL = 250
@@ -22,13 +21,6 @@ const MAX_SCALE = 10
 const CLICK_DISTANCE = 10
 const DRAG_DISMISS_THRESHOLD = 150
 const INITIAL_ZOOM_DISTANCE = -1
-
-const Styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-})
 
 type ImageDetail = {
   close(): void
@@ -508,24 +500,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       })
     }
 
-    const animateConf = {
-      transform: [
-        {
-          scale: _animatedScale,
-        },
-        {
-          translateX: _animatedPosition.x,
-        },
-        {
-          translateY: _animatedPosition.y,
-        },
-      ],
-      left: _imagePosition.x,
-      top: _imagePosition.y,
-      width: _imageWidth,
-      height: _imageHeight,
-    }
-
     useEffect(() => {
       Animated.parallel([
         Animated.timing(_animatedOpacity, {
@@ -602,24 +576,18 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             }}
             {..._imagePanResponder?.panHandlers}
           >
-            <Animated.View
-              style={animateConf}
+            <ImageArea
               renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            >
-              {typeof renderImageComponent === 'function' ? (
-                renderImageComponent({
-                  source,
-                  resizeMode,
-                  style: [imageStyle, Styles['image']],
-                })
-              ) : (
-                <Image
-                  resizeMode={resizeMode}
-                  style={[imageStyle, Styles['image']]}
-                  source={source}
-                />
-              )}
-            </Animated.View>
+              animatedScale={_animatedScale}
+              animatedPosition={_animatedPosition}
+              imagePosition={_imagePosition}
+              imageWidth={_imageWidth}
+              imageHeight={_imageHeight}
+              source={source}
+              resizeMode={resizeMode}
+              imageStyle={imageStyle}
+              renderImageComponent={renderImageComponent}
+            />
           </View>
         </DisplayImageArea>
         <Header
