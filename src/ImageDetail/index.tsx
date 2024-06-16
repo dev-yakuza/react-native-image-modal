@@ -1,26 +1,12 @@
 import type { ReactNode } from 'react'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
-import type {
-  ImageResizeMode,
-  StyleProp,
-  ImageStyle,
-  ImageSourcePropType,
-  GestureResponderEvent,
-  PanResponderGestureState,
-} from 'react-native'
-import { View, Dimensions, Animated, PanResponder, Modal } from 'react-native'
+import type { ImageResizeMode, StyleProp, ImageStyle, ImageSourcePropType } from 'react-native'
+import { Dimensions, Animated, Modal } from 'react-native'
 
 import type { OnTap, OnMove } from '../types'
 import { Background, DisplayImageArea, Footer, Header, ImageArea } from './Components'
 
-const LONG_PRESS_TIME = 800
-const DOUBLE_CLICK_INTERVAL = 250
 const INITIAL_SCALE = 1
-const MIN_SCALE = 0.6
-const MAX_SCALE = 10
-const CLICK_DISTANCE = 10
-const DRAG_DISMISS_THRESHOLD = 150
-const INITIAL_ZOOM_DISTANCE = -1
 
 type ImageDetail = {
   close(): void
@@ -101,7 +87,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     const imageOriginHeight = origin.height
 
     const { width: windowWidth, height: windowHeight } = Dimensions.get('window')
-    const _scale = useRef(INITIAL_SCALE)
+
     const _animatedScale = new Animated.Value(INITIAL_SCALE)
     const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 })
     const _animatedFrame = new Animated.Value(0)
@@ -110,345 +96,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     const _imageWidth = new Animated.Value(imageOriginWidth)
     const _imageHeight = new Animated.Value(imageOriginHeight)
 
-    const _position = useRef({ x: 0, y: 0 })
-    const _lastPosition = useRef({ x: 0, y: 0 })
-    const _centerDiff = useRef({ x: 0, y: 0 })
-    const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
-    const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE)
-    const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
-    const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
-    const _lastClickTime = useRef(0)
-    const _isDoubleClick = useRef(false)
-    const _isLongPress = useRef(false)
     const _isAnimated = useRef(true)
-
-    const handleImageMove = (type: string): void => {
-      const { x: positionX, y: positionY } = _position.current
-      onMove?.({
-        type,
-        positionX,
-        positionY,
-        scale: _scale.current,
-        zoomCurrentDistance: _zoomCurrentDistance.current,
-      })
-    }
-
-    const handlePanResponderReleaseResolve = (changedTouchesCount: number): void => {
-      // When image is zoomed out and finger is released,
-      // Move image position to the center of the screen.
-      if (_scale.current < INITIAL_SCALE) {
-        _position.current = {
-          x: 0,
-          y: 0,
-        }
-        Animated.timing(_animatedPosition, {
-          toValue: _position.current,
-          duration: animationDuration,
-          useNativeDriver: false,
-        }).start()
-        return
-      }
-
-      // When image is zoomed in and finger is released,
-      // Move image position
-      if (_scale.current > INITIAL_SCALE) {
-        const verticalMax = (windowHeight * _scale.current - windowHeight) / 2 / _scale.current
-        let { x: positionX, y: positionY } = _position.current
-        if (positionY < -verticalMax) {
-          positionY = -verticalMax
-        } else if (positionY > verticalMax) {
-          positionY = verticalMax
-        }
-
-        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
-        if (positionX < -horizontalMax) {
-          positionX = -horizontalMax
-        } else if (positionX > horizontalMax) {
-          positionX = horizontalMax
-        }
-
-        Animated.timing(_animatedPosition, {
-          toValue: { x: positionX, y: positionY },
-          duration: animationDuration,
-          useNativeDriver: false,
-        }).start()
-      }
-
-      // When image is normal and finger is released with swipe up or down,
-      // Close image detail.
-      if (
-        swipeToDismiss &&
-        _scale.current === INITIAL_SCALE &&
-        changedTouchesCount === 1 &&
-        Math.abs(_position.current.y) > DRAG_DISMISS_THRESHOLD
-      ) {
-        handleClose()
-        return
-      }
-
-      // When finger is released in original size of image,
-      // image should move to the center of the screen.
-      if (_scale.current === INITIAL_SCALE) {
-        _position.current = {
-          x: 0,
-          y: 0,
-        }
-        Animated.timing(_animatedPosition, {
-          toValue: _position.current,
-          duration: animationDuration,
-          useNativeDriver: false,
-        }).start()
-      }
-
-      // When finger is released,
-      // background should return to its normal opacity.
-      Animated.timing(_animatedOpacity, {
-        toValue: 1,
-        duration: animationDuration,
-        useNativeDriver: false,
-      }).start()
-
-      handleImageMove('onPanResponderRelease')
-    }
-
-    const handlePanResponderGrant = (event: GestureResponderEvent) => {
-      if (_isAnimated.current) {
-        return
-      }
-      _lastPosition.current = { x: 0, y: 0 }
-      _zoomLastDistance.current = INITIAL_ZOOM_DISTANCE
-      _isDoubleClick.current = false
-      _isLongPress.current = false
-
-      // Clear single click timeout
-      if (_singleClickTimeout.current) {
-        clearTimeout(_singleClickTimeout.current)
-        _singleClickTimeout.current = undefined
-      }
-
-      // Calculate center diff for pinch to zoom
-      if (event.nativeEvent.changedTouches.length > 1) {
-        const centerX =
-          (event.nativeEvent.changedTouches[0].pageX + event.nativeEvent.changedTouches[1].pageX) /
-          2
-        const centerY =
-          (event.nativeEvent.changedTouches[0].pageY + event.nativeEvent.changedTouches[1].pageY) /
-          2
-        _centerDiff.current = {
-          x: centerX - windowWidth / 2,
-          y: centerY - windowHeight / 2,
-        }
-      }
-
-      // Clear long press timeout
-      if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current)
-        _longPressTimeout.current = undefined
-      }
-      _longPressTimeout.current = setTimeout(() => {
-        _isLongPress.current = true
-        onLongPress?.()
-      }, LONG_PRESS_TIME)
-
-      // Double tap to zoom
-      if (event.nativeEvent.changedTouches.length <= 1) {
-        if (new Date().getTime() - _lastClickTime.current < (DOUBLE_CLICK_INTERVAL || 0)) {
-          _lastClickTime.current = 0
-          onDoubleTap?.()
-
-          clearTimeout(_longPressTimeout.current)
-          _longPressTimeout.current = undefined
-
-          const doubleClickPosition = {
-            x: event.nativeEvent.changedTouches[0].pageX,
-            y: event.nativeEvent.changedTouches[0].pageY,
-          }
-
-          _isDoubleClick.current = true
-
-          if (_scale.current !== INITIAL_SCALE) {
-            _scale.current = INITIAL_SCALE
-            _position.current = { x: 0, y: 0 }
-          } else {
-            const { x: doubleClickX, y: doubleClickY } = doubleClickPosition
-            const beforeScale = _scale.current
-            _scale.current = 2
-
-            const diffScale = _scale.current - beforeScale
-            const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current
-            const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current
-            _position.current = {
-              x,
-              y,
-            }
-          }
-
-          handleImageMove('centerOn')
-
-          Animated.parallel([
-            Animated.timing(_animatedScale, {
-              toValue: _scale.current,
-              duration: animationDuration,
-              useNativeDriver: false,
-            }),
-            Animated.timing(_animatedPosition, {
-              toValue: _position.current,
-              duration: animationDuration,
-              useNativeDriver: false,
-            }),
-          ]).start()
-        } else {
-          _lastClickTime.current = new Date().getTime()
-        }
-      }
-    }
-
-    const moveImageToGesture = (gestureState: PanResponderGestureState) => {
-      const { x, y } = _lastPosition.current
-      const { dx, dy } = gestureState
-      const diffX = dx - x
-      const diffY = dy - y
-
-      _lastPosition.current = { x: dx, y: dy }
-
-      if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current)
-        _longPressTimeout.current = undefined
-      }
-
-      if (_scale.current > 1) {
-        let x = _position.current.x
-        x += diffX / _scale.current
-
-        const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
-        if (x < -horizontalMax) {
-          x = -horizontalMax
-        } else if (x > horizontalMax) {
-          x = horizontalMax
-        }
-        _position.current.x = x
-        _animatedPosition.setValue(_position.current)
-      }
-
-      let positionY = _position.current.y
-      positionY += diffY / _scale.current
-      _position.current.y = positionY
-      _animatedPosition.setValue(_position.current)
-      if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
-        _animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight)
-      }
-    }
-
-    const pinchZoom = (event: GestureResponderEvent) => {
-      // Pinch to zoom
-      if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current)
-        _longPressTimeout.current = undefined
-      }
-      let minX: number
-      let maxX: number
-      if (
-        event.nativeEvent.changedTouches[0].locationX >
-        event.nativeEvent.changedTouches[1].locationX
-      ) {
-        minX = event.nativeEvent.changedTouches[1].pageX
-        maxX = event.nativeEvent.changedTouches[0].pageX
-      } else {
-        minX = event.nativeEvent.changedTouches[0].pageX
-        maxX = event.nativeEvent.changedTouches[1].pageX
-      }
-      let minY: number
-      let maxY: number
-      if (
-        event.nativeEvent.changedTouches[0].locationY >
-        event.nativeEvent.changedTouches[1].locationY
-      ) {
-        minY = event.nativeEvent.changedTouches[1].pageY
-        maxY = event.nativeEvent.changedTouches[0].pageY
-      } else {
-        minY = event.nativeEvent.changedTouches[0].pageY
-        maxY = event.nativeEvent.changedTouches[1].pageY
-      }
-      const widthDistance = maxX - minX
-      const heightDistance = maxY - minY
-      const diagonalDistance = Math.sqrt(
-        widthDistance * widthDistance + heightDistance * heightDistance,
-      )
-      _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1))
-      if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
-        // Update zoom
-        const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200
-        let zoom = _scale.current + distanceDiff
-        if (zoom < MIN_SCALE) {
-          zoom = MIN_SCALE
-        }
-        if (zoom > MAX_SCALE) {
-          zoom = MAX_SCALE
-        }
-        _scale.current = zoom
-        _animatedScale.setValue(_scale.current)
-
-        // Update image position
-        _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom
-        _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom
-        _animatedPosition.setValue(_position.current)
-      }
-      _zoomLastDistance.current = _zoomCurrentDistance.current
-    }
-
-    const handlePanResponderMove = (
-      event: GestureResponderEvent,
-      gestureState: PanResponderGestureState,
-    ) => {
-      if (_isDoubleClick.current || _isAnimated.current) {
-        return
-      }
-
-      // Single tap to move image
-      if (event.nativeEvent.changedTouches.length <= 1) {
-        moveImageToGesture(gestureState)
-      } else {
-        pinchZoom(event)
-      }
-
-      handleImageMove('onPanResponderMove')
-    }
-
-    const handlePanResponderRelease = (
-      event: GestureResponderEvent,
-      gestureState: PanResponderGestureState,
-    ) => {
-      if (_longPressTimeout.current) {
-        clearTimeout(_longPressTimeout.current)
-        _longPressTimeout.current = undefined
-      }
-
-      if (_isDoubleClick.current || _isLongPress.current || _isAnimated.current) {
-        return
-      }
-
-      const moveDistance = Math.sqrt(
-        gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy,
-      )
-      const { locationX, locationY, pageX, pageY } = event.nativeEvent
-
-      if (event.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
-        _singleClickTimeout.current = setTimeout(() => {
-          onTap?.({ locationX, locationY, pageX, pageY })
-        }, DOUBLE_CLICK_INTERVAL)
-      } else {
-        responderRelease?.(gestureState.vx, _scale.current)
-        handlePanResponderReleaseResolve(event.nativeEvent.changedTouches.length)
-      }
-    }
-
-    const _imagePanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: handlePanResponderGrant,
-      onPanResponderMove: handlePanResponderMove,
-      onPanResponderRelease: handlePanResponderRelease,
-    })
 
     const handleClose = (): void => {
       setTimeout(() => {
@@ -500,7 +148,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       })
     }
 
-    useEffect(() => {
+    const handleOpen = () => {
       Animated.parallel([
         Animated.timing(_animatedOpacity, {
           toValue: 1,
@@ -535,6 +183,10 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           didOpen?.()
         }
       })
+    }
+
+    useEffect(() => {
+      handleOpen()
     }, [_animatedOpacity, _imagePosition, _imageWidth, _imageHeight, _animatedFrame])
 
     useImperativeHandle(ref, () => ({
@@ -569,26 +221,30 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           isTranslucent={isTranslucent}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         >
-          <View
-            style={{
-              overflow: 'hidden',
-              flex: 1,
-            }}
-            {..._imagePanResponder?.panHandlers}
-          >
-            <ImageArea
-              renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-              animatedScale={_animatedScale}
-              animatedPosition={_animatedPosition}
-              imagePosition={_imagePosition}
-              imageWidth={_imageWidth}
-              imageHeight={_imageHeight}
-              source={source}
-              resizeMode={resizeMode}
-              imageStyle={imageStyle}
-              renderImageComponent={renderImageComponent}
-            />
-          </View>
+          <ImageArea
+            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+            isAnimated={_isAnimated}
+            animatedOpacity={_animatedOpacity}
+            animatedScale={_animatedScale}
+            animatedPosition={_animatedPosition}
+            imagePosition={_imagePosition}
+            imageWidth={_imageWidth}
+            imageHeight={_imageHeight}
+            windowWidth={windowWidth}
+            windowHeight={windowHeight}
+            swipeToDismiss={swipeToDismiss}
+            source={source}
+            resizeMode={resizeMode}
+            imageStyle={imageStyle}
+            animationDuration={animationDuration}
+            renderImageComponent={renderImageComponent}
+            onClose={handleClose}
+            onMove={onMove}
+            onTap={onTap}
+            onDoubleTap={onDoubleTap}
+            onLongPress={onLongPress}
+            responderRelease={responderRelease}
+          />
         </DisplayImageArea>
         <Header
           isTranslucent={isTranslucent}
