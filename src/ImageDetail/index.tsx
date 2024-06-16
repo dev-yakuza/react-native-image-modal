@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import React, { forwardRef, useImperativeHandle, useRef } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import type {
   ImageResizeMode,
   StyleProp,
@@ -529,40 +529,42 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       height: _imageHeight,
     }
 
-    Animated.parallel([
-      Animated.timing(_animatedOpacity, {
-        toValue: 1,
-        useNativeDriver: false,
-        duration: animationDuration,
-      }),
-      Animated.timing(_imagePosition, {
-        toValue: {
-          x: 0,
-          y: 0,
-        },
-        useNativeDriver: false,
-        duration: animationDuration * 2,
-      }),
-      Animated.timing(_imageWidth, {
-        toValue: windowWidth,
-        useNativeDriver: false,
-        duration: animationDuration * 2,
-      }),
-      Animated.timing(_imageHeight, {
-        toValue: windowHeight,
-        useNativeDriver: false,
-        duration: animationDuration * 2,
-      }),
-      Animated.spring(_animatedFrame, {
-        toValue: 1,
-        useNativeDriver: false,
-      }),
-    ]).start(() => {
-      _isAnimated.current = false
-      if (isOpen) {
-        didOpen?.()
-      }
-    })
+    useEffect(() => {
+      Animated.parallel([
+        Animated.timing(_animatedOpacity, {
+          toValue: 1,
+          useNativeDriver: false,
+          duration: animationDuration,
+        }),
+        Animated.timing(_imagePosition, {
+          toValue: {
+            x: 0,
+            y: 0,
+          },
+          useNativeDriver: false,
+          duration: animationDuration * 2,
+        }),
+        Animated.timing(_imageWidth, {
+          toValue: windowWidth,
+          useNativeDriver: false,
+          duration: animationDuration * 2,
+        }),
+        Animated.timing(_imageHeight, {
+          toValue: windowHeight,
+          useNativeDriver: false,
+          duration: animationDuration * 2,
+        }),
+        Animated.spring(_animatedFrame, {
+          toValue: 1,
+          useNativeDriver: false,
+        }),
+      ]).start(() => {
+        _isAnimated.current = false
+        if (isOpen) {
+          didOpen?.()
+        }
+      })
+    }, [_animatedOpacity, _imagePosition, _imageWidth, _imageHeight, _animatedFrame])
 
     useImperativeHandle(ref, () => ({
       close() {
