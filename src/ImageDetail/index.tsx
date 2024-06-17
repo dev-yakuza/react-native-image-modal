@@ -8,7 +8,7 @@ import { Background, DisplayImageArea, Footer, Header, ImageArea } from './Compo
 
 const INITIAL_SCALE = 1
 
-type ImageDetail = {
+interface ImageDetail {
   close(): void
 }
 
