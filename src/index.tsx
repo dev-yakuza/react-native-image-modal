@@ -9,56 +9,185 @@ import type { OnTap, OnMove } from './types'
 const VISIBLE_OPACITY = 1
 const INVISIBLE_OPACITY = 0
 
-type ReactNativeImageModal = {
+interface ReactNativeImageModal {
   readonly isOpen: boolean
   open(): void
   close(): void
 }
 
+/**
+ * @typedef {object} Props
+ * @property {ImageSourcePropType} source - Image source.
+ * @property {StyleProp<ImageStyle>} [style] - Style for original image.
+ * @property {ImageResizeMode} [resizeMode=contain] - Resize mode for original image.
+ * @property {boolean} [isRTL] - Support for right-to-left layout.
+ * @property {boolean} [renderToHardwareTextureAndroid=true] - (Android only) Use hardware texture for animation.
+ * @property {boolean} [isTranslucent=false] - Determines whether image modal should go under the system statusbar.
+ * @property {boolean} [swipeToDismiss=true] - Dismiss image modal by swiping up or down.
+ * @property {boolean} [imageBackgroundColor] - Background color for original image.
+ * @property {boolean} [overlayBackgroundColor=#000000] - Background color for modal image.
+ * @property {boolean} [hideCloseButton=false] - Hide close button.
+ * @property {boolean} modalRef - Deprecated: Ref for image modal. Use ref instead.
+ * @property {boolean} [disabled] - Disable opening image modal.
+ * @property {boolean} [modalImageStyle] - Style for modal image.
+ * @property {boolean} [modalImageResizeMode=contain] - Resize mode for modal image.
+ * @property {boolean} [parentLayout] - Parent component layout of ImageModal to limit displayed image modal area when closing image modal.
+ * @property {number} [animationDuration=100] - Duration of animation.
+ * @property {(close: () => void) => ReactNode} [renderHeader] - Render custom header component. You can close image modal by calling close function.
+ * @property {(close: () => void) => ReactNode} [renderFooter] - Render custom footer component. You can close image modal by calling close function.
+ * @property {(params: { source: ImageSourcePropType, style?: StyleProp<ImageStyle>, resizeMode?: ImageResizeMode }) => ReactNode} [renderImageComponent] - Render custom image component like expo-image or react-native-fast-image.
+ * @property {() => void} [onLongPressOriginImage] - Callback when long press on original image.
+ * @property {(eventParams: OnTap) => void} [onTap] - Callback when tap on modal image.
+ * @property {() => void} [onDoubleTap] - Callback when double tap on modal image.
+ * @property {() => void} [onLongPress] - Callback when long press on modal image.
+ * @property {() => void} [onOpen] - Callback when image modal is opening.
+ * @property {() => void} [didOpen] - Callback when image modal is opened.
+ * @property {(position: OnMove) => void} [onMove] - Callback when modal image is moving.
+ * @property {(vx: number, scale: number) => void} [responderRelease] - Callback when finger(s) is released on modal image.
+ * @property {() => void} [willClose] - Callback when image modal is closing.
+ * @property {() => void} [onClose] - Callback when image modal is closed.
+ */
 interface Props {
+  /**
+   *  Image source.
+   */
   readonly source: ImageSourcePropType
+  /**
+   *  Style for original image.
+   */
   readonly style?: StyleProp<ImageStyle>
+  /**
+   *  Resize mode for original image.
+   *  @default 'contain'
+   */
   readonly resizeMode?: ImageResizeMode
+  /**
+   *  Support for right-to-left layout.
+   */
   readonly isRTL?: boolean
+  /**
+   *  (Android only) Use hardware texture for animation.
+   *  @default true
+   */
   readonly renderToHardwareTextureAndroid?: boolean
+  /**
+   *  Determines whether image modal should go under the system statusbar.
+   *  @default false
+   */
   readonly isTranslucent?: boolean
+  /**
+   *  Dismiss image modal by swiping up or down.
+   *  @default true
+   */
   readonly swipeToDismiss?: boolean
+  /**
+   *  Background color for original image.
+   */
   readonly imageBackgroundColor?: string
+  /**
+   *  Background color for modal image.
+   *  @default '#000000'
+   */
   readonly overlayBackgroundColor?: string
+  /**
+   *  Hide close button.
+   *  @default false
+   */
   readonly hideCloseButton?: boolean
   /**
    * @deprecated This prop is deprecated and will be removed in future releases. Use `ref` instead.
    */
   readonly modalRef?: RefObject<ImageDetail>
+  /**
+   *  Disable opening image modal.
+   */
   readonly disabled?: boolean
+  /**
+   *  Style for modal image.
+   */
   readonly modalImageStyle?: ImageStyle
+  /**
+   *  Resize mode for modal image.
+   *  @default 'contain'
+   */
   readonly modalImageResizeMode?: ImageResizeMode
+  /**
+   *  Parent component layout of ImageModal to limit displayed image modal area when closing image modal.
+   */
   readonly parentLayout?: {
     readonly x: number
     readonly y: number
     readonly width: number
     readonly height: number
   }
+  /**
+   *  Duration of animation.
+   *  @default 100
+   */
   readonly animationDuration?: number
+  /**
+   *  Render custom header component. You can close image modal by calling close function.
+   */
   renderHeader?(close: () => void): ReactNode
+  /**
+   *  Render custom footer component. You can close image modal by calling close function.
+   */
   renderFooter?(close: () => void): ReactNode
+  /**
+   *  Render custom image component like expo-image or react-native-fast-image.
+   */
   renderImageComponent?(params: {
     readonly source: ImageSourcePropType
     readonly style?: StyleProp<ImageStyle>
     readonly resizeMode?: ImageResizeMode
   }): ReactNode
+  /**
+   *  Callback when long press on original image.
+   */
   onLongPressOriginImage?(): void
+  /**
+   *  Callback when tap on modal image.
+   */
   onTap?(eventParams: OnTap): void
+  /**
+   *  Callback when double tap on modal image.
+   */
   onDoubleTap?(): void
+  /**
+   *  Callback when long press on modal image.
+   */
   onLongPress?(): void
+  /**
+   *  Callback when image modal is opening.
+   */
   onOpen?(): void
+  /**
+   *  Callback when image modal is opened.
+   */
   didOpen?(): void
+  /**
+   *  Callback when modal image is moving.
+   */
   onMove?(position: OnMove): void
+  /**
+   *  Callback when finger(s) is released on modal image.
+   */
   responderRelease?(vx?: number, scale?: number): void
+  /**
+   *  Callback when image modal is closing.
+   */
   willClose?(): void
+  /**
+   *  Callback when image modal is closed.
+   */
   onClose?(): void
 }
 
+/**
+ * ImageModal component
+ * @param {Props} props - Props of ImageModal component
+ * @returns {ReactNode} Image modal component
+ */
 const ImageModal = forwardRef<ReactNativeImageModal, Props>(
   (
     {
