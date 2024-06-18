@@ -137,9 +137,10 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             useNativeDriver: false,
             duration: animationDuration * 2,
           }),
-          Animated.spring(_animatedFrame, {
+          Animated.timing(_animatedFrame, {
             toValue: 0,
             useNativeDriver: false,
+            duration: animationDuration,
           }),
         ]).start(() => {
           onClose()
@@ -173,9 +174,10 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           useNativeDriver: false,
           duration: animationDuration * 2,
         }),
-        Animated.spring(_animatedFrame, {
+        Animated.timing(_animatedFrame, {
           toValue: 1,
           useNativeDriver: false,
+          duration: animationDuration,
         }),
       ]).start(() => {
         _isAnimated.current = false
