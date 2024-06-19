@@ -45,7 +45,7 @@
     "eslint-plugin-functional": "^6.5.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.2.12",
-    "eslint-plugin-react": "7.34.2",
+    "eslint-plugin-react": "7.34.3",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-unicorn": "^54.0.0",
     "eslint-plugin-unused-imports": "^3.2.0",
