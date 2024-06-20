@@ -10,7 +10,7 @@ import type {
 } from 'react-native'
 import { StyleSheet, Image, PanResponder, View } from 'react-native'
 import { Animated } from 'react-native'
-import type { OnMove, OnTap } from '../../../types'
+import type { OnMove, OnTap } from '../../../../types'
 
 const INITIAL_SCALE = 1
 const LONG_PRESS_TIME = 800
@@ -34,9 +34,9 @@ interface Props {
   readonly animatedOpacity: Animated.Value
   readonly animatedScale: Animated.Value
   readonly animatedPosition: Animated.ValueXY
-  readonly imagePosition: Animated.ValueXY
-  readonly imageWidth: Animated.Value
-  readonly imageHeight: Animated.Value
+  readonly animatedImagePosition: Animated.ValueXY
+  readonly animatedImageWidth: Animated.Value
+  readonly animatedImageHeight: Animated.Value
   readonly windowWidth: number
   readonly windowHeight: number
   readonly source: ImageSourcePropType
@@ -63,9 +63,9 @@ const ImageArea = ({
   animatedOpacity,
   animatedScale,
   animatedPosition,
-  imagePosition,
-  imageWidth,
-  imageHeight,
+  animatedImagePosition,
+  animatedImageWidth,
+  animatedImageHeight,
   windowWidth,
   windowHeight,
   source,
@@ -439,10 +439,10 @@ const ImageArea = ({
               translateY: animatedPosition.y,
             },
           ],
-          left: imagePosition.x,
-          top: imagePosition.y,
-          width: imageWidth,
-          height: imageHeight,
+          left: animatedImagePosition.x,
+          top: animatedImagePosition.y,
+          width: animatedImageWidth,
+          height: animatedImageHeight,
         }}
         renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
       >

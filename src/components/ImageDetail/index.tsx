@@ -3,8 +3,8 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react
 import type { ImageResizeMode, StyleProp, ImageStyle, ImageSourcePropType } from 'react-native'
 import { Dimensions, Animated, Modal } from 'react-native'
 
-import type { OnTap, OnMove } from '../types'
-import { Background, DisplayImageArea, Footer, Header, ImageArea } from './Components'
+import type { OnTap, OnMove } from '../../types'
+import { Background, DisplayImageArea, Footer, Header, ImageArea } from './components'
 
 const INITIAL_SCALE = 1
 
@@ -81,120 +81,126 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
     }: Props,
     ref,
   ) => {
-    const imageOriginX = origin.x - (parentLayout?.x ?? 0) / 2
-    const imageOriginY = origin.y - (parentLayout?.y ?? 0)
-    const imageOriginWidth = origin.width
-    const imageOriginHeight = origin.height
-
     const { width: windowWidth, height: windowHeight } = Dimensions.get('window')
+    const originImagePosition = {
+      x: origin.x - (parentLayout?.x ?? 0) / 2,
+      y: origin.y - (parentLayout?.y ?? 0),
+    }
+    const { width: originImageWidth, height: originImageHeight } = origin
 
-    const _animatedScale = new Animated.Value(INITIAL_SCALE)
-    const _animatedPosition = new Animated.ValueXY({ x: 0, y: 0 })
-    const _animatedFrame = new Animated.Value(0)
-    const _animatedOpacity = new Animated.Value(0)
-    const _imagePosition = new Animated.ValueXY({ x: imageOriginX, y: imageOriginY })
-    const _imageWidth = new Animated.Value(imageOriginWidth)
-    const _imageHeight = new Animated.Value(imageOriginHeight)
+    const animatedScale = new Animated.Value(INITIAL_SCALE)
+    const animatedPosition = new Animated.ValueXY({ x: 0, y: 0 })
+    const animatedFrame = new Animated.Value(0)
+    const animatedOpacity = new Animated.Value(0)
+    const animatedImagePosition = new Animated.ValueXY(originImagePosition)
+    const animatedImageWidth = new Animated.Value(originImageWidth)
+    const animatedImageHeight = new Animated.Value(originImageHeight)
 
-    const _isAnimated = useRef(true)
+    const isAnimated = useRef(true)
 
     const handleClose = (): void => {
-      setTimeout(() => {
-        _isAnimated.current = true
-        willClose?.()
+      isAnimated.current = true
+      willClose?.()
 
+      setTimeout(() => {
+        console.log(originImagePosition, originImageWidth, originImageHeight)
         Animated.parallel([
-          Animated.timing(_animatedScale, {
+          Animated.timing(animatedScale, {
             toValue: INITIAL_SCALE,
             useNativeDriver: false,
             duration: animationDuration,
           }),
-          Animated.timing(_animatedPosition, {
+          Animated.timing(animatedPosition, {
             toValue: 0,
             useNativeDriver: false,
             duration: animationDuration,
           }),
-          Animated.timing(_animatedOpacity, {
+          Animated.timing(animatedOpacity, {
             toValue: 0,
             useNativeDriver: false,
             duration: animationDuration,
           }),
-          Animated.timing(_imagePosition, {
-            toValue: {
-              x: imageOriginX,
-              y: imageOriginY,
-            },
+          Animated.timing(animatedImagePosition, {
+            toValue: originImagePosition,
             useNativeDriver: false,
             duration: animationDuration * 2,
           }),
-          Animated.timing(_imageWidth, {
-            toValue: imageOriginWidth,
+          Animated.timing(animatedImageWidth, {
+            toValue: originImageWidth,
             useNativeDriver: false,
             duration: animationDuration * 2,
           }),
-          Animated.timing(_imageHeight, {
-            toValue: imageOriginHeight,
+          Animated.timing(animatedImageHeight, {
+            toValue: originImageHeight,
             useNativeDriver: false,
             duration: animationDuration * 2,
           }),
-          Animated.timing(_animatedFrame, {
+          Animated.timing(animatedFrame, {
             toValue: 0,
             useNativeDriver: false,
             duration: animationDuration,
           }),
         ]).start(() => {
           onClose()
-          _isAnimated.current = false
+          isAnimated.current = false
         })
       })
     }
 
     const handleOpen = () => {
-      Animated.parallel([
-        Animated.timing(_animatedOpacity, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: animationDuration,
-        }),
-        Animated.timing(_imagePosition, {
-          toValue: {
-            x: 0,
-            y: 0,
-          },
-          useNativeDriver: false,
-          duration: animationDuration * 2,
-        }),
-        Animated.timing(_imageWidth, {
-          toValue: windowWidth,
-          useNativeDriver: false,
-          duration: animationDuration * 2,
-        }),
-        Animated.timing(_imageHeight, {
-          toValue: windowHeight,
-          useNativeDriver: false,
-          duration: animationDuration * 2,
-        }),
-        Animated.timing(_animatedFrame, {
-          toValue: 1,
-          useNativeDriver: false,
-          duration: animationDuration,
-        }),
-      ]).start(() => {
-        _isAnimated.current = false
-        if (isOpen) {
-          didOpen?.()
-        }
+      isAnimated.current = true
+
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(animatedOpacity, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
+          Animated.timing(animatedImagePosition, {
+            toValue: {
+              x: 0,
+              y: 0,
+            },
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.timing(animatedImageWidth, {
+            toValue: windowWidth,
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.timing(animatedImageHeight, {
+            toValue: windowHeight,
+            useNativeDriver: false,
+            duration: animationDuration * 2,
+          }),
+          Animated.timing(animatedFrame, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
+        ]).start(() => {
+          isAnimated.current = false
+          if (isOpen) {
+            didOpen?.()
+          }
+        })
       })
     }
 
     useEffect(() => {
       handleOpen()
-    }, [_animatedOpacity, _imagePosition, _imageWidth, _imageHeight, _animatedFrame])
+    }, [
+      animatedOpacity,
+      animatedImagePosition,
+      animatedImageWidth,
+      animatedImageHeight,
+      animatedFrame,
+    ])
 
     useImperativeHandle(ref, () => ({
-      close() {
-        handleClose()
-      },
+      close: handleClose,
     }))
 
     return (
@@ -213,25 +219,25 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         ]}
       >
         <Background
-          animatedOpacity={_animatedOpacity}
+          animatedOpacity={animatedOpacity}
           backgroundColor={backgroundColor}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         />
         <DisplayImageArea
-          animatedFrame={_animatedFrame}
+          animatedFrame={animatedFrame}
           parentLayout={parentLayout}
           isTranslucent={isTranslucent}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
         >
           <ImageArea
             renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            isAnimated={_isAnimated}
-            animatedOpacity={_animatedOpacity}
-            animatedScale={_animatedScale}
-            animatedPosition={_animatedPosition}
-            imagePosition={_imagePosition}
-            imageWidth={_imageWidth}
-            imageHeight={_imageHeight}
+            isAnimated={isAnimated}
+            animatedOpacity={animatedOpacity}
+            animatedScale={animatedScale}
+            animatedPosition={animatedPosition}
+            animatedImagePosition={animatedImagePosition}
+            animatedImageWidth={animatedImageWidth}
+            animatedImageHeight={animatedImageHeight}
             windowWidth={windowWidth}
             windowHeight={windowHeight}
             swipeToDismiss={swipeToDismiss}
@@ -252,7 +258,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           isTranslucent={isTranslucent}
           hideCloseButton={hideCloseButton}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-          animatedOpacity={_animatedOpacity}
+          animatedOpacity={animatedOpacity}
           onClose={handleClose}
         >
           {typeof renderHeader === 'function' ? renderHeader(handleClose) : undefined}
@@ -260,7 +266,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
         {typeof renderFooter === 'function' && (
           <Footer
             renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            animatedOpacity={_animatedOpacity}
+            animatedOpacity={animatedOpacity}
           >
             {renderFooter(handleClose)}
           </Footer>

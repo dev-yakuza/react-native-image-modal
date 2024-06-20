@@ -1,9 +1,10 @@
 import type { ReactNode, RefObject } from 'react'
 import React, { createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import type { StyleProp, ImageStyle, ImageResizeMode, ImageSourcePropType } from 'react-native'
-import { Animated, View, TouchableOpacity, Dimensions, Image } from 'react-native'
+import { Animated, View } from 'react-native'
 
-import { ImageDetail } from './ImageDetail'
+import { ImageDetail, OriginImage } from './components'
+import { useOriginImageLayout } from './hooks'
 import type { OnTap, OnMove } from './types'
 
 const VISIBLE_OPACITY = 1
@@ -20,7 +21,7 @@ interface ReactNativeImageModal {
  * @property {ImageSourcePropType} source - Image source.
  * @property {StyleProp<ImageStyle>} [style] - Style for original image.
  * @property {ImageResizeMode} [resizeMode=contain] - Resize mode for original image.
- * @property {boolean} [isRTL] - Support for right-to-left layout.
+ * @property {boolean} [isRTL=false] - Support for right-to-left layout.
  * @property {boolean} [renderToHardwareTextureAndroid=true] - (Android only) Use hardware texture for animation.
  * @property {boolean} [isTranslucent=false] - Determines whether image modal should go under the system statusbar.
  * @property {boolean} [swipeToDismiss=true] - Dismiss image modal by swiping up or down.
@@ -28,7 +29,7 @@ interface ReactNativeImageModal {
  * @property {boolean} [overlayBackgroundColor=#000000] - Background color for modal image.
  * @property {boolean} [hideCloseButton=false] - Hide close button.
  * @property {boolean} modalRef - Deprecated: Ref for image modal. Use ref instead.
- * @property {boolean} [disabled] - Disable opening image modal.
+ * @property {boolean} [disabled=false] - Disable opening image modal.
  * @property {boolean} [modalImageStyle] - Style for modal image.
  * @property {boolean} [modalImageResizeMode=contain] - Resize mode for modal image.
  * @property {boolean} [parentLayout] - Parent component layout of ImageModal to limit displayed image modal area when closing image modal.
@@ -63,6 +64,7 @@ interface Props {
   readonly resizeMode?: ImageResizeMode
   /**
    *  Support for right-to-left layout.
+   *  @default false
    */
   readonly isRTL?: boolean
   /**
@@ -100,6 +102,7 @@ interface Props {
   readonly modalRef?: RefObject<ImageDetail>
   /**
    *  Disable opening image modal.
+   *  @default false
    */
   readonly disabled?: boolean
   /**
@@ -139,7 +142,7 @@ interface Props {
   renderImageComponent?(params: {
     readonly source: ImageSourcePropType
     readonly style?: StyleProp<ImageStyle>
-    readonly resizeMode?: ImageResizeMode
+    readonly resizeMode: ImageResizeMode
   }): ReactNode
   /**
    *  Callback when long press on original image.
@@ -194,7 +197,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
       source,
       style,
       resizeMode = 'contain',
-      isRTL,
+      isRTL = false,
       renderToHardwareTextureAndroid = true,
       isTranslucent,
       swipeToDismiss = true,
@@ -202,7 +205,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
       overlayBackgroundColor,
       hideCloseButton,
       modalRef,
-      disabled,
+      disabled = false,
       modalImageStyle,
       modalImageResizeMode,
       parentLayout,
@@ -224,42 +227,24 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
     ref,
   ) => {
     const imageRef = createRef<View>()
-    const imageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
-    const imageDetailRef = modalRef ?? useRef<ImageDetail>(null)
-
-    const [modalInitialPosition, setModalInitialPosition] = useState({
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-    })
+    const imageDetailRef = modalRef ?? createRef<ImageDetail>()
+    // If don't use useRef, animation will not work
+    const originImageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
     const [isModalOpen, setIsModalOpen] = useState(false)
-
-    const getModalPositionX = (x: number, width: number): number => {
-      if (isRTL) {
-        return Dimensions.get('window').width - width - x
-      }
-      return x
-    }
-    const updateModalInitialPosition = (): void => {
-      imageRef.current?.measureInWindow((x, y, width, height) => {
-        setModalInitialPosition({
-          width,
-          height,
-          x: getModalPositionX(x, width),
-          y,
-        })
-      })
-    }
-    Dimensions.addEventListener('change', updateModalInitialPosition)
+    const { originImageLayout, updateOriginImageLayout } = useOriginImageLayout({
+      imageRef,
+      isRTL,
+    })
 
     const showModal = (): void => {
       onOpen?.()
-      updateModalInitialPosition()
+      // Before opening modal, updating origin image position is required.
+      updateOriginImageLayout()
       setTimeout(() => {
         setIsModalOpen(true)
       })
     }
+
     const hideModal = (): void => {
       setTimeout(() => {
         setIsModalOpen(false)
@@ -269,55 +254,42 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
 
     const handleOpen = (): void => {
       showModal()
-      Animated.timing(imageOpacity, {
+      Animated.timing(originImageOpacity, {
         toValue: INVISIBLE_OPACITY,
-        duration: 100,
+        duration: animationDuration,
         useNativeDriver: false,
       }).start()
     }
 
     const handleClose = (): void => {
-      imageOpacity.setValue(VISIBLE_OPACITY)
+      originImageOpacity.setValue(VISIBLE_OPACITY)
       hideModal()
     }
 
     useImperativeHandle(ref, () => ({
       isOpen: isModalOpen,
-      open() {
-        handleOpen()
-      },
+      open: handleOpen,
       close() {
-        imageDetailRef?.current?.close()
+        imageDetailRef.current!.close()
       },
     }))
 
     return (
       <View
         ref={imageRef}
-        onLayout={() => {}}
         style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
       >
-        <Animated.View
+        <OriginImage
+          source={source}
+          resizeMode={resizeMode}
+          imageOpacity={originImageOpacity}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-          style={{ opacity: imageOpacity }}
-        >
-          <TouchableOpacity
-            activeOpacity={VISIBLE_OPACITY}
-            style={{ alignSelf: 'baseline' }}
-            onPress={disabled ? undefined : handleOpen}
-            onLongPress={onLongPressOriginImage}
-          >
-            {typeof renderImageComponent === 'function' ? (
-              renderImageComponent({
-                source,
-                style,
-                resizeMode,
-              })
-            ) : (
-              <Image source={source} style={style} resizeMode={resizeMode} />
-            )}
-          </TouchableOpacity>
-        </Animated.View>
+          disabled={disabled}
+          style={style}
+          onDialogOpen={handleOpen}
+          onLongPressOriginImage={onLongPressOriginImage}
+          renderImageComponent={renderImageComponent}
+        />
         {isModalOpen && (
           <ImageDetail
             source={source}
@@ -327,7 +299,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
             isOpen={isModalOpen}
             renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
             isTranslucent={isTranslucent}
-            origin={modalInitialPosition}
+            origin={originImageLayout}
             backgroundColor={overlayBackgroundColor}
             swipeToDismiss={swipeToDismiss}
             hideCloseButton={hideCloseButton}
