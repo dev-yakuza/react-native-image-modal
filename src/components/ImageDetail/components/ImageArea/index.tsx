@@ -20,8 +20,9 @@ const MAX_SCALE = 10
 const CLICK_DISTANCE = 10
 const DRAG_DISMISS_THRESHOLD = 150
 const INITIAL_ZOOM_DISTANCE = -1
+const VISIBLE_OPACITY = 1
 
-const Styles = StyleSheet.create({
+const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
@@ -30,20 +31,20 @@ const Styles = StyleSheet.create({
 
 interface Props {
   readonly renderToHardwareTextureAndroid: boolean
-  readonly isAnimated: MutableRefObject<boolean>
-  readonly animatedOpacity: Animated.Value
-  readonly animatedScale: Animated.Value
-  readonly animatedPosition: Animated.ValueXY
-  readonly animatedImagePosition: Animated.ValueXY
-  readonly animatedImageWidth: Animated.Value
-  readonly animatedImageHeight: Animated.Value
   readonly windowWidth: number
   readonly windowHeight: number
   readonly source: ImageSourcePropType
   readonly resizeMode?: ImageResizeMode
   readonly imageStyle?: StyleProp<ImageStyle>
   readonly swipeToDismiss?: boolean
+  readonly isAnimated: MutableRefObject<boolean>
   readonly animationDuration: number
+  readonly animatedOpacity: Animated.Value
+  readonly animatedScale: Animated.Value
+  readonly animatedPosition: Animated.ValueXY
+  readonly animatedImagePosition: Animated.ValueXY
+  readonly animatedImageWidth: Animated.Value
+  readonly animatedImageHeight: Animated.Value
   renderImageComponent?(params: {
     readonly source: ImageSourcePropType
     readonly style?: StyleProp<ImageStyle>
@@ -59,20 +60,20 @@ interface Props {
 
 const ImageArea = ({
   renderToHardwareTextureAndroid,
-  isAnimated,
-  animatedOpacity,
-  animatedScale,
-  animatedPosition,
-  animatedImagePosition,
-  animatedImageWidth,
-  animatedImageHeight,
   windowWidth,
   windowHeight,
   source,
   resizeMode,
   imageStyle,
   swipeToDismiss,
+  isAnimated,
   animationDuration,
+  animatedOpacity,
+  animatedScale,
+  animatedPosition,
+  animatedImagePosition,
+  animatedImageWidth,
+  animatedImageHeight,
   renderImageComponent,
   onClose,
   onDoubleTap,
@@ -86,106 +87,146 @@ const ImageArea = ({
   const _position = useRef({ x: 0, y: 0 })
   const _lastPosition = useRef({ x: 0, y: 0 })
   const _centerDiff = useRef({ x: 0, y: 0 })
-  const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
   const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE)
-  const _singleClickTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
-  const _longPressTimeout = useRef<undefined | NodeJS.Timeout>(undefined)
+  const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
+
   const _lastClickTime = useRef(0)
   const _isDoubleClick = useRef(false)
   const _isLongPress = useRef(false)
+  const _singleTapTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
+  const _longPressTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
 
-  const moveImageToGesture = (gestureState: PanResponderGestureState) => {
-    const { x, y } = _lastPosition.current
-    const { dx, dy } = gestureState
-    const diffX = dx - x
-    const diffY = dy - y
+  const getDistanceFromLastPosition = (
+    lastPosition: {
+      x: number
+      y: number
+    },
+    distancePosition: { dx: number; dy: number },
+  ) => {
+    const { x, y } = lastPosition
+    const { dx, dy } = distancePosition
 
-    _lastPosition.current = { x: dx, y: dy }
+    return { dx: dx - x, dy: dy - y }
+  }
 
+  const getPositionFromDistance = (
+    position: {
+      x: number
+      y: number
+    },
+    distancePosition: { dx: number; dy: number },
+  ) => {
+    const { dx, dy } = distancePosition
+    let { x, y } = position
+
+    x += dx / _scale.current
+    y = y + dy / _scale.current
+
+    return { x, y }
+  }
+
+  const clearLongPressTimeout = () => {
     if (_longPressTimeout.current) {
       clearTimeout(_longPressTimeout.current)
       _longPressTimeout.current = undefined
     }
+  }
 
-    if (_scale.current > 1) {
-      let x = _position.current.x
-      x += diffX / _scale.current
-
-      const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
-      if (x < -horizontalMax) {
-        x = -horizontalMax
-      } else if (x > horizontalMax) {
-        x = horizontalMax
-      }
-      _position.current.x = x
-      animatedPosition.setValue(_position.current)
+  const clearSingleTapTimeout = () => {
+    if (_singleTapTimeout.current) {
+      clearTimeout(_singleTapTimeout.current)
+      _singleTapTimeout.current = undefined
     }
+  }
 
-    let positionY = _position.current.y
-    positionY += diffY / _scale.current
-    _position.current.y = positionY
+  const getOpacityFromSwipe = (currentScale: number, dy: number) => {
+    if (swipeToDismiss && currentScale === INITIAL_SCALE) {
+      return (windowHeight - Math.abs(dy)) / windowHeight
+    }
+    return VISIBLE_OPACITY
+  }
+
+  const moveImageToGesture = (gestureState: PanResponderGestureState) => {
+    clearLongPressTimeout()
+    const { dx, dy } = gestureState
+    const newDistance = getDistanceFromLastPosition(_lastPosition.current, { dx, dy })
+    _lastPosition.current = { x: dx, y: dy }
+
+    _position.current = getPositionFromDistance(_position.current, newDistance)
     animatedPosition.setValue(_position.current)
-    if (swipeToDismiss && _scale.current === INITIAL_SCALE) {
-      animatedOpacity.setValue((windowHeight - Math.abs(gestureState.dy)) / windowHeight)
+
+    animatedOpacity.setValue(getOpacityFromSwipe(_scale.current, gestureState.dy))
+  }
+
+  const getDistanceBetweenTouches = (
+    firstFinger: { pageX: number; pageY: number },
+    secondFinger: { pageX: number; pageY: number },
+  ) => {
+    const { pageX: x0, pageY: y0 } = firstFinger
+    const { pageX: x1, pageY: y1 } = secondFinger
+    const widthDistance = Math.abs(x0 - x1)
+    const heightDistance = Math.abs(y0 - y1)
+    const diagonalDistance = Math.sqrt(
+      widthDistance * widthDistance + heightDistance * heightDistance,
+    )
+    return Number(diagonalDistance.toFixed(1))
+  }
+
+  const getZoomFromDistance = (currentScale: number, distanceDiff: number) => {
+    const zoom = currentScale + distanceDiff
+    if (zoom < MIN_SCALE) {
+      return MIN_SCALE
+    }
+    if (zoom > MAX_SCALE) {
+      return MAX_SCALE
+    }
+    return zoom
+  }
+
+  const getPositionFromZoom = ({
+    currentPosition,
+    centerDiff,
+    distanceDiff,
+    zoom,
+  }: {
+    currentPosition: { x: number; y: number }
+    centerDiff: { x: number; y: number }
+    distanceDiff: number
+    zoom: number
+  }) => {
+    return {
+      x: currentPosition.x - (centerDiff.x * distanceDiff) / zoom,
+      y: currentPosition.y - (centerDiff.y * distanceDiff) / zoom,
     }
   }
 
   const pinchZoom = (event: GestureResponderEvent) => {
+    clearLongPressTimeout()
     // Pinch to zoom
-    if (_longPressTimeout.current) {
-      clearTimeout(_longPressTimeout.current)
-      _longPressTimeout.current = undefined
-    }
-    let minX: number
-    let maxX: number
-    if (
-      event.nativeEvent.changedTouches[0].locationX > event.nativeEvent.changedTouches[1].locationX
-    ) {
-      minX = event.nativeEvent.changedTouches[1].pageX
-      maxX = event.nativeEvent.changedTouches[0].pageX
-    } else {
-      minX = event.nativeEvent.changedTouches[0].pageX
-      maxX = event.nativeEvent.changedTouches[1].pageX
-    }
-    let minY: number
-    let maxY: number
-    if (
-      event.nativeEvent.changedTouches[0].locationY > event.nativeEvent.changedTouches[1].locationY
-    ) {
-      minY = event.nativeEvent.changedTouches[1].pageY
-      maxY = event.nativeEvent.changedTouches[0].pageY
-    } else {
-      minY = event.nativeEvent.changedTouches[0].pageY
-      maxY = event.nativeEvent.changedTouches[1].pageY
-    }
-    const widthDistance = maxX - minX
-    const heightDistance = maxY - minY
-    const diagonalDistance = Math.sqrt(
-      widthDistance * widthDistance + heightDistance * heightDistance,
+    _zoomCurrentDistance.current = getDistanceBetweenTouches(
+      event.nativeEvent.changedTouches[0],
+      event.nativeEvent.changedTouches[1],
     )
-    _zoomCurrentDistance.current = Number(diagonalDistance.toFixed(1))
     if (_zoomLastDistance.current !== INITIAL_ZOOM_DISTANCE) {
       // Update zoom
       const distanceDiff = (_zoomCurrentDistance.current - _zoomLastDistance.current) / 200
-      let zoom = _scale.current + distanceDiff
-      if (zoom < MIN_SCALE) {
-        zoom = MIN_SCALE
-      }
-      if (zoom > MAX_SCALE) {
-        zoom = MAX_SCALE
-      }
+      const zoom = getZoomFromDistance(_scale.current, distanceDiff)
       _scale.current = zoom
       animatedScale.setValue(_scale.current)
 
       // Update image position
-      _position.current.x -= (_centerDiff.current.x * distanceDiff) / zoom
-      _position.current.y -= (_centerDiff.current.y * distanceDiff) / zoom
+      _position.current = getPositionFromZoom({
+        currentPosition: _position.current,
+        centerDiff: _centerDiff.current,
+        distanceDiff,
+        zoom,
+      })
       animatedPosition.setValue(_position.current)
     }
     _zoomLastDistance.current = _zoomCurrentDistance.current
   }
 
-  const handleImageMove = (type: string): void => {
+  const triggerOnMove = (type: string): void => {
     const { x: positionX, y: positionY } = _position.current
     onMove?.({
       type,
@@ -196,8 +237,21 @@ const ImageArea = ({
     })
   }
 
+  const getMaxPosition = (
+    scale: number,
+    position: { x: number; y: number },
+  ): { x: number; y: number } => {
+    let { x, y } = position
+    const verticalMax = (windowHeight * scale - windowHeight) / 2 / scale
+    y = Math.max(-verticalMax, Math.min(verticalMax, y))
+
+    const horizontalMax = (windowWidth * scale - windowWidth) / 2 / scale
+    x = Math.max(-horizontalMax, Math.min(horizontalMax, x))
+    return { x, y }
+  }
+
   const handlePanResponderReleaseResolve = (changedTouchesCount: number): void => {
-    // When image is zoomed out and finger is released,
+    // 1. When image is zoomed out and finger is released,
     // Move image position to the center of the screen.
     if (_scale.current < INITIAL_SCALE) {
       _position.current = {
@@ -212,36 +266,22 @@ const ImageArea = ({
       return
     }
 
-    // When image is zoomed in and finger is released,
+    // 2. When image is zoomed in and finger is released,
     // Move image position
     if (_scale.current > INITIAL_SCALE) {
-      const verticalMax = (windowHeight * _scale.current - windowHeight) / 2 / _scale.current
-      let { x: positionX, y: positionY } = _position.current
-      if (positionY < -verticalMax) {
-        positionY = -verticalMax
-      } else if (positionY > verticalMax) {
-        positionY = verticalMax
-      }
-
-      const horizontalMax = (windowWidth * _scale.current - windowWidth) / 2 / _scale.current
-      if (positionX < -horizontalMax) {
-        positionX = -horizontalMax
-      } else if (positionX > horizontalMax) {
-        positionX = horizontalMax
-      }
-
+      _position.current = getMaxPosition(_scale.current, _position.current)
       Animated.timing(animatedPosition, {
-        toValue: { x: positionX, y: positionY },
+        toValue: _position.current,
         duration: animationDuration,
         useNativeDriver: false,
       }).start()
+      return
     }
 
-    // When image is normal and finger is released with swipe up or down,
+    // 3. When image is normal and finger is released with swipe up or down,
     // Close image detail.
     if (
       swipeToDismiss &&
-      _scale.current === INITIAL_SCALE &&
       changedTouchesCount === 1 &&
       Math.abs(_position.current.y) > DRAG_DISMISS_THRESHOLD
     ) {
@@ -249,31 +289,65 @@ const ImageArea = ({
       return
     }
 
-    // When finger is released in original size of image,
+    // 4. When finger is released in original size of image,
     // image should move to the center of the screen.
-    if (_scale.current === INITIAL_SCALE) {
-      _position.current = {
-        x: 0,
-        y: 0,
-      }
-      Animated.timing(animatedPosition, {
-        toValue: _position.current,
-        duration: animationDuration,
-        useNativeDriver: false,
-      }).start()
+    _position.current = {
+      x: 0,
+      y: 0,
     }
-
-    // When finger is released,
-    // background should return to its normal opacity.
-    Animated.timing(animatedOpacity, {
-      toValue: 1,
+    Animated.timing(animatedPosition, {
+      toValue: _position.current,
       duration: animationDuration,
       useNativeDriver: false,
     }).start()
 
-    handleImageMove('onPanResponderRelease')
+    // And background should return to its normal opacity.
+    Animated.timing(animatedOpacity, {
+      toValue: VISIBLE_OPACITY,
+      duration: animationDuration,
+      useNativeDriver: false,
+    }).start()
+
+    triggerOnMove('onPanResponderRelease')
   }
 
+  const getCenterDiff = (
+    firstTouch: { pageX: number; pageY: number },
+    secondTouch: { pageX: number; pageY: number },
+  ) => {
+    const centerX = (firstTouch.pageX + secondTouch.pageX) / 2
+    const centerY = (firstTouch.pageY + secondTouch.pageY) / 2
+    return {
+      x: centerX - windowWidth / 2,
+      y: centerY - windowHeight / 2,
+    }
+  }
+
+  const getZoomAndPosition = (scale: number, position: { pageX: number; pageY: number }) => {
+    // If image is zoomed in, double tap to zoom out
+    if (scale !== INITIAL_SCALE) {
+      return {
+        scale: INITIAL_SCALE,
+        position: { x: 0, y: 0 },
+      }
+    }
+
+    // If image is zoomed out, double tap to zoom in
+    const { pageX: doubleClickX, pageY: doubleClickY } = position
+    const beforeScale = scale
+    const newScale = 2
+
+    const diffScale = newScale - beforeScale
+    const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current
+    const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current
+
+    return {
+      scale: newScale,
+      position: getMaxPosition(newScale, { x, y }),
+    }
+  }
+
+  // Trigger when finger is pressed
   const handlePanResponderGrant = (event: GestureResponderEvent) => {
     if (isAnimated.current) {
       return
@@ -284,67 +358,35 @@ const ImageArea = ({
     _isLongPress.current = false
 
     // Clear single click timeout
-    if (_singleClickTimeout.current) {
-      clearTimeout(_singleClickTimeout.current)
-      _singleClickTimeout.current = undefined
-    }
-
-    // Calculate center diff for pinch to zoom
-    if (event.nativeEvent.changedTouches.length > 1) {
-      const centerX =
-        (event.nativeEvent.changedTouches[0].pageX + event.nativeEvent.changedTouches[1].pageX) / 2
-      const centerY =
-        (event.nativeEvent.changedTouches[0].pageY + event.nativeEvent.changedTouches[1].pageY) / 2
-      _centerDiff.current = {
-        x: centerX - windowWidth / 2,
-        y: centerY - windowHeight / 2,
-      }
-    }
-
+    clearSingleTapTimeout()
     // Clear long press timeout
-    if (_longPressTimeout.current) {
-      clearTimeout(_longPressTimeout.current)
-      _longPressTimeout.current = undefined
-    }
+    clearLongPressTimeout()
+
     _longPressTimeout.current = setTimeout(() => {
       _isLongPress.current = true
       onLongPress?.()
     }, LONG_PRESS_TIME)
 
-    // Double tap to zoom
+    // Calculate center diff for pinch to zoom
+    if (event.nativeEvent.changedTouches.length > 1) {
+      _centerDiff.current = getCenterDiff(
+        event.nativeEvent.changedTouches[0],
+        event.nativeEvent.changedTouches[1],
+      )
+    }
+
     if (event.nativeEvent.changedTouches.length <= 1) {
-      if (new Date().getTime() - _lastClickTime.current < (DOUBLE_CLICK_INTERVAL || 0)) {
+      // Double tap to zoom
+      if (new Date().getTime() - _lastClickTime.current < DOUBLE_CLICK_INTERVAL) {
         _lastClickTime.current = 0
-        onDoubleTap?.()
-
-        clearTimeout(_longPressTimeout.current)
-        _longPressTimeout.current = undefined
-
-        const doubleClickPosition = {
-          x: event.nativeEvent.changedTouches[0].pageX,
-          y: event.nativeEvent.changedTouches[0].pageY,
-        }
-
         _isDoubleClick.current = true
 
-        if (_scale.current !== INITIAL_SCALE) {
-          _scale.current = INITIAL_SCALE
-          _position.current = { x: 0, y: 0 }
-        } else {
-          const { x: doubleClickX, y: doubleClickY } = doubleClickPosition
-          const beforeScale = _scale.current
-          _scale.current = 2
-
-          const diffScale = _scale.current - beforeScale
-          const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current
-          const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current
-          _position.current = {
-            x,
-            y,
-          }
-        }
-
-        handleImageMove('centerOn')
+        const { scale, position } = getZoomAndPosition(
+          _scale.current,
+          event.nativeEvent.changedTouches[0],
+        )
+        _scale.current = scale
+        _position.current = position
 
         Animated.parallel([
           Animated.timing(animatedScale, {
@@ -358,12 +400,15 @@ const ImageArea = ({
             useNativeDriver: false,
           }),
         ]).start()
+        triggerOnMove('centerOn')
+        onDoubleTap?.()
       } else {
         _lastClickTime.current = new Date().getTime()
       }
     }
   }
 
+  // Trigger when finger is moving
   const handlePanResponderMove = (
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState,
@@ -379,34 +424,30 @@ const ImageArea = ({
       pinchZoom(event)
     }
 
-    handleImageMove('onPanResponderMove')
+    triggerOnMove('onPanResponderMove')
   }
 
+  // Trigger when finger is released
   const handlePanResponderRelease = (
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState,
   ) => {
-    if (_longPressTimeout.current) {
-      clearTimeout(_longPressTimeout.current)
-      _longPressTimeout.current = undefined
-    }
-
+    clearLongPressTimeout()
     if (_isDoubleClick.current || _isLongPress.current || isAnimated.current) {
       return
     }
-
     const moveDistance = Math.sqrt(
       gestureState.dx * gestureState.dx + gestureState.dy * gestureState.dy,
     )
-    const { locationX, locationY, pageX, pageY } = event.nativeEvent
-
+    // Single tap
     if (event.nativeEvent.changedTouches.length === 1 && moveDistance < CLICK_DISTANCE) {
-      _singleClickTimeout.current = setTimeout(() => {
-        onTap?.({ locationX, locationY, pageX, pageY })
+      _singleTapTimeout.current = setTimeout(() => {
+        onTap?.(event.nativeEvent)
       }, DOUBLE_CLICK_INTERVAL)
     } else {
-      responderRelease?.(gestureState.vx, _scale.current)
+      // Finger is moved and released
       handlePanResponderReleaseResolve(event.nativeEvent.changedTouches.length)
+      responderRelease?.(gestureState.vx, _scale.current)
     }
   }
 
@@ -450,10 +491,10 @@ const ImageArea = ({
           renderImageComponent({
             source,
             resizeMode,
-            style: [imageStyle, Styles['image']],
+            style: [imageStyle, styles.image],
           })
         ) : (
-          <Image resizeMode={resizeMode} style={[imageStyle, Styles['image']]} source={source} />
+          <Image resizeMode={resizeMode} style={[imageStyle, styles.image]} source={source} />
         )}
       </Animated.View>
     </View>

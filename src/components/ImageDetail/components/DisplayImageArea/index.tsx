@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react'
 import React from 'react'
-import { Animated, Dimensions, Platform, StatusBar } from 'react-native'
+import { Animated, Dimensions, Platform, StatusBar, StyleSheet } from 'react-native'
+
+const styles = StyleSheet.create({
+  clippingArea: {
+    position: 'absolute',
+  },
+})
 
 interface Props {
   readonly animatedFrame: Animated.Value
@@ -14,6 +20,7 @@ interface Props {
   readonly renderToHardwareTextureAndroid: boolean
   readonly children: ReactNode
 }
+
 const DisplayImageArea = ({
   animatedFrame,
   parentLayout,
@@ -21,14 +28,15 @@ const DisplayImageArea = ({
   renderToHardwareTextureAndroid,
   children,
 }: Props) => {
-  // parentLayout is not passed in the props,
+  // When parentLayout is not passed in the props,
   // clipping is not needed, so clipping area should be full screen.
   const { width: windowWidth, height: windowHeight } = Dimensions.get('window')
 
-  // On Android, the status bar height should be added to the top position of the image.
+  // On Android, the status bar height should be added to the top position of the clipping area.
   const statusBarHeight =
     isTranslucent && Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0
-  const containerAnimateConf = {
+
+  const animationStyle = {
     left: animatedFrame.interpolate({
       inputRange: [0, 1],
       outputRange: [parentLayout?.x ?? 0, 0],
@@ -49,7 +57,7 @@ const DisplayImageArea = ({
 
   return (
     <Animated.View
-      style={{ position: 'absolute', ...containerAnimateConf }}
+      style={[styles.clippingArea, animationStyle]}
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
     >
       {children}
