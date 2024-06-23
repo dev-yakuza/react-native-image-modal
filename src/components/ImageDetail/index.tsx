@@ -103,8 +103,12 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
       willClose?.()
 
       setTimeout(() => {
-        console.log(originImagePosition, originImageWidth, originImageHeight)
         Animated.parallel([
+          Animated.timing(animatedFrame, {
+            toValue: 0,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
           Animated.timing(animatedScale, {
             toValue: INITIAL_SCALE,
             useNativeDriver: false,
@@ -135,11 +139,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             useNativeDriver: false,
             duration: animationDuration * 2,
           }),
-          Animated.timing(animatedFrame, {
-            toValue: 0,
-            useNativeDriver: false,
-            duration: animationDuration,
-          }),
         ]).start(() => {
           onClose()
           isAnimated.current = false
@@ -152,6 +151,11 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
 
       setTimeout(() => {
         Animated.parallel([
+          Animated.timing(animatedFrame, {
+            toValue: 1,
+            useNativeDriver: false,
+            duration: animationDuration,
+          }),
           Animated.timing(animatedOpacity, {
             toValue: 1,
             useNativeDriver: false,
@@ -174,11 +178,6 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             toValue: windowHeight,
             useNativeDriver: false,
             duration: animationDuration * 2,
-          }),
-          Animated.timing(animatedFrame, {
-            toValue: 1,
-            useNativeDriver: false,
-            duration: animationDuration,
           }),
         ]).start(() => {
           isAnimated.current = false
@@ -259,18 +258,15 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
           hideCloseButton={hideCloseButton}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
           animatedOpacity={animatedOpacity}
+          renderHeader={renderHeader}
           onClose={handleClose}
-        >
-          {typeof renderHeader === 'function' ? renderHeader(handleClose) : undefined}
-        </Header>
-        {typeof renderFooter === 'function' && (
-          <Footer
-            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            animatedOpacity={animatedOpacity}
-          >
-            {renderFooter(handleClose)}
-          </Footer>
-        )}
+        />
+        <Footer
+          renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+          animatedOpacity={animatedOpacity}
+          renderFooter={renderFooter}
+          onClose={handleClose}
+        />
       </Modal>
     )
   },

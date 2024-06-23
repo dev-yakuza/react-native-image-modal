@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import React from 'react'
-import { Animated, Dimensions, StyleSheet } from 'react-native'
+import { Animated, StyleSheet } from 'react-native'
 
-const Styles = StyleSheet.create({
+const styles = StyleSheet.create({
   footer: {
     position: 'absolute',
     bottom: 0,
@@ -15,26 +15,30 @@ const Styles = StyleSheet.create({
 interface Props {
   readonly renderToHardwareTextureAndroid: boolean
   readonly animatedOpacity: Animated.Value
-  readonly children: ReactNode
+  renderFooter?(close: () => void): ReactNode
+  onClose(): void
 }
 
-const Footer = ({ renderToHardwareTextureAndroid, animatedOpacity, children }: Props) => {
-  const { height: windowHeight } = Dimensions.get('window')
+const Footer = ({
+  renderToHardwareTextureAndroid,
+  animatedOpacity,
+  renderFooter,
+  onClose,
+}: Props) => {
+  if (typeof renderFooter !== 'function') {
+    return
+  }
+
+  const animationStyle = {
+    opacity: animatedOpacity,
+  }
 
   return (
     <Animated.View
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-      style={[
-        Styles['footer'],
-        {
-          opacity: animatedOpacity.interpolate({
-            inputRange: [0, windowHeight],
-            outputRange: [1, 0],
-          }),
-        },
-      ]}
+      style={[styles['footer'], animationStyle]}
     >
-      {children}
+      {renderFooter(onClose)}
     </Animated.View>
   )
 }

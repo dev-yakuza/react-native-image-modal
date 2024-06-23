@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import React from 'react'
 import { Animated, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native'
 
-const Styles = StyleSheet.create({
+const styles = StyleSheet.create({
   closeButton: {
     width: 40,
     height: 40,
@@ -27,7 +27,7 @@ interface Props {
   readonly hideCloseButton: boolean
   readonly renderToHardwareTextureAndroid: boolean
   readonly animatedOpacity: Animated.Value
-  readonly children?: ReactNode
+  renderHeader?(close: () => void): ReactNode
   onClose(): void
 }
 
@@ -36,26 +36,27 @@ const Header = ({
   hideCloseButton,
   renderToHardwareTextureAndroid,
   animatedOpacity,
-  children,
+  renderHeader,
   onClose,
 }: Props) => {
   if (hideCloseButton) return
 
+  const animationStyle = {
+    opacity: animatedOpacity,
+  }
+  const marginTop = isTranslucent ? StatusBar.currentHeight : 0
+
   return (
     <Animated.View
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-      style={[
-        {
-          opacity: animatedOpacity,
-        },
-      ]}
+      style={animationStyle}
     >
-      {children ? (
-        children
+      {typeof renderHeader === 'function' ? (
+        renderHeader(onClose)
       ) : (
-        <SafeAreaView style={{ marginTop: isTranslucent ? StatusBar.currentHeight : 0 }}>
-          <TouchableOpacity style={Styles['closeButton']} onPress={onClose}>
-            <Text style={Styles['label']}>×</Text>
+        <SafeAreaView style={{ marginTop }}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.label}>×</Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}
