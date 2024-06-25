@@ -25,7 +25,7 @@ interface Props {
   readonly source: ImageSourcePropType
   readonly resizeMode?: ImageResizeMode
   readonly backgroundColor?: string
-  readonly swipeToDismiss?: boolean
+  readonly swipeToDismiss: boolean
   readonly hideCloseButton?: boolean
   readonly imageStyle?: StyleProp<ImageStyle>
   readonly parentLayout?: {

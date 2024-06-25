@@ -11,16 +11,25 @@ import type {
 import { StyleSheet, Image, PanResponder, View } from 'react-native'
 import { Animated } from 'react-native'
 import type { OnMove, OnTap } from '../../../../types'
+import {
+  VISIBLE_OPACITY,
+  getCenterPositionBetweenTouches,
+  getDistanceBetweenTouches,
+  getDistanceFromLastPosition,
+  getMaxPosition,
+  getOpacityFromSwipe,
+  getImagePositionFromDistanceInScale,
+  getPositionFromDistanceInScale,
+  getZoomAndPositionFromDoubleTap,
+  getZoomFromDistance,
+} from './utils'
 
 const INITIAL_SCALE = 1
 const LONG_PRESS_TIME = 800
 const DOUBLE_CLICK_INTERVAL = 250
-const MIN_SCALE = 0.6
-const MAX_SCALE = 10
 const CLICK_DISTANCE = 10
 const DRAG_DISMISS_THRESHOLD = 150
 const INITIAL_ZOOM_DISTANCE = -1
-const VISIBLE_OPACITY = 1
 
 const styles = StyleSheet.create({
   image: {
@@ -36,7 +45,7 @@ interface Props {
   readonly source: ImageSourcePropType
   readonly resizeMode?: ImageResizeMode
   readonly imageStyle?: StyleProp<ImageStyle>
-  readonly swipeToDismiss?: boolean
+  readonly swipeToDismiss: boolean
   readonly isAnimated: MutableRefObject<boolean>
   readonly animationDuration: number
   readonly animatedOpacity: Animated.Value
@@ -86,7 +95,7 @@ const ImageArea = ({
 
   const _position = useRef({ x: 0, y: 0 })
   const _lastPosition = useRef({ x: 0, y: 0 })
-  const _centerDiff = useRef({ x: 0, y: 0 })
+  const _centerPosition = useRef({ x: 0, y: 0 })
   const _zoomCurrentDistance = useRef(INITIAL_ZOOM_DISTANCE)
   const _zoomLastDistance = useRef(INITIAL_ZOOM_DISTANCE)
 
@@ -95,35 +104,6 @@ const ImageArea = ({
   const _isLongPress = useRef(false)
   const _singleTapTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const _longPressTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
-
-  const getDistanceFromLastPosition = (
-    lastPosition: {
-      x: number
-      y: number
-    },
-    distancePosition: { dx: number; dy: number },
-  ) => {
-    const { x, y } = lastPosition
-    const { dx, dy } = distancePosition
-
-    return { dx: dx - x, dy: dy - y }
-  }
-
-  const getPositionFromDistance = (
-    position: {
-      x: number
-      y: number
-    },
-    distancePosition: { dx: number; dy: number },
-  ) => {
-    const { dx, dy } = distancePosition
-    let { x, y } = position
-
-    x += dx / _scale.current
-    y = y + dy / _scale.current
-
-    return { x, y }
-  }
 
   const clearLongPressTimeout = () => {
     if (_longPressTimeout.current) {
@@ -139,65 +119,23 @@ const ImageArea = ({
     }
   }
 
-  const getOpacityFromSwipe = (currentScale: number, dy: number) => {
-    if (swipeToDismiss && currentScale === INITIAL_SCALE) {
-      return (windowHeight - Math.abs(dy)) / windowHeight
-    }
-    return VISIBLE_OPACITY
-  }
-
   const moveImageToGesture = (gestureState: PanResponderGestureState) => {
     clearLongPressTimeout()
     const { dx, dy } = gestureState
     const newDistance = getDistanceFromLastPosition(_lastPosition.current, { dx, dy })
     _lastPosition.current = { x: dx, y: dy }
 
-    _position.current = getPositionFromDistance(_position.current, newDistance)
+    const scale = _scale.current
+    _position.current = getImagePositionFromDistanceInScale(scale, _position.current, newDistance)
     animatedPosition.setValue(_position.current)
 
-    animatedOpacity.setValue(getOpacityFromSwipe(_scale.current, gestureState.dy))
-  }
-
-  const getDistanceBetweenTouches = (
-    firstFinger: { pageX: number; pageY: number },
-    secondFinger: { pageX: number; pageY: number },
-  ) => {
-    const { pageX: x0, pageY: y0 } = firstFinger
-    const { pageX: x1, pageY: y1 } = secondFinger
-    const widthDistance = Math.abs(x0 - x1)
-    const heightDistance = Math.abs(y0 - y1)
-    const diagonalDistance = Math.sqrt(
-      widthDistance * widthDistance + heightDistance * heightDistance,
-    )
-    return Number(diagonalDistance.toFixed(1))
-  }
-
-  const getZoomFromDistance = (currentScale: number, distanceDiff: number) => {
-    const zoom = currentScale + distanceDiff
-    if (zoom < MIN_SCALE) {
-      return MIN_SCALE
-    }
-    if (zoom > MAX_SCALE) {
-      return MAX_SCALE
-    }
-    return zoom
-  }
-
-  const getPositionFromZoom = ({
-    currentPosition,
-    centerDiff,
-    distanceDiff,
-    zoom,
-  }: {
-    currentPosition: { x: number; y: number }
-    centerDiff: { x: number; y: number }
-    distanceDiff: number
-    zoom: number
-  }) => {
-    return {
-      x: currentPosition.x - (centerDiff.x * distanceDiff) / zoom,
-      y: currentPosition.y - (centerDiff.y * distanceDiff) / zoom,
-    }
+    const opacity = getOpacityFromSwipe({
+      swipeToDismiss,
+      scale,
+      dy,
+      windowHeight,
+    })
+    animatedOpacity.setValue(opacity)
   }
 
   const pinchZoom = (event: GestureResponderEvent) => {
@@ -215,9 +153,9 @@ const ImageArea = ({
       animatedScale.setValue(_scale.current)
 
       // Update image position
-      _position.current = getPositionFromZoom({
+      _position.current = getPositionFromDistanceInScale({
         currentPosition: _position.current,
-        centerDiff: _centerDiff.current,
+        centerDiff: _centerPosition.current,
         distanceDiff,
         zoom,
       })
@@ -237,44 +175,40 @@ const ImageArea = ({
     })
   }
 
-  const getMaxPosition = (
-    scale: number,
-    position: { x: number; y: number },
-  ): { x: number; y: number } => {
-    let { x, y } = position
-    const verticalMax = (windowHeight * scale - windowHeight) / 2 / scale
-    y = Math.max(-verticalMax, Math.min(verticalMax, y))
+  const animateToPosition = (position: { x: number; y: number }) => {
+    _position.current = position
+    Animated.timing(animatedPosition, {
+      toValue: _position.current,
+      duration: animationDuration,
+      useNativeDriver: false,
+    }).start()
+  }
 
-    const horizontalMax = (windowWidth * scale - windowWidth) / 2 / scale
-    x = Math.max(-horizontalMax, Math.min(horizontalMax, x))
-    return { x, y }
+  const animateToScale = (scale: number) => {
+    _scale.current = scale
+    Animated.timing(animatedScale, {
+      toValue: _scale.current,
+      duration: animationDuration,
+      useNativeDriver: false,
+    }).start()
   }
 
   const handlePanResponderReleaseResolve = (changedTouchesCount: number): void => {
     // 1. When image is zoomed out and finger is released,
     // Move image position to the center of the screen.
     if (_scale.current < INITIAL_SCALE) {
-      _position.current = {
-        x: 0,
-        y: 0,
-      }
-      Animated.timing(animatedPosition, {
-        toValue: _position.current,
-        duration: animationDuration,
-        useNativeDriver: false,
-      }).start()
+      animateToPosition({ x: 0, y: 0 })
       return
     }
 
     // 2. When image is zoomed in and finger is released,
     // Move image position
     if (_scale.current > INITIAL_SCALE) {
-      _position.current = getMaxPosition(_scale.current, _position.current)
-      Animated.timing(animatedPosition, {
-        toValue: _position.current,
-        duration: animationDuration,
-        useNativeDriver: false,
-      }).start()
+      const position = getMaxPosition(_scale.current, _position.current, {
+        width: windowWidth,
+        height: windowHeight,
+      })
+      animateToPosition(position)
       return
     }
 
@@ -291,15 +225,7 @@ const ImageArea = ({
 
     // 4. When finger is released in original size of image,
     // image should move to the center of the screen.
-    _position.current = {
-      x: 0,
-      y: 0,
-    }
-    Animated.timing(animatedPosition, {
-      toValue: _position.current,
-      duration: animationDuration,
-      useNativeDriver: false,
-    }).start()
+    animateToPosition({ x: 0, y: 0 })
 
     // And background should return to its normal opacity.
     Animated.timing(animatedOpacity, {
@@ -309,42 +235,6 @@ const ImageArea = ({
     }).start()
 
     triggerOnMove('onPanResponderRelease')
-  }
-
-  const getCenterDiff = (
-    firstTouch: { pageX: number; pageY: number },
-    secondTouch: { pageX: number; pageY: number },
-  ) => {
-    const centerX = (firstTouch.pageX + secondTouch.pageX) / 2
-    const centerY = (firstTouch.pageY + secondTouch.pageY) / 2
-    return {
-      x: centerX - windowWidth / 2,
-      y: centerY - windowHeight / 2,
-    }
-  }
-
-  const getZoomAndPosition = (scale: number, position: { pageX: number; pageY: number }) => {
-    // If image is zoomed in, double tap to zoom out
-    if (scale !== INITIAL_SCALE) {
-      return {
-        scale: INITIAL_SCALE,
-        position: { x: 0, y: 0 },
-      }
-    }
-
-    // If image is zoomed out, double tap to zoom in
-    const { pageX: doubleClickX, pageY: doubleClickY } = position
-    const beforeScale = scale
-    const newScale = 2
-
-    const diffScale = newScale - beforeScale
-    const x = ((windowWidth / 2 - doubleClickX) * diffScale) / _scale.current
-    const y = ((windowHeight / 2 - doubleClickY) * diffScale) / _scale.current
-
-    return {
-      scale: newScale,
-      position: getMaxPosition(newScale, { x, y }),
-    }
   }
 
   // Trigger when finger is pressed
@@ -369,9 +259,10 @@ const ImageArea = ({
 
     // Calculate center diff for pinch to zoom
     if (event.nativeEvent.changedTouches.length > 1) {
-      _centerDiff.current = getCenterDiff(
+      _centerPosition.current = getCenterPositionBetweenTouches(
         event.nativeEvent.changedTouches[0],
         event.nativeEvent.changedTouches[1],
+        { width: windowWidth, height: windowHeight },
       )
     }
 
@@ -381,25 +272,14 @@ const ImageArea = ({
         _lastClickTime.current = 0
         _isDoubleClick.current = true
 
-        const { scale, position } = getZoomAndPosition(
+        const { scale, position } = getZoomAndPositionFromDoubleTap(
           _scale.current,
           event.nativeEvent.changedTouches[0],
+          { width: windowWidth, height: windowHeight },
         )
-        _scale.current = scale
-        _position.current = position
+        animateToPosition(position)
+        animateToScale(scale)
 
-        Animated.parallel([
-          Animated.timing(animatedScale, {
-            toValue: _scale.current,
-            duration: animationDuration,
-            useNativeDriver: false,
-          }),
-          Animated.timing(animatedPosition, {
-            toValue: _position.current,
-            duration: animationDuration,
-            useNativeDriver: false,
-          }),
-        ]).start()
         triggerOnMove('centerOn')
         onDoubleTap?.()
       } else {
