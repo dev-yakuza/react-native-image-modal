@@ -25,7 +25,7 @@ interface ReactNativeImageModal {
  * @property {boolean} [renderToHardwareTextureAndroid=true] - (Android only) Use hardware texture for animation.
  * @property {boolean} [isTranslucent=false] - Determines whether image modal should go under the system statusbar.
  * @property {boolean} [swipeToDismiss=true] - Dismiss image modal by swiping up or down.
- * @property {boolean} [imageBackgroundColor] - Background color for original image.
+ * @property {boolean} [imageBackgroundColor=transparent] - Background color for original image.
  * @property {boolean} [overlayBackgroundColor=#000000] - Background color for modal image.
  * @property {boolean} [hideCloseButton=false] - Hide close button.
  * @property {boolean} modalRef - Deprecated: Ref for image modal. Use ref instead.
@@ -84,6 +84,7 @@ interface Props {
   readonly swipeToDismiss?: boolean
   /**
    *  Background color for original image.
+   *  @default 'transparent'
    */
   readonly imageBackgroundColor?: string
   /**
@@ -201,7 +202,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
       renderToHardwareTextureAndroid = true,
       isTranslucent,
       swipeToDismiss = true,
-      imageBackgroundColor,
+      imageBackgroundColor = 'transparent',
       overlayBackgroundColor,
       hideCloseButton,
       modalRef,
