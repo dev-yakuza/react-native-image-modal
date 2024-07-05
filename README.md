@@ -24,17 +24,17 @@ There are blog posts about how to use `react-native-image-modal`.
 
 ## Installation
 
-This library use `react-native-fast-image`, so you need to install it.
+Execute the command to install `react-native-image-modal`.
 
 ```bash
-npm install --save react-native-fast-image
-npx pod-install
-```
-
-And then execute the command to install `react-native-image-modal`.
-
-```bash
+# npm
 npm install --save react-native-image-modal
+
+# yarn
+yarn add --dev react-native-image-modal
+
+# pnpm
+pnpm add --save react-native-image-modal
 ```
 
 ## How to use
