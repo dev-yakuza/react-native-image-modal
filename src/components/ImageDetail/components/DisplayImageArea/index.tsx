@@ -34,7 +34,7 @@ const DisplayImageArea = ({
 
   // On Android, the status bar height should be added to the top position of the clipping area.
   const statusBarHeight =
-    isTranslucent && Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0
+    isTranslucent && Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0
 
   const animationStyle = {
     left: animatedFrame.interpolate({
