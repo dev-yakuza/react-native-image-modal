@@ -22,7 +22,7 @@ jobs:
         id: version
         run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.3
         with:
           node-version: 20.11.1
           registry-url: 'https://registry.npmjs.org'
