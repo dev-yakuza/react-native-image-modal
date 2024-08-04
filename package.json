@@ -48,7 +48,7 @@
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-unicorn": "^55.0.0",
-    "eslint-plugin-unused-imports": "^3.2.0",
+    "eslint-plugin-unused-imports": "^4.0.1",
     "lefthook": "^1.7.11",
     "prettier": "3.3.3",
     "react": "18.3.1",
