@@ -9,7 +9,8 @@
     "ios/",
     "Gemfile",
     "android/",
-    ".eslintrc.js"
+    ".eslintrc.js",
+
   ],
-  "words": ["lefthook", "yakuza", "Deku", "tada", "Podfile"]
+  "words": ["lefthook", "yakuza", "Deku", "tada", "Podfile", "danielchabr", "Slashgear"]
 }
