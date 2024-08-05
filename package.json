@@ -37,7 +37,7 @@
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
   "devDependencies": {
     "@types/react": "18.3.3",
-    "@types/react-native": "0.72.8",
+    "@types/react-native": "0.73.0",
     "@typescript-eslint/eslint-plugin": "7.17.0",
     "@typescript-eslint/parser": "7.17.0",
     "cspell": "^8.13.1",
