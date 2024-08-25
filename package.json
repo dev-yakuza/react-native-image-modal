@@ -42,7 +42,7 @@
     "@typescript-eslint/parser": "7.17.0",
     "cspell": "^8.14.2",
     "eslint": "8.57.0",
-    "eslint-plugin-functional": "^6.6.3",
+    "eslint-plugin-functional": "^7.0.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsdoc": "^48.11.0",
     "eslint-plugin-react": "7.35.0",
