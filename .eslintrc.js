@@ -51,6 +51,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/method-signature-style': ['error', 'method'],
+    '@typescript-eslint/unbound-method': 'off',
     'react/display-name': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-no-useless-fragment': 'error',
@@ -61,7 +62,7 @@ module.exports = {
         eventHandlerPropPrefix: 'on',
       },
     ],
-    'unused-imports/no-unused-imports-ts': 'error',
+    'unused-imports/no-unused-imports': 'error',
     'import/order': [
       'error',
       {
