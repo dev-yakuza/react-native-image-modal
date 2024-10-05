@@ -22,9 +22,9 @@ jobs:
         id: version
         run: echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.4
         with:
-          node-version: '22.7.0'
+          node-version: '22.9.0'
           registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: npm install
