@@ -39,7 +39,7 @@
     "@types/react": "18.3.11",
     "@types/react-native": "0.72.8",
     "@typescript-eslint/eslint-plugin": "8.6.0",
-    "@typescript-eslint/parser": "8.6.0",
+    "@typescript-eslint/parser": "8.10.0",
     "cspell": "^8.15.1",
     "eslint": "8.57.0",
     "eslint-plugin-functional": "^6.6.3",
