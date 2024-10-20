@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native'
 import { Animated, Image, TouchableOpacity } from 'react-native'
+import type { RenderImageComponentParams } from '../../types'
 
 interface Props {
   readonly source: ImageSourcePropType
@@ -9,13 +10,10 @@ interface Props {
   readonly renderToHardwareTextureAndroid: boolean
   readonly disabled: boolean
   readonly style?: StyleProp<ImageStyle>
+  readonly isModalOpen: boolean
   onDialogOpen(): void
   onLongPressOriginImage?(): void
-  renderImageComponent?(params: {
-    readonly source: ImageSourcePropType
-    readonly style?: StyleProp<ImageStyle>
-    readonly resizeMode: ImageResizeMode
-  }): ReactNode
+  renderImageComponent?(params: RenderImageComponentParams): ReactNode
 }
 
 const OriginImage = ({
@@ -25,6 +23,7 @@ const OriginImage = ({
   renderToHardwareTextureAndroid,
   disabled,
   style,
+  isModalOpen,
   onDialogOpen,
   onLongPressOriginImage,
   renderImageComponent,
@@ -52,6 +51,7 @@ const OriginImage = ({
             source,
             style,
             resizeMode,
+            isModalOpen,
           })
         ) : (
           <Image source={source} style={style} resizeMode={resizeMode} />
