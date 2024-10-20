@@ -3,7 +3,7 @@ import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from
 type RenderImageComponentParams = {
   readonly source: ImageSourcePropType
   readonly style?: StyleProp<ImageStyle>
-  readonly resizeMode: ImageResizeMode
+  readonly resizeMode?: ImageResizeMode
   readonly isModalOpen: boolean
 }
 
