@@ -5,7 +5,7 @@ import { Animated, View } from 'react-native'
 
 import { ImageDetail, OriginImage } from './components'
 import { useOriginImageLayout } from './hooks'
-import type { OnTap, OnMove } from './types'
+import type { OnTap, OnMove, RenderImageComponentParams } from './types'
 
 const VISIBLE_OPACITY = 1
 const INVISIBLE_OPACITY = 0
@@ -140,11 +140,7 @@ interface Props {
   /**
    *  Render custom image component like expo-image or react-native-fast-image.
    */
-  renderImageComponent?(params: {
-    readonly source: ImageSourcePropType
-    readonly style?: StyleProp<ImageStyle>
-    readonly resizeMode: ImageResizeMode
-  }): ReactNode
+  renderImageComponent?(params: RenderImageComponentParams): ReactNode
   /**
    *  Callback when long press on original image.
    */
@@ -287,6 +283,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
           disabled={disabled}
           style={style}
+          isModalOpen={isModalOpen}
           onDialogOpen={handleOpen}
           onLongPressOriginImage={onLongPressOriginImage}
           renderImageComponent={renderImageComponent}

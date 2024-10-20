@@ -1,3 +1,12 @@
+import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native'
+
+type RenderImageComponentParams = {
+  readonly source: ImageSourcePropType
+  readonly style?: StyleProp<ImageStyle>
+  readonly resizeMode?: ImageResizeMode
+  readonly isModalOpen: boolean
+}
+
 interface OnMove {
   readonly type: string
   readonly positionX: number
@@ -13,4 +22,4 @@ interface OnTap {
   readonly pageY: number
 }
 
-export type { OnMove, OnTap }
+export type { RenderImageComponentParams, OnMove, OnTap }

@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react
 import type { ImageResizeMode, StyleProp, ImageStyle, ImageSourcePropType } from 'react-native'
 import { Dimensions, Animated, Modal } from 'react-native'
 
-import type { OnTap, OnMove } from '../../types'
+import type { OnTap, OnMove, RenderImageComponentParams } from '../../types'
 import { Background, DisplayImageArea, Footer, Header, ImageArea } from './components'
 
 const INITIAL_SCALE = 1
@@ -37,11 +37,7 @@ interface Props {
   readonly animationDuration: number
   renderHeader?(close: () => void): ReactNode
   renderFooter?(close: () => void): ReactNode
-  renderImageComponent?(params: {
-    readonly source: ImageSourcePropType
-    readonly style?: StyleProp<ImageStyle>
-    readonly resizeMode?: ImageResizeMode
-  }): ReactNode
+  renderImageComponent?(params: RenderImageComponentParams): ReactNode
   onTap?(eventParams: OnTap): void
   onDoubleTap?(): void
   onLongPress?(): void
@@ -244,6 +240,7 @@ const ImageDetail = forwardRef<ImageDetail, Props>(
             resizeMode={resizeMode}
             imageStyle={imageStyle}
             animationDuration={animationDuration}
+            isModalOpen={isOpen}
             renderImageComponent={renderImageComponent}
             onClose={handleClose}
             onMove={onMove}

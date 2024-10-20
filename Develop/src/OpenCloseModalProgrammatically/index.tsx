@@ -1,6 +1,5 @@
 import {useRef, useState} from 'react';
 import {
-  Button,
   LayoutChangeEvent,
   SafeAreaView,
   ScrollView,

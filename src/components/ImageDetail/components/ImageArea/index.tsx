@@ -10,7 +10,7 @@ import type {
 } from 'react-native'
 import { StyleSheet, Image, PanResponder, View } from 'react-native'
 import { Animated } from 'react-native'
-import type { OnMove, OnTap } from '../../../../types'
+import type { OnMove, OnTap, RenderImageComponentParams } from '../../../../types'
 import {
   VISIBLE_OPACITY,
   getCenterPositionBetweenTouches,
@@ -54,11 +54,8 @@ interface Props {
   readonly animatedImagePosition: Animated.ValueXY
   readonly animatedImageWidth: Animated.Value
   readonly animatedImageHeight: Animated.Value
-  renderImageComponent?(params: {
-    readonly source: ImageSourcePropType
-    readonly style?: StyleProp<ImageStyle>
-    readonly resizeMode?: ImageResizeMode
-  }): ReactNode
+  readonly isModalOpen: boolean
+  renderImageComponent?(params: RenderImageComponentParams): ReactNode
   onClose(): void
   onDoubleTap?(): void
   onLongPress?(): void
@@ -83,6 +80,7 @@ const ImageArea = ({
   animatedImagePosition,
   animatedImageWidth,
   animatedImageHeight,
+  isModalOpen,
   renderImageComponent,
   onClose,
   onDoubleTap,
@@ -372,6 +370,7 @@ const ImageArea = ({
             source,
             resizeMode,
             style: [imageStyle, styles.image],
+            isModalOpen,
           })
         ) : (
           <Image resizeMode={resizeMode} style={[imageStyle, styles.image]} source={source} />
