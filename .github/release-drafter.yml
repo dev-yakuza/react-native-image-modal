@@ -1,6 +1,5 @@
-name-template: "v$RESOLVED_VERSION"
-tag-template: "v$RESOLVED_VERSION"
-tag-prefix: 'v'
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
 include-labels:
   - 'major'
   - 'minor'

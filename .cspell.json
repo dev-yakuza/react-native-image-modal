@@ -1,16 +1,25 @@
 {
   "version": "0.2",
   "ignorePaths": [
-    "*.svg",
+    ".eslintrc.js",
+    ".gitignore",
     "*.lock",
     "*.snap",
-    ".gitignore",
-    "Podfile",
-    "ios/",
-    "Gemfile",
+    "*.svg",
     "android/",
-    ".eslintrc.js",
-
+    "Gemfile",
+    "ios/",
+    "Podfile"
   ],
-  "words": ["lefthook", "yakuza", "Deku", "tada", "Podfile", "danielchabr", "Slashgear"]
+  "words": [
+    "autolabeler",
+    "commitish",
+    "danielchabr",
+    "Deku",
+    "lefthook",
+    "Podfile",
+    "Slashgear",
+    "tada",
+    "yakuza"
+  ]
 }
