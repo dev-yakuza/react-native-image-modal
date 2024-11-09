@@ -41,7 +41,7 @@
     "@typescript-eslint/eslint-plugin": "8.13.0",
     "@typescript-eslint/parser": "8.13.0",
     "cspell": "^8.16.0",
-    "eslint": "8.57.0",
+    "eslint": "9.14.0",
     "eslint-plugin-functional": "^6.6.3",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.4.3",
