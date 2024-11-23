@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import React from 'react'
 import { Animated, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native'
 
 const styles = StyleSheet.create({

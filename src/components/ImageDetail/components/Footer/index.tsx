@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import React from 'react'
 import { Animated, StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
