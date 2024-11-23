@@ -1,4 +1,3 @@
-import React from 'react'
 import type { ColorValue } from 'react-native'
 import { Animated, StyleSheet } from 'react-native'
 

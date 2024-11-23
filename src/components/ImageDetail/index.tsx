@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import type { ImageResizeMode, StyleProp, ImageStyle, ImageSourcePropType } from 'react-native'
 import { Dimensions, Animated, Modal } from 'react-native'
 

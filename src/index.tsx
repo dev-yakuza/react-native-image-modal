@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from 'react'
-import React, { createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import type { StyleProp, ImageStyle, ImageResizeMode, ImageSourcePropType } from 'react-native'
 import { Animated, View } from 'react-native'
 
