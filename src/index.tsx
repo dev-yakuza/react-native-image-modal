@@ -229,7 +229,7 @@ const ImageModal = forwardRef<ReactNativeImageModal, Props>(
     const originImageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
     const [isModalOpen, setIsModalOpen] = useState(false)
     const { originImageLayout, updateOriginImageLayout } = useOriginImageLayout({
-      imageRef,
+      imageRef: imageRef,
       isRTL,
     })
 

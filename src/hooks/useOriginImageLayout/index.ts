@@ -4,7 +4,7 @@ import type { View } from 'react-native'
 import { Dimensions } from 'react-native'
 
 interface Params {
-  readonly imageRef: RefObject<View>
+  readonly imageRef: RefObject<View | null>
   readonly isRTL: boolean
 }
 
