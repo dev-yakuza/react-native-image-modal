@@ -1591,7 +1591,7 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNScreens (4.3.0):
+  - RNScreens (4.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1612,9 +1612,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.3.0)
+    - RNScreens/common (= 4.4.0)
     - Yoga
-  - RNScreens/common (4.3.0):
+  - RNScreens/common (4.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1923,7 +1923,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 3a68408bf68d0957abcd13d610f76420005c1d91
   ReactCommon: 5809a8ee421b7219221a475b78180f8f34b5c5ec
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
-  RNScreens: 06e1f09654d2da4ff95dee6621b2b13b033e9c5a
+  RNScreens: 351f431ef2a042a1887d4d90e1c1024b8ae9d123
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
