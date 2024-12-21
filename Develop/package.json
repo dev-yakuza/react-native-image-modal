@@ -17,7 +17,7 @@
     "react-native": "0.76.5",
     "react-native-fast-image": "^8.6.3",
     "react-native-safe-area-context": "^5.0.0",
-    "react-native-screens": "^4.3.0"
+    "react-native-screens": "^4.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
