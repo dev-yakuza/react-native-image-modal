@@ -36,23 +36,23 @@
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
   "devDependencies": {
-    "@types/react": "19.0.2",
+    "@types/react": "19.0.7",
     "@types/react-native": "0.72.8",
-    "@typescript-eslint/eslint-plugin": "8.19.0",
-    "@typescript-eslint/parser": "8.19.0",
-    "cspell": "^8.17.1",
+    "@typescript-eslint/eslint-plugin": "8.20.0",
+    "@typescript-eslint/parser": "8.20.0",
+    "cspell": "^8.17.2",
     "eslint": "8.57.0",
     "eslint-plugin-functional": "^6.6.3",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsdoc": "^50.6.1",
-    "eslint-plugin-react": "7.37.3",
+    "eslint-plugin-jsdoc": "^50.6.2",
+    "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.1.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "lefthook": "^1.10.1",
+    "lefthook": "^1.10.8",
     "prettier": "3.4.2",
     "react": "19.0.0",
-    "react-native": "0.76.5",
-    "typescript": "5.7.2"
+    "react-native": "0.76.6",
+    "typescript": "5.7.3"
   }
 }
