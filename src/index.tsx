@@ -1,11 +1,14 @@
 import type { ReactNode, RefObject } from 'react'
 import { createRef, forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import type { StyleProp, ImageStyle, ImageResizeMode, ImageSourcePropType } from 'react-native'
+
 import { Animated, View } from 'react-native'
 
-import { ImageDetail, OriginImage } from './components'
+import { ImageDetailComponent, OriginImage } from './components'
 import { useOriginImageLayout } from './hooks'
-import type { OnTap, OnMove, RenderImageComponentParams } from './types'
+
+import type { ImageDetail } from './components'
+import type { OnMove, OnTap, RenderImageComponentParams } from './types'
+import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native'
 
 const VISIBLE_OPACITY = 1
 const INVISIBLE_OPACITY = 0
@@ -188,138 +191,133 @@ interface Props {
  * @param {Props} props - Props of ImageModal component
  * @returns {ReactNode} Image modal component
  */
-const ImageModal = forwardRef<ReactNativeImageModal, Props>(
-  (
-    {
-      source,
-      style,
-      resizeMode = 'contain',
-      isRTL = false,
-      renderToHardwareTextureAndroid = true,
-      isTranslucent,
-      swipeToDismiss = true,
-      imageBackgroundColor = 'transparent',
-      overlayBackgroundColor,
-      hideCloseButton,
-      modalRef,
-      disabled = false,
-      modalImageStyle,
-      modalImageResizeMode,
-      parentLayout,
-      animationDuration = 100,
-      onLongPressOriginImage,
-      renderHeader,
-      renderFooter,
-      renderImageComponent,
-      onTap,
-      onDoubleTap,
-      onLongPress,
-      onOpen,
-      didOpen,
-      onMove,
-      responderRelease,
-      willClose,
-      onClose,
-    }: Props,
-    ref,
-  ) => {
-    const imageRef = createRef<View>()
-    const imageDetailRef = modalRef ?? createRef<ImageDetail>()
-    // If don't use useRef, animation will not work
-    const originImageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const { originImageLayout, updateOriginImageLayout } = useOriginImageLayout({
-      imageRef: imageRef,
-      isRTL,
+const ImageModal = forwardRef<ReactNativeImageModal, Props>(function ImageModal(
+  {
+    source,
+    style,
+    resizeMode = 'contain',
+    isRTL = false,
+    renderToHardwareTextureAndroid = true,
+    isTranslucent,
+    swipeToDismiss = true,
+    imageBackgroundColor = 'transparent',
+    overlayBackgroundColor,
+    hideCloseButton,
+    modalRef,
+    disabled = false,
+    modalImageStyle,
+    modalImageResizeMode,
+    parentLayout,
+    animationDuration = 100,
+    onLongPressOriginImage,
+    renderHeader,
+    renderFooter,
+    renderImageComponent,
+    onTap,
+    onDoubleTap,
+    onLongPress,
+    onOpen,
+    didOpen,
+    onMove,
+    responderRelease,
+    willClose,
+    onClose,
+  }: Props,
+  ref,
+) {
+  const imageRef = createRef<View>()
+  const imageDetailRef = modalRef ?? createRef<ImageDetail>()
+  // If don't use useRef, animation will not work
+  const originImageOpacity = useRef(new Animated.Value(VISIBLE_OPACITY)).current
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { originImageLayout, updateOriginImageLayout } = useOriginImageLayout({
+    imageRef,
+    isRTL,
+  })
+
+  const showModal = (): void => {
+    onOpen?.()
+    // Before opening modal, updating origin image position is required.
+    updateOriginImageLayout()
+    setTimeout(() => {
+      setIsModalOpen(true)
     })
+  }
 
-    const showModal = (): void => {
-      onOpen?.()
-      // Before opening modal, updating origin image position is required.
-      updateOriginImageLayout()
-      setTimeout(() => {
-        setIsModalOpen(true)
-      })
-    }
+  const hideModal = (): void => {
+    setTimeout(() => {
+      setIsModalOpen(false)
+      onClose?.()
+    })
+  }
 
-    const hideModal = (): void => {
-      setTimeout(() => {
-        setIsModalOpen(false)
-        onClose?.()
-      })
-    }
+  const handleOpen = (): void => {
+    showModal()
+    Animated.timing(originImageOpacity, {
+      toValue: INVISIBLE_OPACITY,
+      duration: animationDuration,
+      useNativeDriver: false,
+    }).start()
+  }
 
-    const handleOpen = (): void => {
-      showModal()
-      Animated.timing(originImageOpacity, {
-        toValue: INVISIBLE_OPACITY,
-        duration: animationDuration,
-        useNativeDriver: false,
-      }).start()
-    }
+  const handleClose = (): void => {
+    originImageOpacity.setValue(VISIBLE_OPACITY)
+    hideModal()
+  }
 
-    const handleClose = (): void => {
-      originImageOpacity.setValue(VISIBLE_OPACITY)
-      hideModal()
-    }
+  useImperativeHandle(ref, () => ({
+    isOpen: isModalOpen,
+    open: handleOpen,
+    close() {
+      imageDetailRef.current!.close()
+    },
+  }))
 
-    useImperativeHandle(ref, () => ({
-      isOpen: isModalOpen,
-      open: handleOpen,
-      close() {
-        imageDetailRef.current!.close()
-      },
-    }))
-
-    return (
-      <View
-        ref={imageRef}
-        style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}
-      >
-        <OriginImage
+  return (
+    <View ref={imageRef} style={[{ alignSelf: 'baseline', backgroundColor: imageBackgroundColor }]}>
+      <OriginImage
+        source={source}
+        resizeMode={resizeMode}
+        imageOpacity={originImageOpacity}
+        renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
+        disabled={disabled}
+        style={style}
+        isModalOpen={isModalOpen}
+        onDialogOpen={handleOpen}
+        onLongPressOriginImage={onLongPressOriginImage}
+        renderImageComponent={renderImageComponent}
+      />
+      {isModalOpen && (
+        <ImageDetailComponent
           source={source}
-          resizeMode={resizeMode}
-          imageOpacity={originImageOpacity}
+          resizeMode={modalImageResizeMode ?? resizeMode}
+          imageStyle={modalImageStyle}
+          ref={modalRef ?? imageDetailRef}
+          isOpen={isModalOpen}
           renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-          disabled={disabled}
-          style={style}
-          isModalOpen={isModalOpen}
-          onDialogOpen={handleOpen}
-          onLongPressOriginImage={onLongPressOriginImage}
+          isTranslucent={isTranslucent}
+          origin={originImageLayout}
+          backgroundColor={overlayBackgroundColor}
+          swipeToDismiss={swipeToDismiss}
+          hideCloseButton={hideCloseButton}
+          parentLayout={parentLayout}
+          animationDuration={animationDuration}
+          renderHeader={renderHeader}
+          renderFooter={renderFooter}
           renderImageComponent={renderImageComponent}
+          onTap={onTap}
+          onDoubleTap={onDoubleTap}
+          onLongPress={onLongPress}
+          didOpen={didOpen}
+          onMove={onMove}
+          responderRelease={responderRelease}
+          willClose={willClose}
+          onClose={handleClose}
         />
-        {isModalOpen && (
-          <ImageDetail
-            source={source}
-            resizeMode={modalImageResizeMode ?? resizeMode}
-            imageStyle={modalImageStyle}
-            ref={modalRef ?? imageDetailRef}
-            isOpen={isModalOpen}
-            renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-            isTranslucent={isTranslucent}
-            origin={originImageLayout}
-            backgroundColor={overlayBackgroundColor}
-            swipeToDismiss={swipeToDismiss}
-            hideCloseButton={hideCloseButton}
-            parentLayout={parentLayout}
-            animationDuration={animationDuration}
-            renderHeader={renderHeader}
-            renderFooter={renderFooter}
-            renderImageComponent={renderImageComponent}
-            onTap={onTap}
-            onDoubleTap={onDoubleTap}
-            onLongPress={onLongPress}
-            didOpen={didOpen}
-            onMove={onMove}
-            responderRelease={responderRelease}
-            willClose={willClose}
-            onClose={handleClose}
-          />
-        )}
-      </View>
-    )
-  },
-)
+      )}
+    </View>
+  )
+})
 
 export default ImageModal
 export type { ReactNativeImageModal, ImageDetail }
