@@ -1,5 +1,6 @@
-import type { ColorValue } from 'react-native'
 import { Animated, StyleSheet } from 'react-native'
+
+import type { ColorValue } from 'react-native'
 
 const styles = StyleSheet.create({
   background: {
@@ -25,11 +26,7 @@ const Background = ({
   return (
     <Animated.View
       renderToHardwareTextureAndroid={renderToHardwareTextureAndroid}
-      style={[
-        styles.background,
-        { backgroundColor: backgroundColor },
-        { opacity: animatedOpacity },
-      ]}
+      style={[styles.background, { backgroundColor }, { opacity: animatedOpacity }]}
     />
   )
 }

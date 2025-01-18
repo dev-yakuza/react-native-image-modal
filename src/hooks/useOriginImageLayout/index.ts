@@ -1,7 +1,9 @@
 import type { RefObject } from 'react'
 import { useState } from 'react'
-import type { View } from 'react-native'
+
 import { Dimensions } from 'react-native'
+
+import type { View } from 'react-native'
 
 interface Params {
   readonly imageRef: RefObject<View | null>

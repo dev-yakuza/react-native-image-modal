@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
-import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native'
+
 import { Animated, Image, TouchableOpacity } from 'react-native'
+
 import type { RenderImageComponentParams } from '../../types'
+import type { ImageResizeMode, ImageSourcePropType, ImageStyle, StyleProp } from 'react-native'
 
 interface Props {
   readonly source: ImageSourcePropType

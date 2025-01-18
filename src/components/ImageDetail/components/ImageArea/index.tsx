@@ -1,5 +1,22 @@
-import type { MutableRefObject } from 'react'
-import { useRef, type ReactNode } from 'react'
+import { useRef } from 'react'
+import type { ReactNode, RefObject } from 'react'
+
+import { Animated, Image, PanResponder, StyleSheet, View } from 'react-native'
+
+import {
+  getCenterPositionBetweenTouches,
+  getDistanceBetweenTouches,
+  getDistanceFromLastPosition,
+  getImagePositionFromDistanceInScale,
+  getMaxPosition,
+  getOpacityFromSwipe,
+  getPositionFromDistanceInScale,
+  getZoomAndPositionFromDoubleTap,
+  getZoomFromDistance,
+  VISIBLE_OPACITY,
+} from './utils'
+
+import type { OnMove, OnTap, RenderImageComponentParams } from '../../../../types'
 import type {
   GestureResponderEvent,
   ImageResizeMode,
@@ -8,21 +25,6 @@ import type {
   PanResponderGestureState,
   StyleProp,
 } from 'react-native'
-import { StyleSheet, Image, PanResponder, View } from 'react-native'
-import { Animated } from 'react-native'
-import type { OnMove, OnTap, RenderImageComponentParams } from '../../../../types'
-import {
-  VISIBLE_OPACITY,
-  getCenterPositionBetweenTouches,
-  getDistanceBetweenTouches,
-  getDistanceFromLastPosition,
-  getMaxPosition,
-  getOpacityFromSwipe,
-  getImagePositionFromDistanceInScale,
-  getPositionFromDistanceInScale,
-  getZoomAndPositionFromDoubleTap,
-  getZoomFromDistance,
-} from './utils'
 
 const INITIAL_SCALE = 1
 const LONG_PRESS_TIME = 800
@@ -46,7 +48,7 @@ interface Props {
   readonly resizeMode?: ImageResizeMode
   readonly imageStyle?: StyleProp<ImageStyle>
   readonly swipeToDismiss: boolean
-  readonly isAnimated: MutableRefObject<boolean>
+  readonly isAnimated: RefObject<boolean>
   readonly animationDuration: number
   readonly animatedOpacity: Animated.Value
   readonly animatedScale: Animated.Value
@@ -343,7 +345,7 @@ const ImageArea = ({
         overflow: 'hidden',
         flex: 1,
       }}
-      {..._imagePanResponder?.panHandlers}
+      {..._imagePanResponder.panHandlers}
     >
       <Animated.View
         style={{

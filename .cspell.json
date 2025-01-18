@@ -1,7 +1,7 @@
 {
   "version": "0.2",
   "ignorePaths": [
-    ".eslintrc.js",
+    "eslint.config.js",
     ".gitignore",
     "*.lock",
     "*.snap",

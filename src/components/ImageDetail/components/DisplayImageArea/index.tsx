@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+
 import { Animated, Dimensions, Platform, StatusBar, StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
