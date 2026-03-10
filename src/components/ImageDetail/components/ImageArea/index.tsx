@@ -198,6 +198,7 @@ const ImageArea = ({
     // Move image position to the center of the screen.
     if (_scale.current < INITIAL_SCALE) {
       animateToPosition({ x: 0, y: 0 })
+      animateToScale(INITIAL_SCALE)
       return
     }
 
