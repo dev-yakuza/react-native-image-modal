@@ -36,6 +36,9 @@
     "url": "https://github.com/dev-yakuza/react-native-image-modal/issues"
   },
   "homepage": "https://github.com/dev-yakuza/react-native-image-modal#readme",
+  "peerDependencies": {
+    "react-native-safe-area-context": ">=4.0.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@types/react": "19.0.8",
@@ -57,6 +60,7 @@
     "prettier": "3.4.2",
     "react": "19.0.0",
     "react-native": "0.77.0",
+    "react-native-safe-area-context": "^5.0.0",
     "typescript": "5.7.3",
     "typescript-eslint": "^8.21.0"
   }
