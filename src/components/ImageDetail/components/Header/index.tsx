@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
-import { Animated, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { Animated, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const styles = StyleSheet.create({
   closeButton: {
